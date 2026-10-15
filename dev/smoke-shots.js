@@ -1,0 +1,10 @@
+qs.manual(true);
+await qs.start({ seed: 7, skipIntro: true });
+await qs.advance(0.5);
+await shot('aim');
+qs.forceTeacher('writing', 30);
+const sol = await qs.throwAt('crush', { pitchDeg: 60 });
+await qs.advance(0.35);
+await shot('flight');
+const id = await qs.runToEnding(60);
+return { sol, id, hits: qs.ctx.round.landing.hits, landing: qs.state().landing };

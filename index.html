@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>情书抛物线 · Love Letter Parabola</title>
+  <link rel="stylesheet" href="./src/ui/ui.css">
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #1d1a24; }
+    #game { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; touch-action: none; }
+    #ui-root { position: fixed; inset: 0; pointer-events: none; }
+    #boot-error { position: fixed; left: 16px; bottom: 16px; color: #fff; background: #a33; padding: 8px 12px; font: 14px sans-serif; }
+  </style>
+  <script type="importmap">
+    { "imports": { "three": "./vendor/three/three.module.js", "three/addons/": "./vendor/three/addons/" } }
+  </script>
+</head>
+<body>
+  <canvas id="game"></canvas>
+  <div id="ui-root"></div>
+  <div id="boot-error" hidden></div>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
