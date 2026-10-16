@@ -1,63 +1,84 @@
-// STUB — to be replaced by the ai-designer agent. Contract: docs/CONTRACTS.md §4.4
-import * as THREE from 'three';
-import { PLAYER_EYE } from '../core/layout.js';
+// Behaviour AI (owner: qs-ai-designer). Contract: docs/CONTRACTS.md §4.4. Notes: docs/modules/ai.md
+//
+//   teacher.js   王老师: state machine, view cone, suspicion, hearing, blackboard, lectures
+//   students.js  classmates: ambient fidgets by trait, ball reactions, in-flight accidents, P1 scenes
+//   lines.js     all Chinese text (board lessons, lecture lines, classmate lines)
+import { PLAYER_EYE, BLACKBOARD } from '../core/layout.js';
+import { smoothstep, yawTo, deg } from '../core/util.js';
+import { createTeacher, TEACHER_STATES, TUNE } from './teacher.js';
+import { createStudents, INCIDENT_KINDS } from './students.js';
+
+const BOARD_YAW = yawTo(PLAYER_EYE, { x: BLACKBOARD.x, z: BLACKBOARD.z });
+const BOARD_PITCH = Math.atan2(BLACKBOARD.y - PLAYER_EYE.y, Math.hypot(BLACKBOARD.x - PLAYER_EYE.x, BLACKBOARD.z - PLAYER_EYE.z));
+const wrap = (a) => a - 2 * Math.PI * Math.floor((a + Math.PI) / (2 * Math.PI));
 
 export async function install(ctx) {
   const { bus, engine } = ctx;
-  const t = {
-    state: 'idle', timer: 0, forced: null, enabled: false,
-    get character() { return ctx.cast.teacher; },
-    get suspicion() { return ctx.round?.suspicion ?? 0; },
-    get facingClass() { return ['watching', 'suspicious', 'alert'].includes(t.state); },
-    force(state, dur = 999) { t.forced = { state, until: ctx.time.now + dur }; set(state); },
-    setSuspicion(v) { if (ctx.round) { ctx.round.suspicion = v; bus.emit('suspicion', { value: v }); } },
-    canSee(pos) {
-      if (!t.facingClass || !t.character) return false;
-      const head = t.character.headWorld(new THREE.Vector3());
-      const fwd = new THREE.Vector3(0, 0, 1);
-      return fwd.dot(pos.clone().sub(head).normalize()) > Math.cos(THREE.MathUtils.degToRad(50));
-    },
-  };
-  function set(state) {
-    if (state === t.state) return;
-    const prev = t.state;
-    t.state = state;
-    t.timer = { writing: 5, warning: 0.7, watching: 4 }[state] ?? 3;
-    const ch = t.character;
-    if (ch) ch.root.rotation.y = state === 'writing' || state === 'warning' ? 0 : Math.PI;
-    bus.emit('teacher:state', { state, prev });
-  }
-  bus.on('phase', ({ to }) => {
-    t.enabled = to === 'aim' || to === 'flight';
-    if (to === 'aim') { t.forced = null; set('writing'); }
-  });
-  engine.onUpdate((dt) => {
-    const r = ctx.round;
-    if (!t.enabled || !r) return;
-    if (t.forced && ctx.time.now < t.forced.until) { /* hold forced state */ } else {
-      t.forced = null;
-      t.timer -= dt;
-      if (t.timer <= 0) set({ writing: 'warning', warning: 'watching', watching: 'writing' }[t.state] || 'writing');
-    }
-    const charging = ctx.gameplay?.aim?.charging;
-    const seesPlayer = t.canSee(new THREE.Vector3(PLAYER_EYE.x, PLAYER_EYE.y, PLAYER_EYE.z));
-    let s = r.suspicion;
-    if (ctx.flow.phase === 'aim') s += (seesPlayer && charging ? 0.7 : -0.15) * dt;
-    const ball = ctx.gameplay?.ball;
-    if (ctx.flow.phase === 'flight' && ball?.state === 'flying' && t.canSee(ball.pos)) {
-      s += 1.5 * dt;
-      if (s >= 1 && !r.teacherSawBall) { r.teacherSawBall = true; r.caughtDuring = 'flight'; bus.emit('teacher:caught', { reason: 'ball' }); }
-    }
-    s = Math.min(1, Math.max(0, s));
-    if (s !== r.suspicion) { r.suspicion = s; bus.emit('suspicion', { value: s }); }
-    if (ctx.flow.phase === 'aim' && s >= 1) { r.caughtDuring = 'aim'; bus.emit('teacher:caught', { reason: 'aim' }); t.enabled = false; }
-  }, ctx.engine.ORDER.AI);
 
-  t.setEnabled = (on) => { t.enabled = on; if (!on) t.state = 'cutscene'; };
-  t.say = (text) => ctx.ui.bubble('teacher', text);
+  /** How suspicious the player looks: charging 1, gaze far from the board ≈ 0.2, studying 0. */
+  function playerExposure() {
+    const aim = ctx.gameplay?.aim;
+    if (!aim || aim.studying) return 0;
+    if (aim.charging) return 1;
+    const fp = ctx.cam?.fp;
+    if (!fp || !Number.isFinite(fp.yaw) || !Number.isFinite(fp.pitch)) return 0;
+    const off = Math.hypot(wrap(fp.yaw - BOARD_YAW), (fp.pitch - BOARD_PITCH) * 0.8);
+    return 0.2 * smoothstep(deg(22), deg(45), off);
+  }
+
+  let students = null;
+  const teacher = createTeacher(ctx, {
+    playerExposure,
+    onWatching: (o) => students?._onWatching(o),
+    callOn: () => students?.callOn(),
+    onCaught: () => {},
+  });
+  students = createStudents(ctx, teacher);
+
+  bus.on('round:setup', () => {
+    teacher._resetRound();
+    students._resetRound();
+  });
+  bus.on('phase', ({ to }) => {
+    if (to === 'aim') {
+      teacher.setEnabled(true);        // whatever the intro did, the aim phase needs a live teacher
+      students._startAim();
+    } else if (to === 'flight') {
+      // keep going: the cycle continues during the flight
+    } else {
+      teacher._settle();
+      if (to === 'ending' || to === 'title' || to === 'card' || to === 'letter') students._endScene();
+    }
+  });
+  bus.on('teacher:state', ({ state }) => students._onTeacherState(state));
+  bus.on('ball:launched', (p) => students._onLaunched(p));
+  bus.on('ball:hit', ({ tag, ownerId, speed, pos }) => {
+    if (ctx.flow?.phase !== 'flight') return;
+    if (teacher._hearLoud(tag, speed)) teacher.hear(pos);
+    if (tag === 'head' && ownerId) students.react('hit', ownerId);
+  });
+  bus.on('ball:nearMiss', ({ ownerId, pos }) => {
+    if (ctx.flow?.phase !== 'flight' || !ownerId) return;
+    if (ownerId === ctx.cast?.teacher?.id || ownerId === 'teacher') teacher.hear(pos);   // whoosh past his ear
+    else students.react('nearMiss', ownerId);
+  });
+
+  engine.onUpdate((dt) => {
+    teacher._update(dt);
+    students._update(dt);
+  }, engine.ORDER.AI);
+
   ctx.ai = {
-    teacher: t,
-    students: { setAmbient() {}, trigger() { return false; }, react() {} },
-    playerExposure: () => (ctx.gameplay?.aim?.charging ? 1 : 0),
+    teacher,
+    students,
+    playerExposure,
+    STATES: TEACHER_STATES,
+    INCIDENT_KINDS,
+    TUNE,
+    debug: {
+      get timeline() { return teacher.timeline; },
+      teacher: () => teacher.debug(),
+      students: () => students.list(),
+    },
   };
 }
