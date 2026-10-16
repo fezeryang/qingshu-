@@ -1,0 +1,62 @@
+// UI flow check with DOM clicks: title → letter (custom) → crumple → intro → aim → Esc pause → caught → card
+// → 改写情书 → preset letter → crumple → aim → caught → card → 回到标题 → title.
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const btns = (t) => [...document.querySelectorAll('#ui-root button')].filter((b) => b.textContent.includes(t));
+const click = (t) => { const b = btns(t); if (b.length !== 1) throw new Error(`expected 1 button "${t}", found ${b.length}`); b[0].click(); };
+const ph = () => qs.state().phase;
+const log = [];
+qs.manual(true);
+await qs.advance(0.2);
+log.push(['boot', ph(), btns('开始').length]);
+click('我是女生'); click('开始');
+await qs.advanceUntil(() => ph() === 'letter', 5);
+log.push(['after start', ph(), qs.ctx.settings.playerGender]);
+click('自己写');
+const ta = document.querySelector('.qs-letter-input'); ta.value = '我喜欢你，从第一次见面开始。'; ta.dispatchEvent(new Event('input'));
+click('写好了');
+await qs.advance(0.1);
+const cat = document.querySelector('.qs-catcher');
+cat.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
+await qs.advance(0.6);
+log.push(['crumple half', ph(), document.querySelector('.qs-crumple-ring .fill').style.strokeDashoffset]);
+await qs.advance(0.8);
+window.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, button: 0 }));
+await qs.advanceUntil(() => ph() !== 'letter', 5);
+log.push(['after crumple', ph(), JSON.stringify(qs.ctx.round.letter)]);
+await qs.advanceUntil(() => ph() === 'aim', 30);
+log.push(['aim', ph(), qs.ctx.ui.state.hud, document.querySelector('.qs-obj-text').textContent]);
+// Esc pause
+window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Escape', key: 'Escape', bubbles: true }));
+const t0 = qs.ctx.time.now; await qs.advance(0.5);
+log.push(['paused', qs.ctx.engine.paused, +(qs.ctx.time.now - t0).toFixed(3), btns('继续').length]);
+await sleep(200); await shot('20-pause');
+click('继续');
+window.dispatchEvent(new KeyboardEvent('keyup', { code: 'Escape', key: 'Escape', bubbles: true }));
+await qs.advance(0.3);
+log.push(['resumed', qs.ctx.engine.paused, qs.ctx.ui.state.paused]);
+// simulated Esc through ctx.input
+qs.ctx.input.simulate({ down: 'Escape' }); await qs.advance(1 / 60);
+log.push(['sim esc', qs.ctx.engine.paused]);
+qs.ctx.ui.pause.close(); qs.ctx.input.simulate({ up: 'Escape' }); await qs.advance(1 / 60);
+// get caught → card
+qs.forceTeacher('watching', 30); qs.setSuspicion(0.99); qs.ctx.gameplay.aim.charging = true;
+await qs.advanceUntil(() => ph() === 'card', 90);
+await qs.advance(0.3);
+log.push(['card', ph(), qs.ctx.round.endingId, btns('再来一局').length, btns('改写情书').length, btns('回到标题').length]);
+click('改写情书');
+await qs.advanceUntil(() => ph() === 'letter', 5);
+log.push(['rewrite', ph(), document.querySelector('.qs-letter-input').value]);
+click('含蓄'); click('写好了');
+await qs.advance(0.1);
+qs.ctx.input.simulate({ down: 'Space' });
+await qs.advanceUntil(() => ph() !== 'letter', 5);
+qs.ctx.input.simulate({ up: 'Space' });
+await qs.advanceUntil(() => ph() === 'aim', 30);
+log.push(['aim2', ph(), qs.ctx.round.letter.presetId]);
+qs.forceTeacher('watching', 30); qs.setSuspicion(0.99); qs.ctx.gameplay.aim.charging = true;
+await qs.advanceUntil(() => ph() === 'card', 90);
+await qs.advance(0.3);
+click('回到标题');
+await qs.advance(0.2);
+log.push(['title', ph(), btns('开始').length, btns('我是女生')[0]?.getAttribute('aria-pressed'), document.querySelectorAll('.qs-layer-screen > *').length]);
+return { log, errors: qs.errors };

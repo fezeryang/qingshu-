@@ -1,0 +1,11 @@
+Bundled fonts (owner: qs-ui-designer). All are licensed under the SIL Open Font License 1.1;
+the full license text and copyright line of each family is in its folder's OFL.txt.
+
+kuaile/  ZCOOL KuaiLe  (站酷快乐体)  https://github.com/googlefonts/zcool-kuaile
+         Used as 'QS KuaiLe': logo, headings, buttons, dialogue, HUD numbers.
+hand/    Long Cang     (龙藏体)      https://github.com/googlefonts/longcang
+         Used as 'QS Hand': handwritten letter text, sticky notes, pencil annotations.
+
+Both are the unicode-range sliced WOFF2 builds served by Google Fonts (fonts.gstatic.com), downloaded
+once and served locally. The browser only fetches the slices that contain characters on screen.
+The font family names were changed in the @font-face rules only (the font files are unmodified).

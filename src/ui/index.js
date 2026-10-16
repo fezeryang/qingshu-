@@ -1,65 +1,195 @@
-// STUB — to be replaced by the ui-designer agent. Contract: docs/CONTRACTS.md §4.7
-export async function install(ctx) {
-  const { time } = ctx;
-  const root = document.getElementById('ui-root');
-  const layer = (html) => {
-    const el = document.createElement('div');
-    el.className = 'stub-layer';
-    el.style.cssText = 'position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;pointer-events:auto;font:20px sans-serif;color:#fff;background:rgba(0,0,0,.45)';
-    el.innerHTML = html;
-    root.appendChild(el);
-    return el;
-  };
-  let chooser = null;
-  const hudEl = document.createElement('div');
-  hudEl.style.cssText = 'position:fixed;left:12px;top:12px;color:#fff;font:16px monospace;text-shadow:0 1px 2px #000;white-space:pre';
-  root.appendChild(hudEl);
-  const sayEl = document.createElement('div');
-  sayEl.style.cssText = 'position:fixed;left:50%;bottom:40px;transform:translateX(-50%);color:#fff;background:rgba(0,0,0,.6);padding:10px 16px;font:18px sans-serif;display:none';
-  root.appendChild(sayEl);
+// UI layer (owner: ui-designer). Contract: docs/CONTRACTS.md §4.7. Notes: docs/modules/ui.md
+//
+// Visual language: a high-schooler's notebook — lined paper, handwriting, highlighters, washi tape,
+// sticky notes, red-pen corrections. Pure DOM + CSS under #ui-root.
+//
+// Rules this file enforces for the whole UI:
+//  - #ui-root and every layer are pointer-events:none; only real controls (.qs-i) take the mouse,
+//    so the canvas always receives presses during aim.
+//  - Every wait the flow depends on (typewriter, auto-advance, crumple progress, durations) runs on
+//    ctx.time (ui clock) through one onUpdate(ORDER.UI) loop — tests can fast-forward everything.
+import { h } from './dom.js';
+import { store } from '../core/util.js';
+import { createTitle } from './title.js';
+import { createLetter } from './letter.js';
+import { createHud } from './hud.js';
+import { createTalk } from './talk.js';
+import { createReveal } from './reveal.js';
+import { createCards } from './card.js';
+import { createPause } from './pause.js';
 
-  const ui = {
-    title() {
-      return new Promise((resolve) => {
-        const el = layer('<h1>情书抛物线</h1><div><button data-g="m">我是男生</button> <button data-g="f">我是女生</button></div>');
-        el.querySelectorAll('button').forEach((b) => b.onclick = () => { ctx.audio.unlock(); el.remove(); resolve({ action: 'start', playerGender: b.dataset.g }); });
-      });
-    },
-    letterEditor({ presets }) {
-      return new Promise((resolve) => {
-        const el = layer(presets.map((p, i) => `<button data-i="${i}">${p.title}</button>`).join(''));
-        el.querySelectorAll('button').forEach((b) => b.onclick = () => { el.remove(); const p = presets[+b.dataset.i]; resolve({ text: p.text, presetId: p.id }); });
-      });
-    },
-    async crumple() { await time.waitUI(0.2); },
-    hud: {
-      show() {}, setObjective() {}, setSuspicion() {}, setPower() {}, setTimer() {}, setTeacherState() {}, prompt() {}, setWillpower() {},
-    },
-    async say(speaker, text) {
-      sayEl.style.display = 'block';
-      sayEl.textContent = `${speaker}：${text}`;
-      await time.waitUI(1.2 + text.length * 0.05);
-      sayEl.style.display = 'none';
-    },
-    async bubble() {},
-    async caption(text) { await ui.say('', text); },
-    async letterReveal(text) { await ui.say('情书', text); },
-    endingCard(ending, info) {
-      return new Promise((resolve) => {
-        const el = layer(`<h2>${ending.title}</h2><p>${info.unlocked}/${info.total}</p><div><button data-c="retry">再来一局</button> <button data-c="title">回到标题</button></div>`);
-        chooser = (c) => { chooser = null; el.remove(); resolve(c); };
-        el.querySelectorAll('button').forEach((b) => b.onclick = () => chooser(b.dataset.c));
-      });
-    },
-    gallery() { return Promise.resolve(); },
-    toast() {},
-    closeAll() { root.querySelectorAll('.stub-layer').forEach((e) => e.remove()); },
-    debugChoose(c) { chooser?.(c); },
+export async function install(ctx) {
+  const { engine, time, bus, input } = ctx;
+  const root = document.getElementById('ui-root');
+  root.textContent = '';
+  root.classList.add('qs-ui');
+
+  const layer = (name) => root.appendChild(h(`div.qs-layer.qs-layer-${name}`));
+  const L = {
+    hud: layer('hud'), world: layer('world'), reveal: layer('reveal'), talk: layer('talk'),
+    caption: layer('caption'), screen: layer('screen'), modal: layer('modal'), toast: layer('toast'),
   };
-  ctx.engine.onUpdate(() => {
-    const r = ctx.round;
-    if (!r) return;
-    hudEl.textContent = `phase ${ctx.flow.phase}  time ${r.timeLeft.toFixed(0)}  suspicion ${(r.suspicion * 100).toFixed(0)}%  teacher ${ctx.ai.teacher.state}  power ${(ctx.gameplay.aim.power * 100).toFixed(0)}`;
-  }, ctx.engine.ORDER.UI);
-  ctx.ui = ui;
+
+  const frameFns = new Set();
+  const closers = new Set();
+  const modals = []; // stack of {el, close}
+  let clickTaken = false;
+  const warned = new Set();
+  const warnOnce = (k, e) => { if (!warned.has(k)) { warned.add(k); console.warn(`[ui] ${k}`, e); } };
+
+  /** Shared kit handed to every UI part. */
+  const U = {
+    ctx, root, L, phase: 'boot',
+    get now() { return time.uiNow; },
+    get frameNo() { return time.frame; },
+    wait: (s) => time.waitUI(s),
+    tween: (o) => time.tween({ clock: 'ui', ...o }),
+    /** per-tick callback on the ui clock: fn(uiDt). Returns an unsubscribe fn. */
+    frame(fn) { frameFns.add(fn); return () => frameFns.delete(fn); },
+    /** register a function run by closeAll({setup}) */
+    onClose(fn) { closers.add(fn); return () => closers.delete(fn); },
+    sfx(name, opts) { try { ctx.audio?.sfx?.(name, opts); } catch (e) { warnOnce('audio.sfx failed', e); } },
+    blip(voice, ch) { try { ctx.audio?.blip?.(voice, ch); } catch (e) { warnOnce('audio.blip failed', e); } },
+    unlock() { try { ctx.audio?.unlock?.(); } catch (e) { warnOnce('audio.unlock failed', e); } },
+    /** A click/Space/Enter meant for "advance" (only while the game ignores the player). One consumer per tick. */
+    takeClick() {
+      if (clickTaken || input.enabled) return false;
+      if (input.pressed('Mouse0') || input.pressed('Space') || input.pressed('Enter') || input.pressed('NumpadEnter')) { clickTaken = true; return true; }
+      return false;
+    },
+    /** Notebook-style button. Text content is exactly `label` (QA finds buttons by their text). */
+    button(label, cls = '', onClick, { sound = 'pop', extra = null } = {}) {
+      const b = h(`button.qs-btn.qs-i${cls ? '.' + cls.split(' ').join('.') : ''}`, { type: 'button' }, label, extra);
+      b.addEventListener('click', (e) => {
+        U.unlock();
+        if (sound) U.sfx(sound, { volume: 0.45 });
+        b.blur();
+        onClick?.(e);
+      });
+      return b;
+    },
+    /** Open a modal panel (settings / gallery / how-to / pause). Returns close(). */
+    modal(panel, { onClose, cls = '' } = {}) {
+      const scrim = h(`div.qs-modal.qs-i${cls ? '.' + cls : ''}`, {}, panel);
+      scrim.addEventListener('pointerdown', (e) => { if (e.target === scrim && entry.dismissable) entry.close(); });
+      L.modal.appendChild(scrim);
+      const entry = {
+        el: scrim, dismissable: true,
+        close() {
+          const i = modals.indexOf(entry);
+          if (i < 0) return;
+          modals.splice(i, 1);
+          scrim.classList.add('is-out');
+          scrim.remove();
+          onClose?.();
+        },
+      };
+      modals.push(entry);
+      return entry;
+    },
+    get topModal() { return modals[modals.length - 1] || null; },
+    saveSettings() {
+      store.set('qingshu.settings', ctx.settings);
+      try { ctx.audio?.applySettings?.(ctx.settings); } catch (e) { warnOnce('audio.applySettings failed', e); }
+      U.applyMotion();
+    },
+    applyMotion() { root.classList.toggle('qs-calm', !!ctx.settings.reducedMotion); },
+    /** Speaker colour for name plates / bubbles. */
+    blurFocus() { const a = document.activeElement; if (a && a !== document.body && root.contains(a)) a.blur(); },
+  };
+  U.applyMotion();
+
+  // Parts (each returns its slice of the API).
+  const hud = createHud(U);
+  const talk = createTalk(U);
+  const reveal = createReveal(U);
+  const cards = createCards(U);
+  const titleScr = createTitle(U, cards);
+  const letter = createLetter(U);
+  const pause = createPause(U, { cards, titleScr });
+
+  function closeAll(opts = {}) {
+    for (const fn of [...closers]) { try { fn(opts); } catch (e) { console.error('[ui] closeAll', e); } }
+    while (modals.length) modals[modals.length - 1].close();
+    if (pause.isOpen()) pause.close();
+    U.blurFocus();
+  }
+
+  // ---- one loop for everything time-based in the UI ----
+  engine.onUpdate(() => {
+    clickTaken = false;
+    for (const fn of [...frameFns]) {
+      try { fn(time.uiDt); } catch (e) { console.error('[ui] frame', e); frameFns.delete(fn); }
+    }
+  }, engine.ORDER.UI);
+
+  // ---- phases / rounds ----
+  bus.on('phase', ({ to }) => {
+    U.phase = to;
+    hud.onPhase(to);
+    if (to !== 'aim' && to !== 'flight' && pause.isOpen()) pause.close();
+  });
+  bus.on('round:setup', () => { closeAll({ setup: true }); hud.reset(); });
+
+  // ---- Esc: pause during aim/flight, closes panels elsewhere ----
+  // Real key presses are handled on the DOM event (ticks stop while paused, so ctx.input can't
+  // resume us); synthetic presses (input.simulate) arrive only on the bus — `domEsc` de-duplicates.
+  let domEsc = 0;
+  const typing = (t) => /^(INPUT|TEXTAREA|SELECT)$/.test(t?.tagName) && t.type !== 'range' && t.type !== 'checkbox';
+  const handleEsc = () => {
+    const top = U.topModal;
+    if (top && top.el.dataset.kind !== 'pause') { top.close(); return; }
+    if (pause.isOpen()) { pause.close(); return; }
+    if (U.phase === 'aim' || U.phase === 'flight') pause.open();
+  };
+  window.addEventListener('keydown', (e) => {
+    if (e.code !== 'Escape' || e.repeat || typing(e.target)) return;
+    domEsc++;
+    handleEsc();
+  });
+  bus.on('input', ({ code, down }) => {
+    if (code !== 'Escape' || !down) return;
+    if (domEsc > 0) { domEsc--; return; }
+    handleEsc();
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden && (U.phase === 'aim' || U.phase === 'flight') && !engine.paused && !engine.manual) pause.open();
+  });
+
+  // First user gesture anywhere unlocks audio (AudioContext needs a gesture).
+  const firstGesture = () => { U.unlock(); window.removeEventListener('pointerdown', firstGesture, true); window.removeEventListener('keydown', firstGesture, true); };
+  window.addEventListener('pointerdown', firstGesture, true);
+  window.addEventListener('keydown', firstGesture, true);
+
+  // Warm up the bundled fonts (non-blocking; text falls back to system fonts until they arrive).
+  try {
+    document.fonts?.load?.('32px "QS KuaiLe"', '情书抛物线我是男生女生开始写好了再来一局改写回到标题目标的课桌').catch(() => {});
+    document.fonts?.load?.('32px "QS Hand"', '今天的夕阳很好看和你一样放学后能一起走吗').catch(() => {});
+  } catch { /* old browsers */ }
+
+  ctx.ui = {
+    title: titleScr.title,
+    letterEditor: letter.editor,
+    crumple: letter.crumple,
+    hud: hud.api,
+    say: talk.say,
+    bubble: talk.bubble,
+    caption: talk.caption,
+    letterReveal: reveal.letterReveal,
+    endingCard: cards.endingCard,
+    gallery: cards.gallery,
+    toast: talk.toast,
+    closeAll: () => closeAll({}),
+    debugChoose: cards.debugChoose,
+    // ---- additions (documented in docs/modules/ui.md) ----
+    closeReveal: reveal.close,
+    settings: () => titleScr.openSettings(),
+    pause: { open: () => pause.open(), close: () => pause.close(), get isOpen() { return pause.isOpen(); } },
+    get state() {
+      return {
+        phase: U.phase, hud: hud.visible, paused: pause.isOpen(), modals: modals.map((m) => m.el.dataset.kind || ''),
+        say: talk.current(), screen: [...L.screen.children].map((c) => c.dataset.kind || c.className),
+      };
+    },
+  };
 }
