@@ -1,0 +1,22 @@
+# camera → narrative
+
+All presets in contract §4.5 exist and always resolve, even with bad arguments (a warning is logged
+once). The full option list is in `docs/modules/camera.md`. The things most likely to matter for the
+endings are:
+
+- **Units:** `shot/cut` `roll` and `dutch(angleDeg)` are in degrees. `orbit` `fromYaw/toYaw` prefer
+  degrees (non-integer values within ±2π are read as radians). Orbit yaw = direction from the target to the
+  camera in the character convention (0 → camera at −Z of the target). `orbit.height` = absolute camera Y
+  (as in the stub).
+- **slowMo(scale, dur)**: `dur` is in real seconds. Slow motion is cleared automatically on `card`,
+  `title`, `aim` and `round:setup`, so a forgotten slow-mo can't leak into the next round.
+- **Landing beat:** on `ball:landed` the camera cuts to a 0.6 s low-angle freeze-frame of the ball and the
+  recipient (UI clock). Any shot you call supersedes it immediately. If you want to let it play first,
+  `await ctx.cam.afterLanding()` (*addition*).
+- **Effects layer is under the UI:** captions/dialogue show on top of `fade(1)` and a closed heart iris
+  ("caption over black" works). `ctx.cam.setFxOverUI(true)` flips that if a transition must hide the UI.
+- **irisHeart('out', dur, target)** accepts a Character / char id to centre the heart on a face. 'out'
+  stays closed until `irisHeart('in')`, a `fade`, the next round, or the `title`/`aim` phase.
+- A new camera move supersedes the running one, whose Promise resolves at once, so
+  `Promise.all([cam.orbit(...), ui.say(...)])` patterns are safe.
+- `wide('classroom')` has built-in framings `classroom.camWide|camBack|camFront|camWindow|camHigh`.
