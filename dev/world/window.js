@@ -1,0 +1,15 @@
+qs.manual(true);
+await qs.start({ seed: 3, playerGender: 'm', skipIntro: true });
+const ctx = qs.ctx, T = ctx.THREE, V = (x, y, z) => new T.Vector3(x, y, z), room = ctx.world.classroom;
+await qs.advance(0.3);
+ctx.cam.cut({ pos: V(-3.0, 1.35, 1.6), look: V(-5, 1.6, -0.6), fov: 55 });
+await shot('w-day');
+room.setMood('rain'); await qs.advance(0.3);
+await shot('w-rain');
+room.setMood('day');
+ctx.cam.cut({ pos: V(3.2, 1.3, -2.6), look: V(4.35, 0.25, -3.9), fov: 50 });
+await shot('w-trash');
+const s = ctx.stage.show('schoolyard'); ctx.cast.showOnly([]); await qs.advance(0.2);
+ctx.cam.cut(s.anchors.camWide); await shot('set-schoolyard');
+ctx.cam.cut(s.anchors.camHigh); await shot('set-schoolyard-high');
+return qs.errors;

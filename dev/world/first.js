@@ -1,0 +1,12 @@
+qs.manual(true);
+await qs.start({ seed: 3, playerGender: 'm', skipIntro: true });
+await qs.advance(0.5);
+const T = qs.ctx.THREE, cam = qs.ctx.cam;
+const t0 = performance.now();
+qs.ctx.world.classroom.blackboard.write('第三章  二次函数\n[[yellow]]y = ax² + bx + c[[white]]  (a ≠ 0)\n例1：已知 f(x) = x² − 2x + 3，求最小值。');
+await shot('aim');
+cam.cut({ pos: new T.Vector3(3.8, 2.6, 4.2), look: new T.Vector3(-1, 1, -3), fov: 60 });
+await shot('overview');
+cam.cut({ pos: new T.Vector3(0, 1.6, -2.4), look: new T.Vector3(0, 1.8, -6), fov: 55 });
+await shot('board');
+return { st: qs.state(), ms: performance.now() - t0, cols: qs.ctx.world.classroom.colliders.length };

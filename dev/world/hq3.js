@@ -1,0 +1,11 @@
+qs.manual(true);
+await qs.start({ seed: 3, playerGender: 'm', skipIntro: true });
+const ctx = qs.ctx, T = ctx.THREE, V = (x, y, z) => new T.Vector3(x, y, z);
+await qs.advance(0.5);
+ctx.cam.cut({ pos: V(4.2, 2.7, 4.3), look: V(-1.2, 0.9, -2.6), fov: 62 });
+ctx.engine.setRenderFn(null);
+await shot('hq-plain');
+const sun = []; ctx.world.classroom.group.traverse((o) => { if (o.isDirectionalLight) sun.push(o); });
+sun[0].castShadow = false; ctx.engine.renderer.shadowMap.needsUpdate = true;
+await shot('hq-noshadow');
+return qs.errors;
