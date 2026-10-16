@@ -1,77 +1,137 @@
-// STUB — to be replaced by the narrative-director agent. Contract: docs/CONTRACTS.md §4.6
-import { SEATS, PLAYER_SEAT } from '../core/layout.js';
+// Story module (owner: narrative-director). Contract: docs/CONTRACTS.md §4.6
+//   roster.js   class roster, teacher, ending NPCs, makeRoster()
+//   letters.js  love-letter presets
+//   endings.js  ENDINGS metadata + resolve() (pure)
+//   direct.js   cutscene director toolkit (safe wrappers around every other module)
+//   intro.js    class-start intro
+//   cutscenes/  one file per ending
 import { store } from '../core/util.js';
+import { ENDINGS, ENDING_IDS, resolve } from './endings.js';
+import { LETTERS } from './letters.js';
+import { makeRoster, STUDENTS, TEACHER, NPCS } from './roster.js';
+import { createDirector, CANCEL } from './direct.js';
+import { intro, introCleanup } from './intro.js';
+import { begin } from './cutscenes/common.js';
+import perfect from './cutscenes/perfect.js';
+import caughtRead from './cutscenes/caught_read.js';
+import chalkCounter from './cutscenes/chalk_counter.js';
+import graded from './cutscenes/graded.js';
+import threePointer from './cutscenes/three_pointer.js';
+import outWindow from './cutscenes/out_window.js';
+import confetti from './cutscenes/confetti.js';
+import selfLove from './cutscenes/self_love.js';
+import wrongCaught from './cutscenes/wrong_caught.js';
+import sameGender from './cutscenes/same_gender.js';
+import wrongAccept from './cutscenes/wrong_accept.js';
+import lost from './cutscenes/lost.js';
+import coward from './cutscenes/coward.js';
 
-const ENDINGS = [
-  { id: 'perfect', title: '完美 · 天台之约', rarity: 'rare', hint: '正中红心。' },
-  { id: 'same_gender', title: '误投 · 认真的回应', rarity: 'common', hint: '扔给了和你同性别的同学……' },
-  { id: 'wrong_caught', title: '误投 A · 请家长', rarity: 'common', hint: '扔错了人，还被发现了。' },
-  { id: 'wrong_accept', title: '误投 B · 将错就错', rarity: 'common', hint: '扔错了人，对方却……' },
-  { id: 'caught_read', title: '社死 · 当众朗读', rarity: 'common', hint: '被老师抓个正着。' },
-  { id: 'chalk_counter', title: '隐藏 · 粉笔头反击', rarity: 'secret', hint: '有人被砸到了，而且是个大人物。' },
-  { id: 'graded', title: '隐藏 · 59 分', rarity: 'secret', hint: '讲台也是一张桌子。' },
-  { id: 'three_pointer', title: '隐藏 · 三分球', rarity: 'secret', hint: '教室里还有一个篮筐。' },
-  { id: 'out_window', title: '隐藏 · 校园广播', rarity: 'secret', hint: '那扇窗户开着。' },
-  { id: 'confetti', title: '隐藏 · 心碎成雪', rarity: 'secret', hint: '抬头看看。' },
-  { id: 'self_love', title: '隐藏 · 爱自己', rarity: 'secret', hint: '有时候答案就在眼前。' },
-  { id: 'lost', title: '隐藏 · 石沉大海', rarity: 'secret', hint: '有些情书谁也没收到。' },
-  { id: 'coward', title: '怂 · 下课铃', rarity: 'common', hint: '犹豫就会败北。' },
-];
-
-const NAMES_F = ['林晓雨', '苏念', '陈可可', '周雪', '叶知秋', '唐糖', '许若晴', '温柔', '夏沫', '白露', '顾盼', '安然'];
-const NAMES_M = ['王大壮', '陈思远', '赵小困', '李一鸣', '张浩然', '刘星', '孙悟', '江北', '何方', '宋书航', '高远'];
+const SCRIPTS = {
+  perfect, caught_read: caughtRead, chalk_counter: chalkCounter, graded, three_pointer: threePointer, out_window: outWindow,
+  confetti, self_love: selfLove, wrong_caught: wrongCaught, same_gender: sameGender, wrong_accept: wrongAccept, lost, coward,
+};
+const GALLERY_KEY = 'qingshu.endings';
+const INTRO_MAX = 6.5;   // ui seconds
+const ENDING_MAX = 44;   // game seconds — hard cap, the scripts are written for 15–38 s
 
 export async function install(ctx) {
-  const { time } = ctx;
-
-  function makeRoster(rng, playerGender) {
-    const students = [];
-    NAMES_F.forEach((name, i) => students.push({ id: `f${i}`, name, gender: 'f', role: 'student', trait: i === 0 ? 'monitor' : 'shy', look: {}, voice: { pitch: 1.2 } }));
-    NAMES_M.forEach((name, i) => students.push({ id: `m${i}`, name, gender: 'm', role: 'student', trait: i === 0 ? 'jock' : 'normal', look: {}, voice: { pitch: 0.8 } }));
-    const free = rng.shuffle(SEATS.filter((s) => s.id !== PLAYER_SEAT).map((s) => s.id));
-    const seatMap = Object.fromEntries(SEATS.map((s) => [s.id, null]));
-    students.forEach((s, i) => { seatMap[free[i]] = s.id; });
-    const crushId = rng.pick(students.filter((s) => s.gender !== playerGender)).id;
-    const teacher = { id: 'teacher', name: '王老师', gender: 'm', role: 'teacher', trait: 'strict', look: {}, voice: { pitch: 0.6 } };
-    return { students, teacher, seatMap, crushId, playerSeatId: PLAYER_SEAT };
-  }
-
-  function resolve(round) {
-    if (!round.launched) return round.caughtDuring === 'aim' ? 'caught_read' : 'coward';
-    const L = round.landing || { type: 'timeout' };
-    const tag = { teacher: 'chalk_counter', podium: 'graded', trash: 'three_pointer', outside: 'out_window', fan: 'confetti', self: 'self_love' }[L.type];
-    if (tag) return tag;
-    const st = L.ownerId && ctx.cast.get(L.ownerId)?.spec;
-    if ((L.type === 'desk' || L.type === 'chair' || L.type === 'caught') && st && st.role === 'student') {
-      if (round.teacherSawBall) return st.gender !== round.playerGender && st.id !== round.crushId ? 'wrong_caught' : 'caught_read';
-      if (st.id === round.crushId) return 'perfect';
-      if (st.gender === round.playerGender) return 'same_gender';
-      return st.trait === 'monitor' ? 'wrong_caught' : 'wrong_accept';
-    }
-    return round.teacherSawBall ? 'caught_read' : 'lost';
-  }
-
-  const KEY = 'qingshu.endings';
-  const gallery = {
-    unlocked: () => store.get(KEY, []),
-    unlock(id) { const u = gallery.unlocked(); if (u.includes(id)) return false; store.set(KEY, [...u, id]); return true; },
-    reset() { store.set(KEY, []); },
+  const { time, bus } = ctx;
+  const shared = {
+    props: new Map(),
+    loops: [],
+    debug: { beat: null, beats: [], endingId: null, durations: {}, running: null, lastError: null },
   };
+
+  /** Run a script with a cap; returns 'ok' | 'cancel' | 'error'. The director is cancelled afterwards. */
+  async function runScript(d, fn, capSec, clock) {
+    const main = (async () => {
+      try { await fn(d); return 'ok'; } catch (err) {
+        if (err === CANCEL) return 'cancel';
+        shared.debug.lastError = String(err?.stack || err);
+        console.error(`[story] ${d.label} failed:`, err);
+        return 'error';
+      }
+    })();
+    const cap = (clock === 'ui' ? time.waitUI(capSec) : time.wait(capSec)).then(() => 'timeout');
+    const res = await Promise.race([main, cap]);
+    d.cancel();
+    return res;
+  }
+
+  async function playIntro() {
+    const d = createDirector(ctx, shared, 'intro');
+    shared.debug.beats = [];
+    shared.debug.running = 'intro';
+    let skipped = false;
+    d.bg(time.until(() => d.cancelled || ctx.input?.pressed?.('Mouse0') || ctx.input?.pressed?.('Space'), INTRO_MAX + 1, 'ui').then((hit) => {
+      if (hit && !d.cancelled) { skipped = true; d.cancel(); }
+    }));
+    await runScript(d, intro, INTRO_MAX, 'ui');
+    shared.debug.introSkipped = skipped;
+    introCleanup(ctx, d);
+    shared.debug.running = null;
+  }
+
+  async function playEnding(id) {
+    const fn = SCRIPTS[id] || SCRIPTS.lost;
+    const d = createDirector(ctx, shared, id);
+    Object.assign(shared.debug, { beat: 'start', beats: [], endingId: id, running: id });
+    const t0 = time.now, u0 = time.uiNow;
+    if (ctx.round) ctx.round.flags = { ...(ctx.round.flags || {}), ending: id };
+    const res = await runScript(d, fn, ENDING_MAX, 'game');
+    if (res === 'error') {
+      // Never strand the player: a minimal but readable fallback ending.
+      const f = createDirector(ctx, shared, `${id}/fallback`);
+      const e = ENDINGS.find((x) => x.id === id);
+      await runScript(f, async (g) => {
+        begin(g, { music: 'comedy' });
+        await g.caption(e?.title || '……', 'impact', 2);
+        await g.say('旁白', e?.subtitle || '……');
+        await g.wait(1);
+      }, 12, 'game');
+    }
+    shared.debug.durations[id] = { game: +(time.now - t0).toFixed(2), ui: +(time.uiNow - u0).toFixed(2), result: res };
+    shared.debug.running = null;
+  }
+
+  const gallery = {
+    unlocked() {
+      const v = store.get(GALLERY_KEY, []);
+      return Array.isArray(v) ? v.filter((x) => ENDING_IDS.includes(x)) : [];
+    },
+    unlock(id) {
+      if (!ENDING_IDS.includes(id)) return false;
+      const u = gallery.unlocked();
+      if (u.includes(id)) return false;
+      store.set(GALLERY_KEY, [...u, id]);
+      return true;
+    },
+    reset() { store.set(GALLERY_KEY, []); },
+  };
+
+  // Per-round reset: loose props back out of the scene, loops stopped, beat markers cleared.
+  bus.on('round:setup', () => {
+    for (const p of shared.props.values()) { p.visible = false; p.removeFromParent(); p.scale.setScalar(1); }
+    for (const l of shared.loops.splice(0)) l.stop(0.2);
+    Object.assign(shared.debug, { beat: null, beats: [], endingId: null, running: null });
+  });
+  // The objective is set even when the intro is skipped (tests / retry with skipIntro).
+  bus.on('phase', ({ to }) => {
+    if (to !== 'aim' || !ctx.round) return;
+    const crush = ctx.cast?.get?.(ctx.round.crushId);
+    if (crush) { try { ctx.ui?.hud?.setObjective?.(`把情书扔到 ${crush.spec.name} 的桌上`); } catch { /* ui not ready */ } }
+  });
 
   ctx.story = {
     ENDINGS,
-    letters: [
-      { id: 'shy', title: '含蓄', text: '今天的夕阳很好看，和你一样。放学后能一起走吗？' },
-      { id: 'chuuni', title: '中二', text: '命运的齿轮已经开始转动——我封印在左手的力量，只为守护你。' },
-      { id: 'tuwei', title: '土味', text: '你知道我的缺点是什么吗？是缺点你。' },
-    ],
+    letters: LETTERS,
     makeRoster,
     resolve,
-    async playIntro() { await time.wait(1); },
-    async playEnding(id) {
-      const e = ENDINGS.find((x) => x.id === id);
-      await ctx.ui.say('旁白', e.title);
-    },
+    playIntro,
+    playEnding,
     gallery,
+    // additions (docs/modules/story.md)
+    STUDENTS, TEACHER, NPCS,
+    debug: shared.debug,
   };
 }

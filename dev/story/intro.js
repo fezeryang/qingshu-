@@ -1,0 +1,32 @@
+// Intro: duration (ui clock), crush close-up shot, skip via Space, objective set.
+qs.manual(true);
+const ctx = qs.ctx;
+const out = {};
+ctx.flow.requestStart({ seed: 5, playerGender: 'f', letter: '我喜欢你。', skipIntro: false, roundSeconds: 1 });
+await qs.advanceUntil(() => ctx.flow.phase === 'intro', 30);
+const u0 = ctx.time.uiNow;
+await qs.advanceUntil(() => ctx.story.debug.beat === 'crush', 10);
+await qs.advance(0.5);
+await shot('intro_crush');
+await qs.advance(1.3);
+await shot('intro_closeup');
+await qs.advanceUntil(() => ctx.flow.phase === 'aim', 10);
+out.introSeconds = +(ctx.time.uiNow - u0).toFixed(2);
+out.crush = ctx.round.crushId;
+await qs.advance(0.3);
+await shot('intro_aim');
+// skip path (finish round 1 first: the 1 s timer ends it with 'coward' → card)
+out.firstEnding = await qs.runToEnding(60);
+ctx.flow.requestStart({ seed: 6, playerGender: 'm', letter: '我喜欢你。', skipIntro: false });
+await qs.advanceUntil(() => ctx.flow.phase === 'intro', 30);
+const u1 = ctx.time.uiNow;
+await qs.advance(1);
+ctx.input.simulate({ down: 'Space' });
+await qs.advance(1 / 60);
+ctx.input.simulate({ up: 'Space' });
+await qs.advanceUntil(() => ctx.flow.phase === 'aim', 10);
+out.skipSeconds = +(ctx.time.uiNow - u1).toFixed(2);
+out.skipped = ctx.story.debug.introSkipped;
+out.letterbox = document.querySelectorAll('[class*=letterbox]').length;
+out.errors = qs.errors;
+return out;
