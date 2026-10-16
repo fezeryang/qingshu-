@@ -1,0 +1,14 @@
+qs.manual(true);
+const ctx = qs.ctx;
+await qs.start({ seed: 21, playerGender: 'f', skipIntro: true });
+qs.forceTeacher('writing', 999);
+await qs.advance(0.3);
+const t = ctx.cast.teacher.headWorld(new ctx.THREE.Vector3());
+const cols = ctx.cast.teacher.getColliders().map((c) => ({ kind: c.kind, tag: c.tag, center: c.center?.toArray?.().map((v) => +v.toFixed(2)), r: c.radius, min: c.min?.toArray?.().map((v) => +v.toFixed(2)), max: c.max?.toArray?.().map((v) => +v.toFixed(2)) }));
+const sol = ctx.gameplay.solveLaunch(t, { budgetMs: 2000 });
+const flat = ctx.gameplay.solveLaunch(t, { mode: 'flat', budgetMs: 2000 });
+ctx.gameplay.launch(sol);
+await qs.advanceUntil(() => ctx.gameplay.ball.state !== 'flying', 10);
+const L = ctx.gameplay.ball.landing;
+const ending = await qs.runToEnding(120);
+return { landed: L.type, ending, target: t.toArray(), cols, sol, flat, origin: ctx.gameplay.launchOrigin().toArray(), fp: [ctx.cam.fp.yaw, ctx.cam.fp.pitch], teacherPos: ctx.cast.teacher.root.position.toArray(), aiState: ctx.ai.teacher.state };

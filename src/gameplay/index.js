@@ -1,179 +1,494 @@
-// STUB — to be replaced by the gameplay-engineer agent. Contract: docs/CONTRACTS.md §4.3
+// Gameplay: charge-and-throw, ball physics, launch solver, preview, hold-breath nudge, landing.
+// Contract: docs/CONTRACTS.md §4.3 (ctx.gameplay) and §5 (Collider, Landing). Notes: docs/modules/gameplay.md
+//
+//   physics.js  deterministic sphere-vs-collider stepping (shared by live ball, predict, solver)
+//   landing.js  physics result → Landing
+//   solver.js   simulation-verified solveLaunch
+//   fx.js       ball view (tumble/squash/wobble), trajectory dots, paper bits
+//   debugdraw.js  ?debug=1 collider wireframes + predicted path
 import * as THREE from 'three';
-import { BALL_RADIUS, PLAYER_EYE, PLAYER_SEAT } from '../core/layout.js';
+import { FANS, PLAYER_SEAT } from '../core/layout.js';
+import { clamp } from '../core/util.js';
+import * as P from './physics.js';
+import { classifyLanding } from './landing.js';
+import { solveLaunch as solve, fanZones } from './solver.js';
+import { BallView, TrajectoryDots, PaperBits } from './fx.js';
+import { DebugDraw } from './debugdraw.js';
 
-const G = 9.8;
-const R = BALL_RADIUS;
-const SPEED_MIN = 2.2, SPEED_MAX = 9;
-const LOB = THREE.MathUtils.degToRad(10);
+const LOB = (P.PHYS.LOB_DEG * Math.PI) / 180;
+const CHARGE_TIME = 1.1;
+const WILLPOWER_TIME = 1.5;
+const PREVIEW_TIME = 0.35;
 
 export async function install(ctx) {
   const { bus, engine, input } = ctx;
-  const ball = {
-    state: 'hidden', pos: new THREE.Vector3(), vel: new THREE.Vector3(), t: 0,
-    hits: [], bounces: 0, restTime: 0, mesh: ctx.characters.createProp('letterBall'), contact: null,
+  const cls = () => ctx.world?.classroom;
+  const phase = () => ctx.flow?.phase;
+  const V = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z);
+
+  // ---------------------------------------------------------------- collision scenes
+  const staticGrid = new P.Grid();
+  let staticSrc = null, staticLen = -1;
+  let debug = null;
+  function syncStatic(force = false) {
+    const list = cls()?.colliders || [];
+    if (force || list !== staticSrc || list.length !== staticLen) {
+      staticGrid.setColliders(list, (c, i) => `s${i}`);
+      staticSrc = list; staticLen = list.length;
+      debug?.setStatic(staticGrid.all);
+    }
+  }
+  const live = new P.Scene(staticGrid, new P.Grid());
+  const snap = new P.Scene(staticGrid, new P.Grid());
+  const prevCenters = new Map();
+
+  function gatherDynamic(withFans) {
+    const out = [];
+    try { for (const c of cls()?.dynamicColliders?.() || []) if (withFans || c?.tag !== 'fan') out.push(c); } catch (e) { warnOnce('dynamicColliders', e); }
+    try { const cc = ctx.cast?.colliders?.(); if (cc) for (const c of cc) out.push(c); } catch (e) { warnOnce('cast.colliders', e); }
+    return out;
+  }
+  /** Live dynamic colliders; colliders without a velocity get one estimated from the last frame. */
+  function syncDynamic(dt) {
+    live.setDynamic(gatherDynamic(true), P.dynamicKeyFn());
+    for (const o of live.dynamic.all) {
+      let prev = prevCenters.get(o.key);
+      if (!prev) { prev = { x: o.cx, y: o.cy, z: o.cz, ok: false }; prevCenters.set(o.key, prev); }
+      if (!o.src?.velocity && prev.ok && dt > 1e-5) {
+        let vx = (o.cx - prev.x) / dt, vy = (o.cy - prev.y) / dt, vz = (o.cz - prev.z) / dt;
+        const s = Math.hypot(vx, vy, vz);
+        if (s > 3) { const f = 3 / s; vx *= f; vy *= f; vz *= f; }
+        o.vx = vx; o.vy = vy; o.vz = vz;
+      }
+      prev.x = o.cx; prev.y = o.cy; prev.z = o.cz; prev.ok = true;
+    }
+  }
+  function snapshot() {
+    syncStatic();
+    snap.setDynamic(gatherDynamic(false), P.dynamicKeyFn());
+    snap.zones = [];
+    return snap;
+  }
+  const warned = new Set();
+  function warnOnce(k, e) { if (!warned.has(k)) { warned.add(k); console.warn(`[gameplay] ${k} failed`, e); } }
+
+  const lookups = {
+    occupant: (seatId) => ctx.cast?.occupant?.(seatId) ?? null,
+    seatOf: (id) => ctx.cast?.seatOf?.(id) ?? null,
+    playerSeat: PLAYER_SEAT,
   };
-  ball.mesh.visible = false;
-  engine.scene.add(ball.mesh);
+  const fans = () => fanZones(cls()?.fans?.length ? cls().fans : FANS);
+  const openings = () => P.defaultOpenings(cls()?.windows?.length ? cls().windows : undefined);
+
+  // ---------------------------------------------------------------- state
+  let prop = null;
+  try { prop = ctx.characters?.createProp?.('letterBall'); } catch (e) { warnOnce('createProp', e); }
+  if (!prop) prop = new THREE.Mesh(new THREE.IcosahedronGeometry(P.PHYS.R, 1), new THREE.MeshStandardMaterial({ color: 0xfff6ee, flatShading: true }));
+  const view = new BallView(prop);
+  engine.scene.add(view.mesh);
+  const dots = new TrajectoryDots(14);
+  engine.scene.add(dots.points);
+  const bits = new PaperBits(ctx.config?.lowfx ? 24 : 48);
+  engine.scene.add(bits.mesh);
+  if (ctx.config?.debug) { debug = new DebugDraw(engine.scene); syncStatic(true); }
+
+  const ball = {
+    state: 'hidden', pos: V(), vel: V(), t: 0, mesh: view.mesh, hits: [], bounces: 0,
+    nearMisses: [], power: 0, landing: null, support: null,
+  };
   const aim = { enabled: false, charging: false, power: 0, studying: false };
-  let arms = null;
+  const willpower = { value: 1, active: false };
+  const sim = P.newBall();
+  const prevPos = V(), renderPos = V();
+  let acc = 0;
+  let rng = ctx.rng?.fork?.('gameplay');
+  let jit = { f1: 2.7, f2: 6.2 };
+  let chargeT = 0, wasCharging = false;
+  let arms = null, armsState = null, throwTimer = 0;
+  let nudgeApi = 0, holdApi = false;
+  let follow = null;
+  let flight = { wind: false };
+  let goneT = 0;
+  let lastSolve = null;
+  let debugFrame = 0;
 
-  const origin = () => new THREE.Vector3(PLAYER_EYE.x + 0.18, PLAYER_EYE.y - 0.08, PLAYER_EYE.z - 0.25);
-  const dirFrom = (yaw, pitch) => new THREE.Vector3(-Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), -Math.cos(yaw) * Math.cos(pitch));
+  // ---------------------------------------------------------------- launch
+  function currentView() {
+    const fp = ctx.cam?.fp;
+    return { yaw: Number.isFinite(fp?.yaw) ? fp.yaw : 0, pitch: Number.isFinite(fp?.pitch) ? fp.pitch : 0 };
+  }
+  /** The exact origin launch() uses: seat + current view yaw/pitch (never the arm animation). */
+  function launchOrigin(v = currentView()) { return P.launchOriginFor(v.yaw, v.pitch); }
 
-  function launch({ yaw, pitch, power, dir }) {
-    const speed = SPEED_MIN + (SPEED_MAX - SPEED_MIN) * THREE.MathUtils.clamp(power, 0, 1);
-    ball.pos.copy(origin());
-    ball.vel.copy(dir ? dir.clone().normalize() : dirFrom(yaw, pitch)).multiplyScalar(speed);
-    Object.assign(ball, { state: 'flying', t: 0, hits: [], bounces: 0, restTime: 0, contact: null });
-    ball.mesh.visible = true;
-    aim.charging = false;
-    arms?.setState('throw');
-    bus.emit('ball:launched', { pos: ball.pos.clone(), vel: ball.vel.clone(), power });
+  const physEvents = {
+    hit(b, h) {
+      const rec = { tag: h.tag, ownerId: h.ownerId ?? null, t: h.t, speed: h.speed };
+      ball.hits.push(rec);
+      ball.bounces = b.bounces;
+      const pos = V(h.x, h.y, h.z), n = V(h.nx, h.ny, h.nz);
+      view.impact(h.speed, n);
+      if (h.speed > 1.4 && h.tag !== 'fan') bits.burst(pos, n, ctx.config?.lowfx ? 2 : 4, Math.min(2, h.speed * 0.3));
+      bus.emit('ball:hit', { tag: h.tag, ownerId: h.ownerId ?? null, speed: h.speed, pos });
+    },
+    apex(b) { bus.emit('ball:apex', { pos: V(b.px, b.py, b.pz) }); },
+    nearMiss(b, info) {
+      ball.nearMisses.push({ ownerId: info.ownerId, dist: info.dist });
+      bus.emit('ball:nearMiss', { ownerId: info.ownerId, dist: info.dist, pos: V(info.x, info.y, info.z) });
+    },
+  };
+
+  function launch(spec = {}) {
+    syncStatic();
+    const origin = launchOrigin();
+    const vel = P.launchVelocity(spec, V());
+    if (!Number.isFinite(vel.x + vel.y + vel.z)) vel.set(0, 2, -3);
+    const power = Number.isFinite(spec.power) ? clamp(spec.power, 0, 1) : P.powerFromSpeed(vel.length());
+    P.resetBall(sim, origin, vel);
+    acc = 0;
+    if (view.mesh.parent !== engine.scene) engine.scene.add(view.mesh);
+    view.mesh.scale.set(1, 1, 1);
+    let hand = null;
+    try { hand = arms?.handWorld?.(V()) || null; } catch { hand = null; }
+    view.launch(vel, hand, origin);
+    Object.assign(ball, { state: 'flying', t: 0, hits: [], bounces: 0, nearMisses: [], power, landing: null, support: null });
+    ball.pos.copy(origin); ball.vel.copy(vel); prevPos.copy(origin);
+    aim.charging = false; aim.power = 0; wasCharging = false;
+    willpower.value = 1; willpower.active = false; holdApi = false; nudgeApi = 0;
+    follow = null; flight = { wind: false }; goneT = 0;
+    throwTimer = 0.35;
+    dots.hide();
+    prevCenters.clear();
+    syncDynamic(0);
+    if (debug) debug.setPath(predictPath({ vel }, 4));
+    bus.emit('ball:launched', { pos: origin.clone(), vel: vel.clone(), power });
   }
 
-  /** Ballistic solve (no drag) from the launch origin to `target`. */
-  function solveLaunch(target, opts = {}) {
-    const o = origin();
-    const dx = target.x - o.x, dz = target.z - o.z, dy = target.y - o.y;
-    const d = Math.hypot(dx, dz);
-    const yaw = Math.atan2(-dx, -dz);
-    const prefer = THREE.MathUtils.degToRad(opts.pitchDeg ?? 35);
-    let best = null;
-    for (let deg = 5; deg <= 75; deg += 0.5) {
-      const th = THREE.MathUtils.degToRad(deg);
-      const denom = 2 * Math.cos(th) ** 2 * (d * Math.tan(th) - dy);
-      if (denom <= 0) continue;
-      const v = Math.sqrt((G * d * d) / denom);
-      const power = (v - SPEED_MIN) / (SPEED_MAX - SPEED_MIN);
-      if (power < 0 || power > 1) continue;
-      const score = Math.abs(th - prefer);
-      if (!best || score < best.score) best = { yaw, pitch: th, power, score };
+  function finish() {
+    const s = sim.reason === 'rest' ? (sim.lastSupport || sim.support) : (sim.support || (sim.reason === 'timeout' ? sim.lastSupport : null));
+    const res = {
+      reason: sim.reason, triggerTag: sim.triggerTag, fanOwner: sim.fanOwner, support: P.supportInfo(s),
+      pos: { x: sim.px, y: sim.py, z: sim.pz }, t: sim.t, hits: sim.hits, bounces: sim.bounces, nearMisses: ball.nearMisses,
+    };
+    const landing = classifyLanding(res, lookups);
+    landing.pos = V(sim.px, sim.py, sim.pz);
+    ball.pos.copy(landing.pos);
+    ball.landing = landing;
+    ball.support = res.support;
+    ball.bounces = sim.bounces;
+    if (sim.reason === 'fan') {
+      ball.state = 'gone';
+      view.mesh.visible = false;
+      bits.burst(landing.pos, null, ctx.config?.lowfx ? 14 : 28, 2.2);
+      pushIncident({ kind: 'fanHit', id: sim.fanOwner ?? null, pos: landing.pos.clone() });
+    } else if (sim.reason === 'trigger' && sim.triggerTag !== 'trash') {
+      ball.state = 'gone'; goneT = 0;
+    } else {
+      ball.state = 'rest';
+      ball.vel.set(0, 0, 0);
+      view.settle();
     }
-    return best && { yaw: best.yaw, pitch: best.pitch, power: best.power };
-  }
-
-  const _c = new THREE.Vector3(), _n = new THREE.Vector3(), _l = new THREE.Vector3(), _q = new THREE.Quaternion();
-  function collide(c) {
-    if (c.kind === 'trigger') {
-      if (ball.pos.x > c.min.x && ball.pos.x < c.max.x && ball.pos.y > c.min.y && ball.pos.y < c.max.y && ball.pos.z > c.min.z && ball.pos.z < c.max.z) return land(c.tag === 'trash' ? 'trash' : 'outside');
-      return;
-    }
-    if (c.kind === 'sphere') {
-      _n.subVectors(ball.pos, c.center);
-      const dist = _n.length();
-      if (dist >= c.radius + R || dist === 0) return;
-      _n.divideScalar(dist);
-      ball.pos.copy(c.center).addScaledVector(_n, c.radius + R);
-      return respond(c, 0.55);
-    }
-    if (c.kind === 'obb') {
-      _q.copy(c.quaternion).invert();
-      _l.subVectors(ball.pos, c.center).applyQuaternion(_q);
-      _c.set(THREE.MathUtils.clamp(_l.x, -c.halfSize.x, c.halfSize.x), THREE.MathUtils.clamp(_l.y, -c.halfSize.y, c.halfSize.y), THREE.MathUtils.clamp(_l.z, -c.halfSize.z, c.halfSize.z));
-      if (_l.distanceToSquared(_c) >= R * R) return;
-      if (c.tag === 'fan') return land('fan');
-      _n.subVectors(_l, _c).normalize().applyQuaternion(c.quaternion);
-      return respond(c, 0.4);
-    }
-    // box
-    _c.set(THREE.MathUtils.clamp(ball.pos.x, c.min.x, c.max.x), THREE.MathUtils.clamp(ball.pos.y, c.min.y, c.max.y), THREE.MathUtils.clamp(ball.pos.z, c.min.z, c.max.z));
-    const d2 = ball.pos.distanceToSquared(_c);
-    if (d2 >= R * R) return;
-    if (d2 > 1e-12) { _n.subVectors(ball.pos, _c).normalize(); ball.pos.copy(_c).addScaledVector(_n, R); } else { _n.set(0, 1, 0); ball.pos.y = c.max.y + R; }
-    return respond(c, c.tag === 'floor' ? 0.3 : 0.32);
-  }
-  function respond(c, e) {
-    const vn = ball.vel.dot(_n);
-    if (vn < 0) {
-      ball.vel.addScaledVector(_n, -(1 + e) * vn);
-      const vt = ball.vel.clone().addScaledVector(_n, -ball.vel.dot(_n));
-      ball.vel.addScaledVector(vt, -0.35);
-      if (-vn > 0.4) { ball.bounces++; ball.hits.push({ tag: c.tag, ownerId: c.ownerId ?? null, t: +ball.t.toFixed(3), speed: +(-vn).toFixed(2) }); bus.emit('ball:hit', { tag: c.tag, ownerId: c.ownerId ?? null, speed: -vn, pos: ball.pos.clone() }); }
-    }
-    if (_n.y > 0.6) ball.contact = c;
-  }
-
-  function land(type) {
-    if (ball.state !== 'flying') return;
-    ball.state = type === 'fan' || type === 'outside' ? 'gone' : 'rest';
-    const c = ball.contact;
-    let landing = { type, seatId: null, ownerId: null, pos: ball.pos.clone(), hits: ball.hits, flightTime: ball.t, bounces: ball.bounces };
-    if (type === 'rest' || type === 'timeout') {
-      const tag = c?.tag;
-      if (ball.hits.some((h) => h.tag === 'teacher')) landing.type = 'teacher';
-      else if (tag === 'desk' || tag === 'chair') {
-        landing.seatId = c.ownerId;
-        landing.ownerId = ctx.cast.occupant(c.ownerId);
-        landing.type = c.ownerId === PLAYER_SEAT ? 'self' : tag;
-      } else if (tag === 'podium' || tag === 'teacherDesk') landing.type = 'podium';
-      else landing.type = 'floor';
-    }
+    renderPos.copy(ball.pos);
+    view.update(0, renderPos, false);
     bus.emit('ball:landed', landing);
   }
 
-  function step(dt) {
-    const colliders = [...ctx.world.classroom.colliders, ...ctx.world.classroom.dynamicColliders(), ...ctx.cast.colliders()];
-    const n = Math.ceil(dt / (1 / 240));
-    const h = dt / n;
-    for (let i = 0; i < n && ball.state === 'flying'; i++) {
-      ball.t += h;
-      ball.vel.y -= G * h;
-      ball.vel.multiplyScalar(1 - 0.08 * h);
-      ball.pos.addScaledVector(ball.vel, h);
-      ball.contact = null;
-      for (const c of colliders) { collide(c); if (ball.state !== 'flying') return; }
-      if (ball.contact && ball.vel.length() < 0.12) ball.restTime += h; else ball.restTime = 0;
-      if (ball.restTime > 0.25) return land('rest');
-      if (ball.t > 7) return land('timeout');
+  function pushIncident(inc) {
+    const r = ctx.round;
+    if (r && Array.isArray(r.incidents)) r.incidents.push({ ...inc, t: +ball.t.toFixed(2), by: 'gameplay' });
+    bus.emit('incident', inc);
+  }
+
+  // ---------------------------------------------------------------- per-frame flight
+  const _cf = V(), _env = { wind: null, nudge: null, near: true, openings: null };
+  const _wind = { x: 0, y: 0, z: 0, strength: 0 }, _nudge = { x: 0, y: 0, z: 0 };
+
+  function flightEnv() {
+    _env.openings = openings();
+    const w = cls()?.wind;
+    _env.wind = null;
+    if (w && w.strength > 0 && w.dir) {
+      const l = Math.hypot(w.dir.x, w.dir.y, w.dir.z) || 1;
+      _wind.x = w.dir.x / l; _wind.y = w.dir.y / l; _wind.z = w.dir.z / l; _wind.strength = clamp(w.strength, 0, 2);
+      _env.wind = _wind;
+    }
+    _env.nudge = null;
+    const axis = clamp((input.isDown('KeyD') ? 1 : 0) - (input.isDown('KeyA') ? 1 : 0) + nudgeApi, -1, 1);
+    if (willpower.active && axis) {
+      let fx = sim.vx, fz = sim.vz;
+      const l = Math.hypot(fx, fz);
+      if (l > 1e-3) {
+        fx /= l; fz /= l;
+        let rx = -fz, rz = fx;                       // right of the flight direction
+        engine.camera.getWorldDirection(_cf);
+        if (_cf.x * fx + _cf.z * fz < -0.3) { rx = -rx; rz = -rz; } // looking back at the ball: screen right flips
+        _nudge.x = rx * axis * P.PHYS.NUDGE_ACC; _nudge.y = 0; _nudge.z = rz * axis * P.PHYS.NUDGE_ACC;
+        _env.nudge = _nudge;
+      }
+    }
+    return _env;
+  }
+
+  function stepFlight(dt) {
+    syncStatic();
+    syncDynamic(dt);
+    const env = flightEnv();
+    acc += dt;
+    let n = 0;
+    while (acc >= P.PHYS.H && ball.state === 'flying' && n < 96) {
+      prevPos.set(sim.px, sim.py, sim.pz);
+      P.stepBall(sim, live, env, P.PHYS.H, physEvents);
+      acc -= P.PHYS.H; n++;
+      if (ball.state !== 'flying') return; // intercepted from an event handler
+      if (sim.done) { finish(); return; }
+    }
+    ball.pos.set(sim.px, sim.py, sim.pz);
+    ball.vel.set(sim.vx, sim.vy, sim.vz);
+    ball.t = sim.t;
+    ball.bounces = sim.bounces;
+    if (!flight.wind && sim.windDrift > 0.1) {
+      flight.wind = true;
+      pushIncident({ kind: 'wind', pos: ball.pos.clone(), drift: +sim.windDrift.toFixed(2) });
+    }
+    renderPos.lerpVectors(prevPos, ball.pos, clamp(acc / P.PHYS.H, 0, 1));
+    const s = sim.support;
+    if (s && sim.sny > 0.5) view.roll(ball.vel, V(sim.snx, sim.sny, sim.snz), dt);
+    view.update(dt, renderPos, !(s && sim.sny > 0.5));
+    if (debug && (debugFrame++ % 3 === 0)) debug.setDynamic(live.dynamic.all);
+  }
+
+  // ---------------------------------------------------------------- aim input
+  function chargeCurve(t) {
+    if (t < CHARGE_TIME) { const k = t / CHARGE_TIME; return 1 - (1 - k) * (1 - k); }
+    const u = t - CHARGE_TIME;
+    const j = 0.5 - 0.5 * (0.6 * Math.cos(2 * Math.PI * jit.f1 * u) + 0.4 * Math.cos(2 * Math.PI * jit.f2 * u));
+    return 1 - 0.15 * j;
+  }
+  function cancelCharge(emit = true) {
+    if (!aim.charging) return;
+    aim.charging = false; aim.power = 0; wasCharging = false;
+    dots.hide();
+    if (emit) bus.emit('aim:cancel', {});
+  }
+  function updateAim(dt) {
+    const active = aim.enabled && ball.state === 'held' && phase() === 'aim';
+    if (!active) { if (aim.charging && phase() !== 'aim') cancelCharge(false); dots.hide(); return; }
+    if (input.enabled) {
+      const study = input.isDown('Mouse2') || input.isDown('Space');
+      if (study !== aim.studying) {
+        aim.studying = study;
+        bus.emit('aim:study', { on: study });
+        if (study) cancelCharge(true);
+      }
+      if (input.pressed('Mouse0') && !aim.studying && !aim.charging) {
+        aim.charging = true; aim.power = 0; chargeT = 0; wasCharging = true;
+        bus.emit('aim:charge', { power: 0 });
+      }
+    }
+    if (aim.charging) {
+      if (!wasCharging) { chargeT = 0; wasCharging = true; } // charging set from outside (tests)
+      chargeT += dt;
+      aim.power = chargeCurve(chargeT);
+      try { arms?.setCharge?.(aim.power); } catch (e) { warnOnce('arms.setCharge', e); }
+      const v = currentView();
+      const spec = { yaw: v.yaw, pitch: v.pitch + LOB, power: aim.power };
+      if (input.enabled && input.released('Mouse0')) { launch(spec); return; }
+      const pts = predictPoints(spec, PREVIEW_TIME + 0.05, 0.025).filter((p) => p.t > 0.05);
+      dots.set(pts, engine.renderer);
+      if (debug && (debugFrame++ % 4 === 0)) debug.setPath(predictPath(spec, 3));
+    } else { wasCharging = false; dots.hide(); }
+  }
+
+  // ---------------------------------------------------------------- willpower (hold breath)
+  function setWillpower(on) {
+    if (on === willpower.active) return;
+    willpower.active = on;
+    bus.emit('ball:willpower', { on });
+  }
+  function updateWillpower(dt) {
+    if (ball.state !== 'flying') { setWillpower(false); return; }
+    const want = holdApi || (input.enabled && input.isDown('Space'));
+    if (want && !willpower.active && willpower.value > 0) setWillpower(true);
+    if (willpower.active) {
+      willpower.value = Math.max(0, willpower.value - dt / WILLPOWER_TIME);
+      if (!want || willpower.value <= 0) setWillpower(false);
     }
   }
 
+  // ---------------------------------------------------------------- first-person arms
+  function ensureArms() {
+    if (arms || !ctx.characters?.createArms) return arms;
+    try {
+      arms = ctx.characters.createArms();
+      if (arms?.group) engine.camera.add(arms.group);
+      armsState = null;
+    } catch (e) { warnOnce('createArms', e); arms = null; }
+    return arms;
+  }
+  function updateArms(dt) {
+    if (!arms) return;
+    const ph = phase();
+    let want = 'hidden';
+    if (ph === 'aim' && ball.state === 'held') want = aim.studying ? 'study' : aim.charging ? 'charge' : 'holdBall';
+    else if ((ph === 'aim' || ph === 'flight') && throwTimer > 0) want = 'throw';
+    else if (ph === 'letter') want = 'write';
+    const camMode = ctx.cam?.mode;
+    if (camMode && camMode !== 'fp' && !(want === 'throw' && throwTimer > 0.2)) want = 'hidden';
+    if (want !== armsState) {
+      armsState = want;
+      try { arms.setState?.(want); } catch (e) { warnOnce('arms.setState', e); }
+    }
+    throwTimer = Math.max(0, throwTimer - dt);
+    try { arms.update?.(dt); } catch (e) { warnOnce('arms.update', e); }
+  }
+
+  // ---------------------------------------------------------------- frame update
+  engine.onUpdate((dt) => {
+    updateAim(dt);
+    if (ball.state === 'flying') { updateWillpower(dt); stepFlight(dt); }
+    else {
+      updateWillpower(dt);
+      if (ball.state === 'gone' && view.mesh.visible) {
+        // out of the window: keep falling outside for the camera, then stop on the ground
+        goneT += dt;
+        ball.vel.y -= P.PHYS.G * dt;
+        ball.pos.addScaledVector(ball.vel, dt);
+        if (ball.pos.y < P.PHYS.R) { ball.pos.y = P.PHYS.R; ball.vel.set(0, 0, 0); }
+        if (goneT < 3) view.update(dt, ball.pos, true);
+      } else if (ball.state === 'rest' && view.mesh.parent === engine.scene) {
+        if (follow) {
+          const ch = follow.ch;
+          try { ch?.handWorld?.('R', ball.pos); } catch { /* keep last */ }
+          follow.t += dt;
+          if (follow.t > 6 || !view.mesh.visible) follow = null;
+        }
+        if (view.sq.amt > 0 || view.wobble.amt > 0 || follow) view.update(dt, ball.pos, false);
+      }
+    }
+    bits.update(dt);
+    updateArms(dt);
+  }, engine.ORDER.GAMEPLAY);
+
+  // ---------------------------------------------------------------- phases / rounds
+  function resetBallView() {
+    if (view.mesh.parent !== engine.scene) engine.scene.add(view.mesh);
+    view.mesh.visible = false;
+    view.mesh.scale.set(1, 1, 1);
+    view.mesh.rotation.set(0, 0, 0);
+    view.sq.amt = 0; view.wobble.amt = 0;
+  }
+  bus.on('round:setup', () => {
+    rng = ctx.rng?.fork?.('gameplay');
+    jit = { f1: rng ? rng.range(2.2, 3.2) : 2.7, f2: rng ? rng.range(5, 7.5) : 6.2 };
+    Object.assign(ball, { state: 'hidden', t: 0, hits: [], bounces: 0, nearMisses: [], power: 0, landing: null, support: null });
+    ball.pos.set(0, -10, 0); ball.vel.set(0, 0, 0);
+    sim.done = true;
+    Object.assign(aim, { charging: false, power: 0, studying: false });
+    willpower.value = 1; willpower.active = false; holdApi = false; nudgeApi = 0;
+    follow = null; throwTimer = 0; wasCharging = false;
+    prevCenters.clear();
+    bits.clear(); dots.hide(); resetBallView();
+    syncStatic(true);
+  });
   bus.on('phase', ({ to }) => {
     aim.enabled = to === 'aim';
     if (to === 'aim') {
-      if (!arms) { arms = ctx.characters.createArms(); engine.camera.add(arms.group); }
-      arms.setGender(ctx.round.playerGender);
-      arms.setState('holdBall');
-      ball.state = 'held'; ball.mesh.visible = false; aim.power = 0; aim.charging = false;
-    } else if (to === 'title' || to === 'letter' || to === 'intro') {
-      arms?.setState('hidden'); ball.state = 'hidden'; ball.mesh.visible = false;
+      ensureArms();
+      try { arms?.setGender?.(ctx.round?.playerGender || ctx.settings?.playerGender || 'm'); } catch (e) { warnOnce('arms.setGender', e); }
+      if (ball.state !== 'flying') {
+        ball.state = 'held';
+        resetBallView();
+        Object.assign(aim, { charging: false, power: 0, studying: false });
+        willpower.value = 1; willpower.active = false;
+      }
+    } else if (to === 'letter') {
+      ensureArms();
+      if (ball.state !== 'flying') { ball.state = 'hidden'; resetBallView(); }
+    } else if (to === 'title' || to === 'intro') {
+      if (ball.state !== 'flying') { ball.state = 'hidden'; resetBallView(); }
     }
+    if (to !== 'aim') { cancelCharge(false); if (aim.studying) { aim.studying = false; } }
   });
 
-  engine.onUpdate((dt) => {
-    if (aim.enabled && input.enabled) {
-      aim.studying = input.isDown('Mouse2') || input.isDown('Space');
-      if (input.pressed('Mouse0') && !aim.studying) { aim.charging = true; aim.power = 0; bus.emit('aim:charge', { power: 0 }); }
-      if (aim.charging) {
-        aim.power = Math.min(1, aim.power + dt / 1.1);
-        arms?.setCharge(aim.power);
-        if (input.released('Mouse0')) {
-          const { yaw, pitch } = ctx.cam.fp;
-          launch({ yaw, pitch: pitch + LOB, power: aim.power });
-        }
-      }
-      arms?.setState(aim.studying ? 'study' : aim.charging ? 'charge' : 'holdBall');
-    }
-    if (ball.state === 'flying') step(dt);
-    ball.mesh.position.copy(ball.pos);
-    arms?.update(dt);
-  }, engine.ORDER.GAMEPLAY);
+  // ---------------------------------------------------------------- prediction / solving
+  function predictPoints(spec, seconds = 1, every = 1 / 60) {
+    const scene = snapshot();
+    const origin = spec.origin || launchOrigin();
+    const vel = spec.vel || P.launchVelocity(spec, V());
+    const r = P.simulate(scene, origin, vel, { env: { openings: openings() }, record: every, stopAt: seconds });
+    return r.path;
+  }
+  function predictPath(spec, seconds) { return predictPoints(spec, seconds, 1 / 60); }
+  /** Trajectory preview (contract): positions every 1/60 s for `seconds` (stops at landing). */
+  function predict(spec = {}, seconds = 1) {
+    return predictPoints(spec, seconds, 1 / 60).map((p) => V(p.x, p.y, p.z));
+  }
 
-  async function scriptedThrow({ mesh, from, to, height = 0.6, duration = 0.8 }) {
+  function solveLaunch(target, opts = {}) {
+    if (!target || !Number.isFinite(target.x + target.y + target.z)) return null;
+    const scene = snapshot();
+    const sol = solve({
+      origin: launchOrigin(), target: V(target.x, target.y, target.z), scene, fans: fans(), lookups,
+      env: { openings: openings() }, opts, budgetMs: opts.budgetMs ?? 140,
+    });
+    lastSolve = sol;
+    if (!sol) return null;
+    return sol;
+  }
+
+  // ---------------------------------------------------------------- scripted / intercept
+  async function scriptedThrow({ mesh, from, to, height = 0.6, duration = 0.8, spin = true } = {}) {
+    if (!mesh || !from || !to) return;
     if (!mesh.parent) engine.scene.add(mesh);
     mesh.visible = true;
-    await ctx.time.tween({ duration, onUpdate: (k) => {
-      mesh.position.lerpVectors(from, to, k);
-      mesh.position.y += Math.sin(Math.PI * k) * height;
-    } });
+    const a = from.clone ? from.clone() : V(from.x, from.y, from.z);
+    const b = to.clone ? to.clone() : V(to.x, to.y, to.z);
+    const axis = V(b.z - a.z, 0, -(b.x - a.x)).normalize();
+    if (axis.lengthSq() < 0.5) axis.set(1, 0, 0);
+    const q0 = mesh.quaternion.clone(), q = new THREE.Quaternion();
+    await ctx.time.tween({
+      duration: Math.max(0.01, duration),
+      onUpdate: (k) => {
+        mesh.position.lerpVectors(a, b, k);
+        mesh.position.y += 4 * height * k * (1 - k);
+        if (spin) { q.setFromAxisAngle(axis, -k * duration * 14); mesh.quaternion.copy(q0).premultiply(q); }
+      },
+    });
+    mesh.position.copy(b);
   }
+
   function intercept(charId) {
-    if (ball.state !== 'flying') return;
-    const ch = ctx.cast.get(charId);
-    if (ch) ch.handWorld('R', ball.pos);
+    if (ball.state !== 'flying') return false;
+    const ch = ctx.cast?.get?.(charId) || (charId === 'teacher' ? ctx.cast?.teacher : null);
+    sim.done = true; sim.reason = 'intercept';
     ball.state = 'rest';
-    bus.emit('ball:landed', { type: 'intercept', seatId: ctx.cast.seatOf(charId), ownerId: charId, pos: ball.pos.clone(), hits: ball.hits, flightTime: ball.t, bounces: ball.bounces, nearMisses: [] });
+    try { ch?.handWorld?.('R', ball.pos); } catch { /* keep the flight position */ }
+    ball.vel.set(0, 0, 0);
+    follow = ch ? { ch, t: 0 } : null;
+    view.update(0, ball.pos, false);
+    const landing = {
+      type: 'intercept', seatId: ctx.cast?.seatOf?.(charId) ?? null, ownerId: charId, pos: ball.pos.clone(),
+      hits: ball.hits.map((h) => ({ ...h })), flightTime: +sim.t.toFixed(3), bounces: sim.bounces,
+      nearMisses: ball.nearMisses.map((n) => ({ ...n })), support: null, reason: 'intercept',
+    };
+    ball.landing = landing;
+    bus.emit('ball:landed', landing);
+    return true;
   }
-  ctx.gameplay = { intercept, ball, aim, willpower: { value: 1, active: false }, launch, launchOrigin: origin, solveLaunch, predict: () => [], nudge() {}, scriptedThrow };
+
+  ctx.gameplay = {
+    ball, aim, willpower,
+    launch,
+    launchOrigin: () => launchOrigin(),
+    solveLaunch,
+    predict,
+    nudge(x) { nudgeApi = clamp(Number.isFinite(x) ? x : 0, -1, 1); },
+    scriptedThrow,
+    intercept,
+    // additions (docs/modules/gameplay.md)
+    holdBreath(on = true) { holdApi = !!on; },
+    release() { follow = null; },
+    get lastSolve() { return lastSolve; },
+    PHYS: P.PHYS,
+    debug: { sim, live, staticGrid, fans, predictPoints },
+  };
 }

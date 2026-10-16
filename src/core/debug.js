@@ -40,7 +40,7 @@ export function installDebug(ctx) {
     if (typeof name === 'object' && name) return new THREE.Vector3(name.x, name.y, name.z);
     if (name === 'crush') return target(ctx.cast.seatOf(r.crushId));
     if (SEAT_BY_ID[name]) { const s = SEAT_BY_ID[name]; return new THREE.Vector3(s.x, s.deskTopY + BALL_RADIUS, s.deskZ); }
-    if (ctx.cast.get(name)) return target(ctx.cast.seatOf(name));
+    if (name !== 'teacher' && ctx.cast.get(name)) return target(ctx.cast.seatOf(name));
     switch (name) {
       case 'trash': return new THREE.Vector3(TRASH.x, TRASH.h * 0.6, TRASH.z);
       case 'window': { const w = WINDOWS.find((x) => x.open); return new THREE.Vector3(w.x - 0.6, w.sillY + 0.5, w.z); }

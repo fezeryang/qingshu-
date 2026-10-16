@@ -220,7 +220,7 @@ ctx.cam = {
   pip(on, {target}),                                  // picture-in-picture (teacher turning mid-flight)
 }
 ```
-Automatic behaviour: phase title → establishing shot; aim → FP (cursor position mapped to limited yaw/pitch, smoothed; looks down at the book while studying; FOV tightens while charging); `ball:launched` → follow the ball (C cycles styles), bullet time at the apex and near landing; mid-flight `teacher:state` warning/watching → PiP + slow motion; `ball:willpower` → slow motion; `ball:landed` → landing freeze-frame shot.
+Automatic behaviour: phase title → establishing shot; aim → FP (cursor position mapped to yaw ±75°, pitch −35°…+45° — the +45° up limit lets players lob at up to 55°; smoothed; looks down at the book while studying; FOV tightens while charging); `ball:launched` → follow the ball (C cycles styles), bullet time at the apex and near landing; mid-flight `teacher:state` warning/watching → PiP + slow motion; `ball:willpower` → slow motion; `ball:landed` → landing freeze-frame shot.
 
 ### 4.6 `ctx.story` (narrative-director)
 

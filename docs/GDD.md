@@ -45,7 +45,7 @@ You sit in the back row by the window. While the math teacher turns to write on 
 
 ### 6.1 Throwing and physics
 - Ball radius 0.04 m, gravity 9.8, light air drag, low restitution (wood ~0.3, heads ~0.55), high friction; it bounces, rolls and stops.
-- Charge 0→1 over 1.1 s, then jitters between 0.85 and 1 (shaky hand). Speed maps to 2.2–9 m/s. Launch direction = view direction + ~10° upward lob.
+- Charge 0→1 over 1.1 s, then jitters between 0.85 and 1 (shaky hand). Speed maps to 2.2–10.5 m/s (10.5 is needed to reach the bin, the teacher's desk and the teacher from the back row). Launch direction = view direction + ~10° upward lob.
 - While charging, show a dotted preview of the first 0.35 s of the trajectory (not the whole arc — keep it skill-based).
 - Colliders: floor, walls, window frames/glass, desk tops, chairs, book stacks, platform, teacher's desk, trash bin (walls + inner trigger), fan blades (rotating OBBs), classmates' heads (spheres) and torsos (boxes), raised arms, the teacher (head + torso).
 
@@ -88,7 +88,7 @@ You sit in the back row by the window. While the math teacher turns to write on 
 
 | Input | aim | flight |
 |---|---|---|
-| Mouse move / touch drag | Look (cursor position maps to limited yaw/pitch, smoothed) | — |
+| Mouse move / touch drag | Look (cursor position maps to limited yaw ±75° / pitch −35°…+45°, smoothed) | — |
 | LMB hold / release | Charge / throw | — |
 | RMB or Space hold | Pretend to study | Space: hold breath (slow-mo + telekinesis) |
 | A / D | — | Telekinesis nudge (while holding breath) |
