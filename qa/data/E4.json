@@ -1,0 +1,94 @@
+{
+ "r1": {
+  "endingId": "coward",
+  "card": "普通结局\n怂下课铃\n\n犹豫了一整节课，错过了一整个青春。\n\n结局收集 1 / 13\nNEW!\n再来一局\n改写情书\n回到标题",
+  "shown": {
+   "endingId": "coward",
+   "isNew": true
+  }
+ },
+ "r2": {
+  "endingId": "coward",
+  "card": "普通结局\n怂下课铃\n\n犹豫了一整节课，错过了一整个青春。\n\n结局收集 1 / 13\n再来一局\n改写情书\n回到标题",
+  "shown": {
+   "endingId": "coward",
+   "isNew": false
+  }
+ },
+ "after": {
+  "unlocked": [
+   "coward"
+  ],
+  "raw": "[\"coward\"]",
+  "endings": [
+   {
+    "id": "perfect",
+    "title": "完美 · 天台之约",
+    "hint": "正中红心——而且，老师什么都没看见。"
+   },
+   {
+    "id": "same_gender",
+    "title": "误投 · 认真的回应",
+    "hint": "和你同性别的同学，也会很认真地读你的信……"
+   },
+   {
+    "id": "wrong_caught",
+    "title": "误投 A · 请家长",
+    "hint": "扔错了人，而对方恰好是个\"正直\"的人。"
+   },
+   {
+    "id": "wrong_accept",
+    "title": "误投 B · 将错就错",
+    "hint": "扔错了人，对方却红了脸。"
+   },
+   {
+    "id": "caught_read",
+    "title": "社死 · 当众朗读",
+    "hint": "在老师的眼皮底下动手。"
+   },
+   {
+    "id": "chalk_counter",
+    "title": "隐藏 · 粉笔头反击",
+    "hint": "有人被砸到了——而且是个大人物。"
+   },
+   {
+    "id": "graded",
+    "title": "隐藏 · 59 分",
+    "hint": "讲台，也是一张桌子。"
+   },
+   {
+    "id": "three_pointer",
+    "title": "隐藏 · 三分球",
+    "hint": "教室角落里，也有一个\"篮筐\"。"
+   },
+   {
+    "id": "out_window",
+    "title": "隐藏 · 校园广播",
+    "hint": "那扇窗户，一直开着。"
+   },
+   {
+    "id": "confetti",
+    "title": "隐藏 · 心碎成雪",
+    "hint": "抬头看看——天花板上有东西在转。"
+   },
+   {
+    "id": "self_love",
+    "title": "隐藏 · 爱自己",
+    "hint": "有时候，答案就在你自己的桌上。"
+   },
+   {
+    "id": "lost",
+    "title": "隐藏 · 石沉大海",
+    "hint": "有些情书谁也没收到——连地板都不在乎。"
+   },
+   {
+    "id": "coward",
+    "title": "怂 · 下课铃",
+    "hint": "犹豫，就会败北。"
+   }
+  ]
+ },
+ "selectors": {
+  "title.gallery": "role=button name=/^结局图鉴/"
+ }
+}

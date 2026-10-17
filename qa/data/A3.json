@@ -1,0 +1,294 @@
+{
+ "rounds": [
+  {
+   "round": 1,
+   "via": "start",
+   "phaseAtStart": "aim",
+   "seed": 300,
+   "target": "crush#0:xu_ruoqing@r4c5",
+   "landing": "desk",
+   "endingId": "perfect",
+   "reachedCard": true,
+   "stages": [
+    "classroom",
+    "rooftop"
+   ],
+   "durGame": 27.17,
+   "actError": null,
+   "mem": {
+    "geometries": 82,
+    "textures": 81
+   },
+   "heap": 30,
+   "errors": 0,
+   "scene": 910
+  },
+  {
+   "round": 2,
+   "via": "retry",
+   "phaseAtStart": "aim",
+   "seed": 883178099,
+   "target": "floor",
+   "landing": "floor",
+   "endingId": "lost",
+   "reachedCard": true,
+   "stages": [
+    "classroom"
+   ],
+   "durGame": 16.167,
+   "actError": null,
+   "mem": {
+    "geometries": 97,
+    "textures": 93
+   },
+   "heap": 30,
+   "errors": 0,
+   "scene": 947
+  },
+  {
+   "round": 3,
+   "via": "rewrite",
+   "phaseAtStart": "aim",
+   "seed": 497823186,
+   "target": "trash",
+   "landing": "trash",
+   "endingId": "three_pointer",
+   "reachedCard": true,
+   "stages": [
+    "classroom",
+    "court"
+   ],
+   "durGame": 20.026,
+   "actError": null,
+   "mem": {
+    "geometries": 117,
+    "textures": 111
+   },
+   "heap": 30,
+   "errors": 0,
+   "scene": 989
+  },
+  {
+   "round": 4,
+   "via": "title",
+   "phaseAtStart": "aim",
+   "seed": 301,
+   "target": "crush#0:tang_tang@r3c5",
+   "landing": "desk",
+   "endingId": "perfect",
+   "reachedCard": true,
+   "stages": [
+    "classroom",
+    "rooftop"
+   ],
+   "durGame": 29.333,
+   "actError": null,
+   "mem": {
+    "geometries": 117,
+    "textures": 112
+   },
+   "heap": 30,
+   "errors": 0,
+   "scene": 994
+  },
+  {
+   "round": 5,
+   "via": "retry",
+   "phaseAtStart": "aim",
+   "seed": 481158273,
+   "target": "floor",
+   "landing": "floor",
+   "endingId": "lost",
+   "reachedCard": true,
+   "stages": [
+    "classroom"
+   ],
+   "durGame": 16.383,
+   "actError": null,
+   "mem": {
+    "geometries": 117,
+    "textures": 112
+   },
+   "heap": 30,
+   "errors": 0,
+   "scene": 1000
+  },
+  {
+   "round": 6,
+   "via": "rewrite",
+   "phaseAtStart": "aim",
+   "seed": 953329115,
+   "target": "trash",
+   "landing": "trash",
+   "endingId": "three_pointer",
+   "reachedCard": true,
+   "stages": [
+    "classroom",
+    "court"
+   ],
+   "durGame": 19.913,
+   "actError": null,
+   "mem": {
+    "geometries": 118,
+    "textures": 113
+   },
+   "heap": 30,
+   "errors": 0,
+   "scene": 994
+  },
+  {
+   "round": 7,
+   "via": "title",
+   "phaseAtStart": "aim",
+   "seed": 302,
+   "target": "crush#0:gu_xiaosuan@r3c5",
+   "landing": "desk",
+   "endingId": "perfect",
+   "reachedCard": true,
+   "stages": [
+    "classroom",
+    "rooftop"
+   ],
+   "durGame": 29.975,
+   "actError": null,
+   "mem": {
+    "geometries": 118,
+    "textures": 113
+   },
+   "heap": 30,
+   "errors": 0,
+   "scene": 999
+  },
+  {
+   "round": 8,
+   "via": "retry",
+   "phaseAtStart": "aim",
+   "seed": 474513841,
+   "target": "floor",
+   "landing": "floor",
+   "endingId": "lost",
+   "reachedCard": true,
+   "stages": [
+    "classroom"
+   ],
+   "durGame": 16.733,
+   "actError": null,
+   "mem": {
+    "geometries": 118,
+    "textures": 113
+   },
+   "heap": 30,
+   "errors": 0,
+   "scene": 1004
+  },
+  {
+   "round": 9,
+   "via": "rewrite",
+   "phaseAtStart": "aim",
+   "seed": 485050175,
+   "target": "trash",
+   "landing": "trash",
+   "endingId": "three_pointer",
+   "reachedCard": true,
+   "stages": [
+    "classroom",
+    "court"
+   ],
+   "durGame": 19.909,
+   "actError": null,
+   "mem": {
+    "geometries": 118,
+    "textures": 113
+   },
+   "heap": 30,
+   "errors": 0,
+   "scene": 998
+  },
+  {
+   "round": 10,
+   "via": "title",
+   "phaseAtStart": "aim",
+   "seed": 303,
+   "target": "crush#0:chen_keke@r2c5",
+   "landing": "desk",
+   "endingId": "perfect",
+   "reachedCard": true,
+   "stages": [
+    "classroom",
+    "rooftop"
+   ],
+   "durGame": 29.078,
+   "actError": null,
+   "mem": {
+    "geometries": 118,
+    "textures": 113
+   },
+   "heap": 30,
+   "errors": 0,
+   "scene": 1003
+  }
+ ],
+ "replays": [
+  {
+   "pass": 0,
+   "seed": 300,
+   "endingId": "perfect",
+   "geometries": 118,
+   "textures": 113
+  },
+  {
+   "pass": 0,
+   "seed": 883178099,
+   "endingId": "lost",
+   "geometries": 118,
+   "textures": 113
+  },
+  {
+   "pass": 0,
+   "seed": 497823186,
+   "endingId": "three_pointer",
+   "geometries": 118,
+   "textures": 113
+  },
+  {
+   "pass": 0,
+   "seed": 301,
+   "endingId": "perfect",
+   "geometries": 118,
+   "textures": 113
+  },
+  {
+   "pass": 1,
+   "seed": 300,
+   "endingId": "perfect",
+   "geometries": 118,
+   "textures": 113
+  },
+  {
+   "pass": 1,
+   "seed": 883178099,
+   "endingId": "lost",
+   "geometries": 118,
+   "textures": 113
+  },
+  {
+   "pass": 1,
+   "seed": 497823186,
+   "endingId": "three_pointer",
+   "geometries": 118,
+   "textures": 113
+  },
+  {
+   "pass": 1,
+   "seed": 301,
+   "endingId": "perfect",
+   "geometries": 118,
+   "textures": 113
+  }
+ ],
+ "selectors": {
+  "letter.preset": "role=button name=/^土味情话$/",
+  "letter.confirm": "role=button name=/^写好了$/",
+  "crumple": "hold@centre"
+ }
+}

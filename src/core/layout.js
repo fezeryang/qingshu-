@@ -13,7 +13,7 @@ export const ROWS_Z = [-3.2, -1.95, -0.7, 0.55, 1.8];
 export const AISLES_X = [-4.2, -1.4, 1.4, 4.2];
 
 export const PLAYER_SEAT = 'r4c0';                // window side, back row — the protagonist seat
-export const EYE_Y_SEATED = 1.18;                 // seated eye height (raised from 1.12 so chibi heads in front don't fill the view)
+export const EYE_Y_SEATED = 1.24;                 // seated eye height (stylised: high enough to see over the big chibi heads in front)
 export const HEAD_Y_SEATED = 1.08;                // seated head centre (for colliders / look-at)
 
 /** @typedef {{id:string,row:number,col:number,x:number,deskZ:number,chairZ:number,deskTopY:number,deskmate:string,isPlayer:boolean}} Seat */

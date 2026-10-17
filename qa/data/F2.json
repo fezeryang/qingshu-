@@ -1,0 +1,46 @@
+[
+ {
+  "id": "perfect",
+  "minScale": 0.1
+ },
+ {
+  "id": "same_gender",
+  "minScale": 0.1
+ },
+ {
+  "id": "wrong_caught",
+  "minScale": 0.1
+ },
+ {
+  "id": "wrong_accept",
+  "minScale": 0.1
+ },
+ {
+  "id": "chalk_counter",
+  "minScale": 0.1
+ },
+ {
+  "id": "graded",
+  "minScale": 0.1
+ },
+ {
+  "id": "three_pointer",
+  "minScale": 0.1
+ },
+ {
+  "id": "out_window",
+  "minScale": 0.1
+ },
+ {
+  "id": "confetti",
+  "minScale": 0.1
+ },
+ {
+  "id": "self_love",
+  "minScale": 0.1
+ },
+ {
+  "id": "lost",
+  "minScale": 0.1
+ }
+]

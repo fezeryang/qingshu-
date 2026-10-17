@@ -1,0 +1,62 @@
+{
+ "start": {
+  "mv": 0.8,
+  "raw": "{\"masterVolume\":0.8,\"musicVolume\":0.7,\"sfxVolume\":0.9,\"sensitivity\":1,\"reducedMotion\":false,\"playerGender\":\"m\"}"
+ },
+ "loud": {
+  "contexts": 1,
+  "states": [
+   "running"
+  ],
+  "analysers": 1,
+  "peak": 0,
+  "rms": 0,
+  "mv": 0.8
+ },
+ "silent": {
+  "contexts": 1,
+  "states": [
+   "running"
+  ],
+  "analysers": 1,
+  "peak": 0,
+  "rms": 0,
+  "mv": 0
+ },
+ "persisted": {
+  "mv": 0,
+  "raw": "{\"masterVolume\":0,\"musicVolume\":0.7,\"sfxVolume\":0.9,\"sensitivity\":1,\"reducedMotion\":false,\"playerGender\":\"m\"}"
+ },
+ "afterReload": {
+  "mv": 0,
+  "raw": "{\"masterVolume\":0,\"musicVolume\":0.7,\"sfxVolume\":0.9,\"sensitivity\":1,\"reducedMotion\":false,\"playerGender\":\"m\"}"
+ },
+ "silentAfterReload": {
+  "contexts": 1,
+  "states": [
+   "running"
+  ],
+  "analysers": 1,
+  "peak": 0,
+  "rms": 0,
+  "mv": 0
+ },
+ "muted": {
+  "contexts": 1,
+  "states": [
+   "running"
+  ],
+  "analysers": 1,
+  "peak": 0,
+  "rms": 0
+ },
+ "afterMute": {
+  "mv": 0,
+  "raw": "{\"masterVolume\":0,\"musicVolume\":0.7,\"sfxVolume\":0.9,\"sensitivity\":1,\"reducedMotion\":false,\"playerGender\":\"m\"}"
+ },
+ "selectors": {
+  "title.settings": "role=button name=/^设置$/",
+  "settings.master": "role=slider name=/主音量/",
+  "settings.done": "role=button name=/^完成$/"
+ }
+}

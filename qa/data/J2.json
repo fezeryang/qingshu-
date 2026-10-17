@@ -1,0 +1,369 @@
+{
+ "perfect": {
+  "dialogue": [
+   "苏念：……你的字，好丑。",
+   "你：那……明天也一起看夕阳吧？",
+   "苏念：但是，我看了好多遍。"
+  ],
+  "captions": [
+   "心 动",
+   "放学后 · 天台"
+  ],
+  "reveals": [
+   "read: 其实……我注意你很久了。",
+   "reply: ……放学后，\n天台见。"
+  ],
+  "music": [
+   "romance"
+  ],
+  "stages": [
+   "classroom",
+   "rooftop"
+  ],
+  "shots": [
+   "qa/shots/endings/perfect-1_5s.png",
+   "qa/shots/endings/perfect-5s.png",
+   "qa/shots/endings/perfect-climax.png",
+   "qa/shots/endings/perfect-card.png"
+  ],
+  "durGame": 27.956
+ },
+ "same_gender": {
+  "dialogue": [
+   "江北：……",
+   "江北：这是我读过最美的一封信。……我愿意。",
+   "夏沫：……诶？",
+   "你：等、等一下，我其实是想——",
+   "江北：我会对你负责的。",
+   "江北：鸡腿，分你一半。"
+  ],
+  "captions": [
+   "全 班 沸 腾",
+   "后来——",
+   "（一起被罚站）",
+   "……好像，也不错？"
+  ],
+  "reveals": [
+   "read: 其实……我注意你很久了。"
+  ],
+  "music": [
+   "romance"
+  ],
+  "stages": [
+   "classroom",
+   "cherryPath",
+   "canteen"
+  ],
+  "shots": [
+   "qa/shots/endings/same_gender-1_5s.png",
+   "qa/shots/endings/same_gender-5s.png",
+   "qa/shots/endings/same_gender-climax.png",
+   "qa/shots/endings/same_gender-card.png"
+  ],
+  "durGame": 30.515
+ },
+ "wrong_caught": {
+  "dialogue": [
+   "林晓雨：报告老师！有人上课传情书！",
+   "王老师：最后一排靠窗的同学——明天，把家长叫来。",
+   "王老师：您家孩子，上课传情书。还传错了人。",
+   "妈妈：什么？！我们家孩子还会写情书？！",
+   "爸爸：……这字写得，跟我当年一模一样。",
+   "妈妈：……你当年写给谁的？！",
+   "王老师：回去写三千字检讨。明天交。",
+   "你：三、三千字？！"
+  ],
+  "captions": [
+   "第二天 · 办公室",
+   "检讨书 · 3000 字",
+   "尊敬的王老师：我错了。（还剩 2994 字）"
+  ],
+  "reveals": [],
+  "music": [
+   "tragedy"
+  ],
+  "stages": [
+   "classroom",
+   "office"
+  ],
+  "shots": [
+   "qa/shots/endings/wrong_caught-1_5s.png",
+   "qa/shots/endings/wrong_caught-5s.png",
+   "qa/shots/endings/wrong_caught-climax.png",
+   "qa/shots/endings/wrong_caught-card.png"
+  ],
+  "durGame": 29.714
+ },
+ "wrong_accept": {
+  "dialogue": [
+   "苏念：……（用力地点头）",
+   "你：等……不是……",
+   "苏念：不用说了，我都懂。"
+  ],
+  "captions": [
+   "将 错 就 错",
+   "第 1 天：还没找到机会解释。",
+   "第 30 天：好像……解释不清了。",
+   "第 100 天：……算了，就这样吧。"
+  ],
+  "reveals": [
+   "read: 其实……我注意你很久了。"
+  ],
+  "music": [
+   "romance",
+   "comedy"
+  ],
+  "stages": [
+   "classroom",
+   "cherryPath",
+   "canteen",
+   "rooftop"
+  ],
+  "shots": [
+   "qa/shots/endings/wrong_accept-1_5s.png",
+   "qa/shots/endings/wrong_accept-5s.png",
+   "qa/shots/endings/wrong_accept-climax.png",
+   "qa/shots/endings/wrong_accept-card.png"
+  ],
+  "durGame": 25.813
+ },
+ "caught_read": {
+  "dialogue": [
+   "王老师：最后一排，靠窗的那位同学——",
+   "王老师：我盯你很久了。",
+   "王老师：拿上来。念给大家听。",
+   "王老师：……文笔还行。下课来办公室。"
+  ],
+  "captions": [
+   "社 死"
+  ],
+  "reveals": [
+   "readAloud: 教室第四排的风都知道，我偷看了你一百零八次<3"
+  ],
+  "music": [
+   "shame"
+  ],
+  "stages": [
+   "classroom"
+  ],
+  "shots": [
+   "qa/shots/endings/caught_read-1_5s.png",
+   "qa/shots/endings/caught_read-5s.png",
+   "qa/shots/endings/caught_read-climax.png",
+   "qa/shots/endings/caught_read-card.png"
+  ],
+  "durGame": 22.917
+ },
+ "chalk_counter": {
+  "dialogue": [
+   "王老师：这一下，力道不错。",
+   "王老师：可惜——准头差了点。",
+   "乐多多：好准！老师，再来一个！",
+   "王老师：继续上课。"
+  ],
+  "captions": [
+   "狙 击",
+   "命中率 100%"
+  ],
+  "reveals": [],
+  "music": [
+   "mystery",
+   "comedy"
+  ],
+  "stages": [
+   "classroom"
+  ],
+  "shots": [
+   "qa/shots/endings/chalk_counter-1_5s.png",
+   "qa/shots/endings/chalk_counter-5s.png",
+   "qa/shots/endings/chalk_counter-climax.png",
+   "qa/shots/endings/chalk_counter-card.png"
+  ],
+  "durGame": 14.858
+ },
+ "graded": {
+  "dialogue": [
+   "王老师：嗯……",
+   "你：……完了。",
+   "王老师：错别字 3 处，感情真挚，论据不足——59 分。",
+   "王老师：差一分及格。下课来办公室，我教你怎么写。"
+  ],
+  "captions": [
+   "59 分"
+  ],
+  "reveals": [
+   "grading: 其实……我注意你很久了。"
+  ],
+  "music": [
+   "comedy"
+  ],
+  "stages": [
+   "classroom"
+  ],
+  "shots": [
+   "qa/shots/endings/graded-1_5s.png",
+   "qa/shots/endings/graded-5s.png",
+   "qa/shots/endings/graded-climax.png",
+   "qa/shots/endings/graded-card.png"
+  ],
+  "durGame": 23.216
+ },
+ "three_pointer": {
+  "dialogue": [
+   "解说：球——进——了——！！！",
+   "夏沫：这弧线……是天才！",
+   "王老师：……这……这是在上课！",
+   "体育老师：刚才那一球，是谁投的？！",
+   "体育老师：你的抛物线……我找了整整十年！",
+   "解说：没送出去的情书，变成了全国大赛的绝杀！",
+   "体育老师：好苗子……好苗子啊！"
+  ],
+  "captions": [
+   "三 分 球 ！",
+   "一个月后 · 全国大赛"
+  ],
+  "reveals": [],
+  "music": [
+   "sports"
+  ],
+  "stages": [
+   "classroom",
+   "court"
+  ],
+  "shots": [
+   "qa/shots/endings/three_pointer-1_5s.png",
+   "qa/shots/endings/three_pointer-5s.png",
+   "qa/shots/endings/three_pointer-climax.png",
+   "qa/shots/endings/three_pointer-card.png"
+  ],
+  "durGame": 20.026
+ },
+ "out_window": {
+  "dialogue": [
+   "你：（不要啊——！）",
+   "校长：……多么纯洁的感情啊。",
+   "校长（广播）：咳咳。全体师生请注意——",
+   "校长（广播）：……写这封信的同学，校长支持你！但要以学业为重哦。"
+  ],
+  "captions": [
+   "全 校 广 播",
+   "全 校 皆 知"
+  ],
+  "reveals": [
+   "readAloud: 其实……我注意你很久了。"
+  ],
+  "music": [
+   "mystery",
+   "broadcast"
+  ],
+  "stages": [
+   "classroom",
+   "schoolyard"
+  ],
+  "shots": [
+   "qa/shots/endings/out_window-1_5s.png",
+   "qa/shots/endings/out_window-5s.png",
+   "qa/shots/endings/out_window-climax.png",
+   "qa/shots/endings/out_window-card.png"
+  ],
+  "durGame": 20.66
+ },
+ "confetti": {
+  "dialogue": [
+   "叶知秋：……下雪了。",
+   "冷月：心形的……雪？",
+   "你：……是我的。"
+  ],
+  "captions": [
+   "下 雪 了",
+   "心 碎 成 雪"
+  ],
+  "reveals": [],
+  "music": [
+   "romance"
+  ],
+  "stages": [
+   "classroom"
+  ],
+  "shots": [
+   "qa/shots/endings/confetti-1_5s.png",
+   "qa/shots/endings/confetti-climax.png",
+   "qa/shots/endings/confetti-5s.png",
+   "qa/shots/endings/confetti-card.png"
+  ],
+  "durGame": 11.209
+ },
+ "self_love": {
+  "dialogue": [
+   "你：……？",
+   "你：原来……我这么会说话。"
+  ],
+  "captions": [
+   "最好的收件人，是你自己。"
+  ],
+  "reveals": [
+   "read: 其实……我注意你很久了。"
+  ],
+  "music": [
+   "romance"
+  ],
+  "stages": [
+   "classroom"
+  ],
+  "shots": [
+   "qa/shots/endings/self_love-1_5s.png",
+   "qa/shots/endings/self_love-5s.png",
+   "qa/shots/endings/self_love-climax.png",
+   "qa/shots/endings/self_love-card.png"
+  ],
+  "durGame": 16.938
+ },
+ "lost": {
+  "dialogue": [
+   "你：……",
+   "保洁阿姨：年轻真好啊。"
+  ],
+  "captions": [
+   "……没有人注意到。",
+   "当天晚上",
+   "石 沉 大 海"
+  ],
+  "reveals": [],
+  "music": [
+   "lonely"
+  ],
+  "stages": [
+   "classroom"
+  ],
+  "shots": [
+   "qa/shots/endings/lost-1_5s.png",
+   "qa/shots/endings/lost-5s.png",
+   "qa/shots/endings/lost-climax.png",
+   "qa/shots/endings/lost-card.png"
+  ],
+  "durGame": 16
+ },
+ "coward": {
+  "dialogue": [
+   "你：……明天。明天一定。"
+  ],
+  "captions": [
+   "纸团……被手汗泡软了。",
+   "怂"
+  ],
+  "reveals": [],
+  "music": [
+   "lonely"
+  ],
+  "stages": [
+   "classroom"
+  ],
+  "shots": [
+   "qa/shots/endings/coward-1_5s.png",
+   "qa/shots/endings/coward-5s.png",
+   "qa/shots/endings/coward-climax.png",
+   "qa/shots/endings/coward-card.png"
+  ],
+  "durGame": 13.2
+ }
+}

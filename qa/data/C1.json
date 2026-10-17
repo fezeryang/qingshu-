@@ -1,0 +1,2886 @@
+[
+ {
+  "seatId": "r0c0",
+  "occupant": null,
+  "solved": true,
+  "ms": 43,
+  "sol": {
+   "yaw": 0.0331,
+   "pitch": 54,
+   "power": 0.639
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r0c0"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r0c0",
+   "ownerId": null,
+   "reason": "rest",
+   "pos": [
+    -3.13,
+    0.78,
+    -3.206
+   ],
+   "hits": [
+    {
+     "tag": "desk",
+     "ownerId": "r0c0"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r0c0"
+    }
+   ],
+   "flightTime": 1.767,
+   "bounces": 2,
+   "owner": null
+  },
+  "landedAfter": 1.767,
+  "tunnels": [],
+  "seed": 11,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r0c1",
+  "occupant": "xia_mo",
+  "solved": false,
+  "ms": 147,
+  "err": null,
+  "seed": 11,
+  "hit": false,
+  "predicted": null
+ },
+ {
+  "seatId": "r0c2",
+  "occupant": "lin_xiaoyu",
+  "solved": true,
+  "ms": 81,
+  "sol": {
+   "yaw": -0.4529,
+   "pitch": 50,
+   "power": 0.678
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r0c2"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r0c2",
+   "ownerId": "lin_xiaoyu",
+   "reason": "rest",
+   "pos": [
+    -0.426,
+    0.78,
+    -3.184
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r0c2"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r0c2"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r0c2"
+    }
+   ],
+   "flightTime": 1.713,
+   "bounces": 3,
+   "owner": {
+    "gender": "f",
+    "trait": "monitor",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.717,
+  "tunnels": [],
+  "seed": 11,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r0c3",
+  "occupant": "you_xiaoyou",
+  "solved": true,
+  "ms": 82,
+  "sol": {
+   "yaw": -0.5478,
+   "pitch": 50,
+   "power": 0.708
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r0c3"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r0c3",
+   "ownerId": "you_xiaoyou",
+   "reason": "rest",
+   "pos": [
+    0.226,
+    0.827,
+    -3.276
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r0c3"
+    },
+    {
+     "tag": "book",
+     "ownerId": "r0c3"
+    }
+   ],
+   "flightTime": 1.667,
+   "bounces": 2,
+   "owner": {
+    "gender": "f",
+    "trait": "gamer",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.667,
+  "tunnels": [],
+  "seed": 11,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r0c4",
+  "occupant": "li_yiming",
+  "solved": true,
+  "ms": 46,
+  "sol": {
+   "yaw": -0.8138,
+   "pitch": 46,
+   "power": 0.806
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r0c4"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r0c4",
+   "ownerId": "li_yiming",
+   "reason": "rest",
+   "pos": [
+    2.466,
+    0.788,
+    -3.163
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r0c4"
+    },
+    {
+     "tag": "book",
+     "ownerId": "r0c4"
+    },
+    {
+     "tag": "book",
+     "ownerId": "r0c4"
+    }
+   ],
+   "flightTime": 1.725,
+   "bounces": 3,
+   "owner": {
+    "gender": "m",
+    "trait": "gamer",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.733,
+  "tunnels": [],
+  "seed": 11,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r0c5",
+  "occupant": "wang_dazhuang",
+  "solved": true,
+  "ms": 143,
+  "sol": {
+   "yaw": -0.8691,
+   "pitch": 42,
+   "power": 0.85
+  },
+  "robust": 3,
+  "expect": {
+   "type": "desk",
+   "seatId": "r0c5"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r0c5",
+   "ownerId": "wang_dazhuang",
+   "reason": "rest",
+   "pos": [
+    3.136,
+    0.78,
+    -3.285
+   ],
+   "hits": [
+    {
+     "tag": "desk",
+     "ownerId": "r0c5"
+    },
+    {
+     "tag": "book",
+     "ownerId": "r0c5"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r0c5"
+    }
+   ],
+   "flightTime": 1.696,
+   "bounces": 3,
+   "owner": {
+    "gender": "m",
+    "trait": "foodie",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.7,
+  "tunnels": [],
+  "seed": 11,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r1c0",
+  "occupant": "hu_shuo",
+  "solved": true,
+  "ms": 68,
+  "sol": {
+   "yaw": 0.0438,
+   "pitch": 62,
+   "power": 0.583
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r1c0"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r1c0",
+   "ownerId": "hu_shuo",
+   "reason": "rest",
+   "pos": [
+    -3.161,
+    0.78,
+    -2.005
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r1c0"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r1c0"
+    }
+   ],
+   "flightTime": 1.775,
+   "bounces": 2,
+   "owner": {
+    "gender": "m",
+    "trait": "gossip",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.783,
+  "tunnels": [],
+  "seed": 11,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r1c1",
+  "occupant": "le_duoduo",
+  "solved": true,
+  "ms": 22,
+  "sol": {
+   "yaw": -0.1205,
+   "pitch": 58,
+   "power": 0.547
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r1c1"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r1c1",
+   "ownerId": "le_duoduo",
+   "reason": "rest",
+   "pos": [
+    -2.471,
+    0.78,
+    -1.93
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r1c1"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r1c1"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r1c1"
+    }
+   ],
+   "flightTime": 1.679,
+   "bounces": 3,
+   "owner": {
+    "gender": "f",
+    "trait": "clown",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.683,
+  "tunnels": [],
+  "seed": 11,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r1c2",
+  "occupant": null,
+  "solved": true,
+  "ms": 8,
+  "sol": {
+   "yaw": -0.5957,
+   "pitch": 58,
+   "power": 0.624
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r1c2"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r1c2",
+   "ownerId": null,
+   "reason": "rest",
+   "pos": [
+    -0.365,
+    0.78,
+    -1.868
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r1c2"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r1c2"
+    }
+   ],
+   "flightTime": 1.638,
+   "bounces": 2,
+   "owner": null
+  },
+  "landedAfter": 1.65,
+  "tunnels": [],
+  "seed": 11,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r1c3",
+  "occupant": "tang_tang",
+  "solved": true,
+  "ms": 9,
+  "sol": {
+   "yaw": -0.7003,
+   "pitch": 58,
+   "power": 0.665
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r1c3"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r1c3",
+   "ownerId": "tang_tang",
+   "reason": "rest",
+   "pos": [
+    0.309,
+    0.788,
+    -1.855
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r1c3"
+    },
+    {
+     "tag": "book",
+     "ownerId": "r1c3"
+    }
+   ],
+   "flightTime": 1.75,
+   "bounces": 2,
+   "owner": {
+    "gender": "f",
+    "trait": "gossip",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.75,
+  "tunnels": [],
+  "seed": 11,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r1c4",
+  "occupant": "gu_xiaosuan",
+  "solved": true,
+  "ms": 91,
+  "sol": {
+   "yaw": -0.9504,
+   "pitch": 46,
+   "power": 0.747
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r1c4"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r1c4",
+   "ownerId": "gu_xiaosuan",
+   "reason": "rest",
+   "pos": [
+    2.5,
+    0.788,
+    -1.898
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r1c4"
+    },
+    {
+     "tag": "book",
+     "ownerId": "r1c4"
+    },
+    {
+     "tag": "book",
+     "ownerId": "r1c4"
+    }
+   ],
+   "flightTime": 1.613,
+   "bounces": 3,
+   "owner": {
+    "gender": "f",
+    "trait": "nerd",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.617,
+  "tunnels": [],
+  "seed": 11,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r1c5",
+  "occupant": "song_shuhang",
+  "solved": true,
+  "ms": 46,
+  "sol": {
+   "yaw": -1.002,
+   "pitch": 46,
+   "power": 0.792
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r1c5"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r1c5",
+   "ownerId": "song_shuhang",
+   "reason": "rest",
+   "pos": [
+    3.095,
+    0.78,
+    -1.925
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r1c5"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r1c5"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r1c5"
+    }
+   ],
+   "flightTime": 1.733,
+   "bounces": 3,
+   "owner": {
+    "gender": "m",
+    "trait": "nerd",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.733,
+  "tunnels": [],
+  "seed": 11,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r2c0",
+  "occupant": "long_aotian",
+  "solved": true,
+  "ms": 43,
+  "sol": {
+   "yaw": 0.0645,
+   "pitch": 62,
+   "power": 0.422
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r2c0"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r2c0",
+   "ownerId": "long_aotian",
+   "reason": "rest",
+   "pos": [
+    -3.125,
+    0.78,
+    -0.772
+   ],
+   "hits": [
+    {
+     "tag": "desk",
+     "ownerId": "r2c0"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r2c0"
+    }
+   ],
+   "flightTime": 1.587,
+   "bounces": 2,
+   "owner": {
+    "gender": "m",
+    "trait": "chuuni",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.6,
+  "tunnels": [],
+  "seed": 11,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r2c1",
+  "occupant": "wen_yan",
+  "solved": true,
+  "ms": 13,
+  "sol": {
+   "yaw": -0.1768,
+   "pitch": 58,
+   "power": 0.395
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r2c1"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r2c1",
+   "ownerId": "wen_yan",
+   "reason": "rest",
+   "pos": [
+    -2.48,
+    0.788,
+    -0.68
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r2c1"
+    },
+    {
+     "tag": "book",
+     "ownerId": "r2c1"
+    },
+    {
+     "tag": "book",
+     "ownerId": "r2c1"
+    }
+   ],
+   "flightTime": 1.354,
+   "bounces": 3,
+   "owner": {
+    "gender": "m",
+    "trait": "shy",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.367,
+  "tunnels": [],
+  "seed": 11,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r2c2",
+  "occupant": "yan_zheng",
+  "solved": true,
+  "ms": 8,
+  "sol": {
+   "yaw": -0.7854,
+   "pitch": 58,
+   "power": 0.517
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r2c2"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r2c2",
+   "ownerId": "yan_zheng",
+   "reason": "rest",
+   "pos": [
+    -0.32,
+    0.78,
+    -0.7
+   ],
+   "hits": [
+    {
+     "tag": "desk",
+     "ownerId": "r2c2"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r2c2"
+    }
+   ],
+   "flightTime": 1.683,
+   "bounces": 2,
+   "owner": {
+    "gender": "m",
+    "trait": "disciplinarian",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.683,
+  "tunnels": [],
+  "seed": 11,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r2c3",
+  "occupant": "jiang_bei",
+  "solved": true,
+  "ms": 8,
+  "sol": {
+   "yaw": -0.8935,
+   "pitch": 58,
+   "power": 0.571
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r2c3"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r2c3",
+   "ownerId": "jiang_bei",
+   "reason": "rest",
+   "pos": [
+    0.362,
+    0.78,
+    -0.592
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r2c3"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r2c3"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r2c3"
+    }
+   ],
+   "flightTime": 1.625,
+   "bounces": 3,
+   "owner": {
+    "gender": "m",
+    "trait": "artsy",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.633,
+  "tunnels": [],
+  "seed": 11,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r2c4",
+  "occupant": "zhang_haoran",
+  "solved": true,
+  "ms": 39,
+  "sol": {
+   "yaw": -1.1197,
+   "pitch": 50,
+   "power": 0.703
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r2c4"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r2c4",
+   "ownerId": "zhang_haoran",
+   "reason": "rest",
+   "pos": [
+    2.454,
+    0.78,
+    -0.675
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r2c4"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r2c4"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r2c4"
+    }
+   ],
+   "flightTime": 1.729,
+   "bounces": 3,
+   "owner": {
+    "gender": "m",
+    "trait": "jock",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.733,
+  "tunnels": [],
+  "seed": 11,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r2c5",
+  "occupant": null,
+  "solved": true,
+  "ms": 39,
+  "sol": {
+   "yaw": -1.1619,
+   "pitch": 50,
+   "power": 0.755
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r2c5"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r2c5",
+   "ownerId": null,
+   "reason": "rest",
+   "pos": [
+    3.042,
+    0.78,
+    -0.628
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r2c5"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r2c5"
+    }
+   ],
+   "flightTime": 1.717,
+   "bounces": 2,
+   "owner": null
+  },
+  "landedAfter": 1.717,
+  "tunnels": [],
+  "seed": 11,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r3c0",
+  "occupant": "sun_xiaokong",
+  "solved": true,
+  "ms": 15,
+  "sol": {
+   "yaw": 0.1226,
+   "pitch": 58,
+   "power": 0.2
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r3c0"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r3c0",
+   "ownerId": "sun_xiaokong",
+   "reason": "rest",
+   "pos": [
+    -3.129,
+    0.78,
+    0.481
+   ],
+   "hits": [
+    {
+     "tag": "desk",
+     "ownerId": "r3c0"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r3c0"
+    }
+   ],
+   "flightTime": 1.221,
+   "bounces": 2,
+   "owner": {
+    "gender": "m",
+    "trait": "clown",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.233,
+  "tunnels": [],
+  "seed": 11,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r3c1",
+  "occupant": null,
+  "solved": true,
+  "ms": 5,
+  "sol": {
+   "yaw": -0.3283,
+   "pitch": 58,
+   "power": 0.199
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r3c1"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r3c1",
+   "ownerId": null,
+   "reason": "rest",
+   "pos": [
+    -2.488,
+    0.788,
+    0.635
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r3c1"
+    },
+    {
+     "tag": "book",
+     "ownerId": "r3c1"
+    }
+   ],
+   "flightTime": 1.1,
+   "bounces": 2,
+   "owner": null
+  },
+  "landedAfter": 1.1,
+  "tunnels": [],
+  "seed": 11,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r3c2",
+  "occupant": null,
+  "solved": true,
+  "ms": 7,
+  "sol": {
+   "yaw": -1.0876,
+   "pitch": 58,
+   "power": 0.426
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r3c2"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r3c2",
+   "ownerId": null,
+   "reason": "rest",
+   "pos": [
+    -0.382,
+    0.788,
+    0.611
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r3c2"
+    },
+    {
+     "tag": "book",
+     "ownerId": "r3c2"
+    }
+   ],
+   "flightTime": 1.433,
+   "bounces": 2,
+   "owner": null
+  },
+  "landedAfter": 1.433,
+  "tunnels": [],
+  "seed": 11,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r3c3",
+  "occupant": "xu_ruoqing",
+  "solved": true,
+  "ms": 8,
+  "sol": {
+   "yaw": -1.1715,
+   "pitch": 58,
+   "power": 0.497
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r3c3"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r3c3",
+   "ownerId": "xu_ruoqing",
+   "reason": "rest",
+   "pos": [
+    0.31,
+    0.788,
+    0.642
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r3c3"
+    },
+    {
+     "tag": "book",
+     "ownerId": "r3c3"
+    }
+   ],
+   "flightTime": 1.546,
+   "bounces": 2,
+   "owner": {
+    "gender": "f",
+    "trait": "normal",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.55,
+  "tunnels": [],
+  "seed": 11,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r3c4",
+  "occupant": null,
+  "solved": true,
+  "ms": 37,
+  "sol": {
+   "yaw": -1.3219,
+   "pitch": 50,
+   "power": 0.663
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r3c4"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r3c4",
+   "ownerId": null,
+   "reason": "rest",
+   "pos": [
+    2.639,
+    0.78,
+    0.51
+   ],
+   "hits": [
+    {
+     "tag": "desk",
+     "ownerId": "r3c4"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r3c4"
+    }
+   ],
+   "flightTime": 1.758,
+   "bounces": 2,
+   "owner": null
+  },
+  "landedAfter": 1.767,
+  "tunnels": [],
+  "seed": 11,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r3c5",
+  "occupant": "su_nian",
+  "solved": true,
+  "ms": 151,
+  "sol": {
+   "yaw": -1.3472,
+   "pitch": 42,
+   "power": 0.691
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r3c5"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r3c5",
+   "ownerId": "su_nian",
+   "reason": "rest",
+   "pos": [
+    3.336,
+    0.78,
+    0.638
+   ],
+   "hits": [
+    {
+     "tag": "prop",
+     "ownerId": "r3c5"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r3c5"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r3c5"
+    }
+   ],
+   "flightTime": 1.675,
+   "bounces": 3,
+   "owner": {
+    "gender": "f",
+    "trait": "shy",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.683,
+  "tunnels": [],
+  "seed": 11,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r4c1",
+  "occupant": "leng_yue",
+  "solved": true,
+  "ms": 4,
+  "sol": {
+   "yaw": -1.3009,
+   "pitch": 66,
+   "power": 0.012
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r4c1"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r4c1",
+   "ownerId": "leng_yue",
+   "reason": "rest",
+   "pos": [
+    -2.479,
+    0.787,
+    1.796
+   ],
+   "hits": [
+    {
+     "tag": "desk",
+     "ownerId": "r4c1"
+    },
+    {
+     "tag": "book",
+     "ownerId": "r4c1"
+    }
+   ],
+   "flightTime": 0.958,
+   "bounces": 2,
+   "owner": {
+    "gender": "f",
+    "trait": "chuuni",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 0.967,
+  "tunnels": [],
+  "seed": 11,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r4c2",
+  "occupant": "chen_keke",
+  "solved": true,
+  "ms": 8,
+  "sol": {
+   "yaw": -1.5214,
+   "pitch": 58,
+   "power": 0.381
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r4c2"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r4c2",
+   "ownerId": "chen_keke",
+   "reason": "rest",
+   "pos": [
+    -0.357,
+    0.78,
+    1.814
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r4c2"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r4c2"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r4c2"
+    }
+   ],
+   "flightTime": 1.425,
+   "bounces": 3,
+   "owner": {
+    "gender": "f",
+    "trait": "foodie",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.433,
+  "tunnels": [],
+  "seed": 11,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r4c3",
+  "occupant": "ye_zhiqiu",
+  "solved": true,
+  "ms": 8,
+  "sol": {
+   "yaw": -1.5311,
+   "pitch": 58,
+   "power": 0.464
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r4c3"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r4c3",
+   "ownerId": "ye_zhiqiu",
+   "reason": "rest",
+   "pos": [
+    0.325,
+    0.78,
+    1.801
+   ],
+   "hits": [
+    {
+     "tag": "desk",
+     "ownerId": "r4c3"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r4c3"
+    }
+   ],
+   "flightTime": 1.604,
+   "bounces": 2,
+   "owner": {
+    "gender": "f",
+    "trait": "artsy",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.617,
+  "tunnels": [],
+  "seed": 11,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r4c4",
+  "occupant": "bai_xiaomeng",
+  "solved": true,
+  "ms": 21,
+  "sol": {
+   "yaw": -1.5469,
+   "pitch": 54,
+   "power": 0.668
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r4c4"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r4c4",
+   "ownerId": "bai_xiaomeng",
+   "reason": "rest",
+   "pos": [
+    2.515,
+    0.78,
+    1.801
+   ],
+   "hits": [
+    {
+     "tag": "desk",
+     "ownerId": "r4c4"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r4c4"
+    }
+   ],
+   "flightTime": 1.829,
+   "bounces": 2,
+   "owner": {
+    "gender": "f",
+    "trait": "sleeper",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.833,
+  "tunnels": [],
+  "seed": 11,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r4c5",
+  "occupant": "zhao_xiaokun",
+  "solved": true,
+  "ms": 47,
+  "sol": {
+   "yaw": -1.5494,
+   "pitch": 50,
+   "power": 0.706
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r4c5"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r4c5",
+   "ownerId": "zhao_xiaokun",
+   "reason": "rest",
+   "pos": [
+    3.035,
+    0.78,
+    1.838
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r4c5"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r4c5"
+    }
+   ],
+   "flightTime": 1.617,
+   "bounces": 2,
+   "owner": {
+    "gender": "m",
+    "trait": "sleeper",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.617,
+  "tunnels": [],
+  "seed": 11,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r0c0",
+  "occupant": null,
+  "solved": true,
+  "ms": 35,
+  "sol": {
+   "yaw": 0.0331,
+   "pitch": 54,
+   "power": 0.639
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r0c0"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r0c0",
+   "ownerId": null,
+   "reason": "rest",
+   "pos": [
+    -3.13,
+    0.78,
+    -3.206
+   ],
+   "hits": [
+    {
+     "tag": "desk",
+     "ownerId": "r0c0"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r0c0"
+    }
+   ],
+   "flightTime": 1.767,
+   "bounces": 2,
+   "owner": null
+  },
+  "landedAfter": 1.767,
+  "tunnels": [],
+  "seed": 23,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r0c1",
+  "occupant": "yan_zheng",
+  "solved": true,
+  "ms": 143,
+  "sol": {
+   "yaw": -0.0914,
+   "pitch": 50,
+   "power": 0.62
+  },
+  "robust": 1,
+  "expect": {
+   "type": "desk",
+   "seatId": "r0c1"
+  },
+  "landing": {
+   "type": "floor",
+   "seatId": null,
+   "ownerId": null,
+   "reason": "rest",
+   "nearSeatId": "r0c0",
+   "pos": [
+    -2.905,
+    0.04,
+    -3.677
+   ],
+   "hits": [
+    {
+     "tag": "head",
+     "ownerId": "yan_zheng"
+    },
+    {
+     "tag": "floor",
+     "ownerId": null
+    },
+    {
+     "tag": "floor",
+     "ownerId": null
+    }
+   ],
+   "flightTime": 2.304,
+   "bounces": 3,
+   "owner": null
+  },
+  "landedAfter": 2.317,
+  "tunnels": [],
+  "seed": 23,
+  "hit": false,
+  "predicted": true
+ },
+ {
+  "seatId": "r0c2",
+  "occupant": "wang_dazhuang",
+  "solved": true,
+  "ms": 73,
+  "sol": {
+   "yaw": -0.4529,
+   "pitch": 50,
+   "power": 0.678
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r0c2"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r0c2",
+   "ownerId": "wang_dazhuang",
+   "reason": "rest",
+   "pos": [
+    -0.426,
+    0.78,
+    -3.184
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r0c2"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r0c2"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r0c2"
+    }
+   ],
+   "flightTime": 1.713,
+   "bounces": 3,
+   "owner": {
+    "gender": "m",
+    "trait": "foodie",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.717,
+  "tunnels": [],
+  "seed": 23,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r0c3",
+  "occupant": null,
+  "solved": true,
+  "ms": 37,
+  "sol": {
+   "yaw": -0.5675,
+   "pitch": 50,
+   "power": 0.707
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r0c3"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r0c3",
+   "ownerId": null,
+   "reason": "rest",
+   "pos": [
+    0.31,
+    0.788,
+    -3.101
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r0c3"
+    },
+    {
+     "tag": "book",
+     "ownerId": "r0c3"
+    }
+   ],
+   "flightTime": 1.633,
+   "bounces": 2,
+   "owner": null
+  },
+  "landedAfter": 1.633,
+  "tunnels": [],
+  "seed": 23,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r0c4",
+  "occupant": "long_aotian",
+  "solved": true,
+  "ms": 48,
+  "sol": {
+   "yaw": -0.8138,
+   "pitch": 46,
+   "power": 0.806
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r0c4"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r0c4",
+   "ownerId": "long_aotian",
+   "reason": "rest",
+   "pos": [
+    2.466,
+    0.788,
+    -3.163
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r0c4"
+    },
+    {
+     "tag": "book",
+     "ownerId": "r0c4"
+    },
+    {
+     "tag": "book",
+     "ownerId": "r0c4"
+    }
+   ],
+   "flightTime": 1.725,
+   "bounces": 3,
+   "owner": {
+    "gender": "m",
+    "trait": "chuuni",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.733,
+  "tunnels": [],
+  "seed": 23,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r0c5",
+  "occupant": "you_xiaoyou",
+  "solved": true,
+  "ms": 43,
+  "sol": {
+   "yaw": -0.8691,
+   "pitch": 42,
+   "power": 0.85
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r0c5"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r0c5",
+   "ownerId": "you_xiaoyou",
+   "reason": "rest",
+   "pos": [
+    3.136,
+    0.78,
+    -3.285
+   ],
+   "hits": [
+    {
+     "tag": "desk",
+     "ownerId": "r0c5"
+    },
+    {
+     "tag": "book",
+     "ownerId": "r0c5"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r0c5"
+    }
+   ],
+   "flightTime": 1.696,
+   "bounces": 3,
+   "owner": {
+    "gender": "f",
+    "trait": "gamer",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.7,
+  "tunnels": [],
+  "seed": 23,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r1c0",
+  "occupant": "lin_xiaoyu",
+  "solved": true,
+  "ms": 68,
+  "sol": {
+   "yaw": 0.0438,
+   "pitch": 62,
+   "power": 0.583
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r1c0"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r1c0",
+   "ownerId": "lin_xiaoyu",
+   "reason": "rest",
+   "pos": [
+    -3.161,
+    0.78,
+    -2.005
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r1c0"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r1c0"
+    }
+   ],
+   "flightTime": 1.775,
+   "bounces": 2,
+   "owner": {
+    "gender": "f",
+    "trait": "monitor",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.783,
+  "tunnels": [],
+  "seed": 23,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r1c1",
+  "occupant": null,
+  "solved": true,
+  "ms": 9,
+  "sol": {
+   "yaw": -0.1205,
+   "pitch": 58,
+   "power": 0.539
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r1c1"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r1c1",
+   "ownerId": null,
+   "reason": "rest",
+   "pos": [
+    -2.48,
+    0.78,
+    -1.95
+   ],
+   "hits": [
+    {
+     "tag": "desk",
+     "ownerId": "r1c1"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r1c1"
+    }
+   ],
+   "flightTime": 1.708,
+   "bounces": 2,
+   "owner": null
+  },
+  "landedAfter": 1.717,
+  "tunnels": [],
+  "seed": 23,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r1c2",
+  "occupant": "song_shuhang",
+  "solved": true,
+  "ms": 8,
+  "sol": {
+   "yaw": -0.5957,
+   "pitch": 58,
+   "power": 0.624
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r1c2"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r1c2",
+   "ownerId": "song_shuhang",
+   "reason": "rest",
+   "pos": [
+    -0.365,
+    0.78,
+    -1.868
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r1c2"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r1c2"
+    }
+   ],
+   "flightTime": 1.638,
+   "bounces": 2,
+   "owner": {
+    "gender": "m",
+    "trait": "nerd",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.65,
+  "tunnels": [],
+  "seed": 23,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r1c3",
+  "occupant": "wen_yan",
+  "solved": true,
+  "ms": 11,
+  "sol": {
+   "yaw": -0.7003,
+   "pitch": 58,
+   "power": 0.665
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r1c3"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r1c3",
+   "ownerId": "wen_yan",
+   "reason": "rest",
+   "pos": [
+    0.309,
+    0.788,
+    -1.855
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r1c3"
+    },
+    {
+     "tag": "book",
+     "ownerId": "r1c3"
+    }
+   ],
+   "flightTime": 1.75,
+   "bounces": 2,
+   "owner": {
+    "gender": "m",
+    "trait": "shy",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.75,
+  "tunnels": [],
+  "seed": 23,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r1c4",
+  "occupant": null,
+  "solved": true,
+  "ms": 88,
+  "sol": {
+   "yaw": -0.9504,
+   "pitch": 46,
+   "power": 0.747
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r1c4"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r1c4",
+   "ownerId": null,
+   "reason": "rest",
+   "pos": [
+    2.5,
+    0.788,
+    -1.898
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r1c4"
+    },
+    {
+     "tag": "book",
+     "ownerId": "r1c4"
+    },
+    {
+     "tag": "book",
+     "ownerId": "r1c4"
+    }
+   ],
+   "flightTime": 1.613,
+   "bounces": 3,
+   "owner": null
+  },
+  "landedAfter": 1.617,
+  "tunnels": [],
+  "seed": 23,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r1c5",
+  "occupant": "zhao_xiaokun",
+  "solved": true,
+  "ms": 37,
+  "sol": {
+   "yaw": -1.002,
+   "pitch": 46,
+   "power": 0.792
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r1c5"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r1c5",
+   "ownerId": "zhao_xiaokun",
+   "reason": "rest",
+   "pos": [
+    3.095,
+    0.78,
+    -1.925
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r1c5"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r1c5"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r1c5"
+    }
+   ],
+   "flightTime": 1.733,
+   "bounces": 3,
+   "owner": {
+    "gender": "m",
+    "trait": "sleeper",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.733,
+  "tunnels": [],
+  "seed": 23,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r2c0",
+  "occupant": "le_duoduo",
+  "solved": true,
+  "ms": 49,
+  "sol": {
+   "yaw": 0.0645,
+   "pitch": 62,
+   "power": 0.422
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r2c0"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r2c0",
+   "ownerId": "le_duoduo",
+   "reason": "rest",
+   "pos": [
+    -3.125,
+    0.78,
+    -0.772
+   ],
+   "hits": [
+    {
+     "tag": "desk",
+     "ownerId": "r2c0"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r2c0"
+    }
+   ],
+   "flightTime": 1.587,
+   "bounces": 2,
+   "owner": {
+    "gender": "f",
+    "trait": "clown",
+    "role": "student",
+    "isCrush": true
+   }
+  },
+  "landedAfter": 1.6,
+  "tunnels": [],
+  "seed": 23,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r2c1",
+  "occupant": "tang_tang",
+  "solved": true,
+  "ms": 21,
+  "sol": {
+   "yaw": -0.1768,
+   "pitch": 58,
+   "power": 0.395
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r2c1"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r2c1",
+   "ownerId": "tang_tang",
+   "reason": "rest",
+   "pos": [
+    -2.48,
+    0.788,
+    -0.68
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r2c1"
+    },
+    {
+     "tag": "book",
+     "ownerId": "r2c1"
+    },
+    {
+     "tag": "book",
+     "ownerId": "r2c1"
+    }
+   ],
+   "flightTime": 1.354,
+   "bounces": 3,
+   "owner": {
+    "gender": "f",
+    "trait": "gossip",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.367,
+  "tunnels": [],
+  "seed": 23,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r2c2",
+  "occupant": "hu_shuo",
+  "solved": true,
+  "ms": 7,
+  "sol": {
+   "yaw": -0.7854,
+   "pitch": 58,
+   "power": 0.517
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r2c2"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r2c2",
+   "ownerId": "hu_shuo",
+   "reason": "rest",
+   "pos": [
+    -0.32,
+    0.78,
+    -0.7
+   ],
+   "hits": [
+    {
+     "tag": "desk",
+     "ownerId": "r2c2"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r2c2"
+    }
+   ],
+   "flightTime": 1.683,
+   "bounces": 2,
+   "owner": {
+    "gender": "m",
+    "trait": "gossip",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.683,
+  "tunnels": [],
+  "seed": 23,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r2c3",
+  "occupant": "ye_zhiqiu",
+  "solved": true,
+  "ms": 8,
+  "sol": {
+   "yaw": -0.8935,
+   "pitch": 58,
+   "power": 0.571
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r2c3"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r2c3",
+   "ownerId": "ye_zhiqiu",
+   "reason": "rest",
+   "pos": [
+    0.362,
+    0.78,
+    -0.592
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r2c3"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r2c3"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r2c3"
+    }
+   ],
+   "flightTime": 1.625,
+   "bounces": 3,
+   "owner": {
+    "gender": "f",
+    "trait": "artsy",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.633,
+  "tunnels": [],
+  "seed": 23,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r2c4",
+  "occupant": "su_nian",
+  "solved": true,
+  "ms": 39,
+  "sol": {
+   "yaw": -1.1197,
+   "pitch": 50,
+   "power": 0.703
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r2c4"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r2c4",
+   "ownerId": "su_nian",
+   "reason": "rest",
+   "pos": [
+    2.454,
+    0.78,
+    -0.675
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r2c4"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r2c4"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r2c4"
+    }
+   ],
+   "flightTime": 1.729,
+   "bounces": 3,
+   "owner": {
+    "gender": "f",
+    "trait": "shy",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.733,
+  "tunnels": [],
+  "seed": 23,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r2c5",
+  "occupant": "leng_yue",
+  "solved": true,
+  "ms": 41,
+  "sol": {
+   "yaw": -1.1619,
+   "pitch": 50,
+   "power": 0.755
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r2c5"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r2c5",
+   "ownerId": "leng_yue",
+   "reason": "rest",
+   "pos": [
+    3.042,
+    0.78,
+    -0.628
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r2c5"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r2c5"
+    }
+   ],
+   "flightTime": 1.717,
+   "bounces": 2,
+   "owner": {
+    "gender": "f",
+    "trait": "chuuni",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.717,
+  "tunnels": [],
+  "seed": 23,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r3c0",
+  "occupant": "bai_xiaomeng",
+  "solved": true,
+  "ms": 40,
+  "sol": {
+   "yaw": 0.1226,
+   "pitch": 62,
+   "power": 0.223
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r3c0"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r3c0",
+   "ownerId": "bai_xiaomeng",
+   "reason": "rest",
+   "pos": [
+    -3.128,
+    0.78,
+    0.481
+   ],
+   "hits": [
+    {
+     "tag": "desk",
+     "ownerId": "r3c0"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r3c0"
+    }
+   ],
+   "flightTime": 1.283,
+   "bounces": 2,
+   "owner": {
+    "gender": "f",
+    "trait": "sleeper",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.283,
+  "tunnels": [],
+  "seed": 23,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r3c1",
+  "occupant": "chen_keke",
+  "solved": true,
+  "ms": 5,
+  "sol": {
+   "yaw": -0.3283,
+   "pitch": 58,
+   "power": 0.199
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r3c1"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r3c1",
+   "ownerId": "chen_keke",
+   "reason": "rest",
+   "pos": [
+    -2.488,
+    0.788,
+    0.635
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r3c1"
+    },
+    {
+     "tag": "book",
+     "ownerId": "r3c1"
+    }
+   ],
+   "flightTime": 1.1,
+   "bounces": 2,
+   "owner": {
+    "gender": "f",
+    "trait": "foodie",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.1,
+  "tunnels": [],
+  "seed": 23,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r3c2",
+  "occupant": "sun_xiaokong",
+  "solved": true,
+  "ms": 8,
+  "sol": {
+   "yaw": -1.0876,
+   "pitch": 58,
+   "power": 0.426
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r3c2"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r3c2",
+   "ownerId": "sun_xiaokong",
+   "reason": "rest",
+   "pos": [
+    -0.382,
+    0.788,
+    0.611
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r3c2"
+    },
+    {
+     "tag": "book",
+     "ownerId": "r3c2"
+    }
+   ],
+   "flightTime": 1.433,
+   "bounces": 2,
+   "owner": {
+    "gender": "m",
+    "trait": "clown",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.433,
+  "tunnels": [],
+  "seed": 23,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r3c3",
+  "occupant": "xu_ruoqing",
+  "solved": true,
+  "ms": 7,
+  "sol": {
+   "yaw": -1.1715,
+   "pitch": 58,
+   "power": 0.497
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r3c3"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r3c3",
+   "ownerId": "xu_ruoqing",
+   "reason": "rest",
+   "pos": [
+    0.31,
+    0.788,
+    0.642
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r3c3"
+    },
+    {
+     "tag": "book",
+     "ownerId": "r3c3"
+    }
+   ],
+   "flightTime": 1.546,
+   "bounces": 2,
+   "owner": {
+    "gender": "f",
+    "trait": "normal",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.55,
+  "tunnels": [],
+  "seed": 23,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r3c4",
+  "occupant": "jiang_bei",
+  "solved": true,
+  "ms": 42,
+  "sol": {
+   "yaw": -1.3219,
+   "pitch": 50,
+   "power": 0.663
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r3c4"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r3c4",
+   "ownerId": "jiang_bei",
+   "reason": "rest",
+   "pos": [
+    2.639,
+    0.78,
+    0.51
+   ],
+   "hits": [
+    {
+     "tag": "desk",
+     "ownerId": "r3c4"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r3c4"
+    }
+   ],
+   "flightTime": 1.758,
+   "bounces": 2,
+   "owner": {
+    "gender": "m",
+    "trait": "artsy",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.767,
+  "tunnels": [],
+  "seed": 23,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r3c5",
+  "occupant": null,
+  "solved": true,
+  "ms": 148,
+  "sol": {
+   "yaw": -1.3472,
+   "pitch": 42,
+   "power": 0.691
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r3c5"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r3c5",
+   "ownerId": null,
+   "reason": "rest",
+   "pos": [
+    3.336,
+    0.78,
+    0.638
+   ],
+   "hits": [
+    {
+     "tag": "prop",
+     "ownerId": "r3c5"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r3c5"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r3c5"
+    }
+   ],
+   "flightTime": 1.675,
+   "bounces": 3,
+   "owner": null
+  },
+  "landedAfter": 1.683,
+  "tunnels": [],
+  "seed": 23,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r4c1",
+  "occupant": "gu_xiaosuan",
+  "solved": true,
+  "ms": 6,
+  "sol": {
+   "yaw": -1.3009,
+   "pitch": 66,
+   "power": 0.012
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r4c1"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r4c1",
+   "ownerId": "gu_xiaosuan",
+   "reason": "rest",
+   "pos": [
+    -2.479,
+    0.787,
+    1.796
+   ],
+   "hits": [
+    {
+     "tag": "desk",
+     "ownerId": "r4c1"
+    },
+    {
+     "tag": "book",
+     "ownerId": "r4c1"
+    }
+   ],
+   "flightTime": 0.958,
+   "bounces": 2,
+   "owner": {
+    "gender": "f",
+    "trait": "nerd",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 0.967,
+  "tunnels": [],
+  "seed": 23,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r4c2",
+  "occupant": "xia_mo",
+  "solved": true,
+  "ms": 6,
+  "sol": {
+   "yaw": -1.5214,
+   "pitch": 58,
+   "power": 0.381
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r4c2"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r4c2",
+   "ownerId": "xia_mo",
+   "reason": "rest",
+   "pos": [
+    -0.357,
+    0.78,
+    1.814
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r4c2"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r4c2"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r4c2"
+    }
+   ],
+   "flightTime": 1.425,
+   "bounces": 3,
+   "owner": {
+    "gender": "f",
+    "trait": "jock",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.433,
+  "tunnels": [],
+  "seed": 23,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r4c3",
+  "occupant": "zhang_haoran",
+  "solved": true,
+  "ms": 8,
+  "sol": {
+   "yaw": -1.5311,
+   "pitch": 58,
+   "power": 0.464
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r4c3"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r4c3",
+   "ownerId": "zhang_haoran",
+   "reason": "rest",
+   "pos": [
+    0.325,
+    0.78,
+    1.801
+   ],
+   "hits": [
+    {
+     "tag": "desk",
+     "ownerId": "r4c3"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r4c3"
+    }
+   ],
+   "flightTime": 1.604,
+   "bounces": 2,
+   "owner": {
+    "gender": "m",
+    "trait": "jock",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.617,
+  "tunnels": [],
+  "seed": 23,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r4c4",
+  "occupant": "li_yiming",
+  "solved": true,
+  "ms": 23,
+  "sol": {
+   "yaw": -1.5469,
+   "pitch": 54,
+   "power": 0.668
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r4c4"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r4c4",
+   "ownerId": "li_yiming",
+   "reason": "rest",
+   "pos": [
+    2.515,
+    0.78,
+    1.801
+   ],
+   "hits": [
+    {
+     "tag": "desk",
+     "ownerId": "r4c4"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r4c4"
+    }
+   ],
+   "flightTime": 1.829,
+   "bounces": 2,
+   "owner": {
+    "gender": "m",
+    "trait": "gamer",
+    "role": "student",
+    "isCrush": false
+   }
+  },
+  "landedAfter": 1.833,
+  "tunnels": [],
+  "seed": 23,
+  "hit": true,
+  "predicted": true
+ },
+ {
+  "seatId": "r4c5",
+  "occupant": null,
+  "solved": true,
+  "ms": 35,
+  "sol": {
+   "yaw": -1.5494,
+   "pitch": 50,
+   "power": 0.706
+  },
+  "robust": 4,
+  "expect": {
+   "type": "desk",
+   "seatId": "r4c5"
+  },
+  "landing": {
+   "type": "desk",
+   "seatId": "r4c5",
+   "ownerId": null,
+   "reason": "rest",
+   "pos": [
+    3.035,
+    0.78,
+    1.838
+   ],
+   "hits": [
+    {
+     "tag": "book",
+     "ownerId": "r4c5"
+    },
+    {
+     "tag": "desk",
+     "ownerId": "r4c5"
+    }
+   ],
+   "flightTime": 1.617,
+   "bounces": 2,
+   "owner": null
+  },
+  "landedAfter": 1.617,
+  "tunnels": [],
+  "seed": 23,
+  "hit": true,
+  "predicted": true
+ }
+]

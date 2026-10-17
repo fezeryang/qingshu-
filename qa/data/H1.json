@@ -1,0 +1,163 @@
+{
+ "steps": [],
+ "beforeClick": {
+  "contexts": [],
+  "music": "title"
+ },
+ "afterClick": {
+  "contexts": [
+   "running"
+  ],
+  "music": "title"
+ },
+ "levelIntro": {
+  "contexts": 1,
+  "states": [
+   "running"
+  ],
+  "analysers": 1,
+  "peak": 0.3939785957336426,
+  "rms": 0.1024477991127922
+ },
+ "levelEnding": {
+  "contexts": 1,
+  "states": [
+   "running"
+  ],
+  "analysers": 1,
+  "peak": 0.3890231251716614,
+  "rms": 0.11899165098474364
+ },
+ "final": {
+  "musicByPhase": [
+   {
+    "phase": "title",
+    "music": "title",
+    "t": 1.153866666684548
+   },
+   {
+    "phase": "letter",
+    "music": "title",
+    "t": 2.3865999999940395
+   },
+   {
+    "phase": "intro",
+    "music": "classroom",
+    "t": 5.577266666720311
+   },
+   {
+    "phase": "aim",
+    "music": "classroom",
+    "t": 11.36756666670259
+   },
+   {
+    "phase": "flight",
+    "music": "flight",
+    "t": 17.367566666702743
+   },
+   {
+    "phase": "ending",
+    "music": null,
+    "t": 21.100900000035864
+   },
+   {
+    "phase": "ending",
+    "music": "romance",
+    "t": 24.15090000003569
+   }
+  ],
+  "audioLog": [
+   "{\"t\":0,\"kind\":\"music\",\"name\":\"title\",\"auto\":true}",
+   "{\"t\":1.713,\"kind\":\"sfx\",\"name\":\"pop\"}",
+   "{\"t\":2.253,\"kind\":\"sfx\",\"name\":\"swoosh\"}",
+   "{\"t\":2.995,\"kind\":\"sfx\",\"name\":\"pageFlip\"}",
+   "{\"t\":3.353,\"kind\":\"sfx\",\"name\":\"ding\"}",
+   "{\"t\":3.561,\"kind\":\"sfx\",\"name\":\"paperCrumple\"}",
+   "{\"t\":3.871,\"kind\":\"sfx\",\"name\":\"paperCrumple\"}",
+   "{\"t\":4.198,\"kind\":\"sfx\",\"name\":\"paperCrumple\"}",
+   "{\"t\":4.521,\"kind\":\"sfx\",\"name\":\"paperCrumple\"}",
+   "{\"t\":4.745,\"kind\":\"sfx\",\"name\":\"swoosh\"}",
+   "{\"t\":5.577,\"kind\":\"loop\",\"name\":\"fanHum\",\"auto\":true}",
+   "{\"t\":5.577,\"kind\":\"music\",\"name\":\"classroom\",\"auto\":true}",
+   "{\"t\":5.577,\"kind\":\"sfx\",\"name\":\"bell\",\"auto\":true}",
+   "{\"t\":6.784,\"kind\":\"sfx\",\"name\":\"chairScrape\"}",
+   "{\"t\":7.601,\"kind\":\"sfx\",\"name\":\"murmur\"}",
+   "{\"t\":9.001,\"kind\":\"sfx\",\"name\":\"heartbeat\"}",
+   "{\"t\":9.001,\"kind\":\"sfx\",\"name\":\"slowmoIn\"}",
+   "{\"t\":9.606,\"kind\":\"sfx\",\"name\":\"heartbeat\"}",
+   "{\"t\":9.606,\"kind\":\"sfx\",\"name\":\"sparkle\"}",
+   "{\"t\":10.712,\"kind\":\"loop\",\"name\":\"murmur\"}",
+   "{\"t\":12.212,\"kind\":\"loop\",\"name\":\"chalkScratch\",\"auto\":true}",
+   "{\"t\":13.212,\"kind\":\"sfx\",\"name\":\"stingDanger\",\"auto\":true}",
+   "{\"t\":13.212,\"kind\":\"sfx\",\"name\":\"hmm\",\"auto\":true}",
+   "{\"t\":15.012,\"kind\":\"loop\",\"name\":\"chalkScratch\",\"auto\":true}",
+   "{\"t\":15.512,\"kind\":\"loop\",\"name\":\"heartbeat\",\"auto\":true}",
+   "{\"t\":16.697,\"kind\":\"music\",\"name\":\"flight\",\"auto\":true}",
+   "{\"t\":16.697,\"kind\":\"sfx\",\"name\":\"whoosh\",\"auto\":true}",
+   "{\"t\":16.698,\"kind\":\"sfx\",\"name\":\"slowmoIn\",\"auto\":true}",
+   "{\"t\":16.762,\"kind\":\"sfx\",\"name\":\"swoosh\",\"auto\":true}",
+   "{\"t\":17.052,\"kind\":\"sfx\",\"name\":\"slowmoOut\",\"auto\":true}",
+   "{\"t\":17.706,\"kind\":\"sfx\",\"name\":\"swoosh\",\"auto\":true}",
+   "{\"t\":17.727,\"kind\":\"sfx\",\"name\":\"bounceSoft\",\"auto\":true}",
+   "{\"t\":17.74,\"kind\":\"sfx\",\"name\":\"thudDesk\",\"auto\":true}",
+   "{\"t\":18.078,\"kind\":\"music\",\"name\":\"off\"}",
+   "{\"t\":18.078,\"kind\":\"sfx\",\"name\":\"pop\"}",
+   "{\"t\":19.799,\"kind\":\"sfx\",\"name\":\"paperUnfold\"}",
+   "{\"t\":21.116,\"kind\":\"music\",\"name\":\"romance\"}",
+   "{\"t\":21.116,\"kind\":\"sfx\",\"name\":\"paperUnfold\"}",
+   "{\"t\":27.199,\"kind\":\"sfx\",\"name\":\"heartbeat\"}",
+   "{\"t\":28.816,\"kind\":\"sfx\",\"name\":\"pencil\"}",
+   "{\"t\":30.633,\"kind\":\"sfx\",\"name\":\"whoosh\"}",
+   "{\"t\":32.215,\"kind\":\"sfx\",\"name\":\"thudDesk\"}",
+   "{\"t\":32.215,\"kind\":\"sfx\",\"name\":\"paperUnfold\"}",
+   "{\"t\":32.215,\"kind\":\"sfx\",\"name\":\"stingReveal\"}",
+   "{\"t\":32.215,\"kind\":\"sfx\",\"name\":\"paperUnfold\"}",
+   "{\"t\":37.632,\"kind\":\"sfx\",\"name\":\"sparkle\"}",
+   "{\"t\":38.465,\"kind\":\"loop\",\"name\":\"birds\",\"auto\":true}"
+  ],
+  "sfxCalls": [
+   "pop",
+   "swoosh",
+   "pageFlip",
+   "ding",
+   "paperCrumple",
+   "paperCrumple",
+   "paperCrumple",
+   "paperCrumple",
+   "swoosh",
+   "chairScrape",
+   "murmur",
+   "heartbeat",
+   "slowmoIn",
+   "heartbeat",
+   "sparkle",
+   "murmur",
+   "pop",
+   "paperUnfold",
+   "paperUnfold",
+   "heartbeat",
+   "pencil",
+   "whoosh",
+   "thudDesk",
+   "paperUnfold",
+   "stingReveal",
+   "paperUnfold",
+   "sparkle",
+   "ding"
+  ],
+  "musicCalls": [
+   null,
+   "romance",
+   "romance"
+  ],
+  "endingId": "perfect",
+  "recentSample": [
+   "{\"t\":32.215,\"kind\":\"sfx\",\"name\":\"stingReveal\"}",
+   "{\"t\":32.215,\"kind\":\"sfx\",\"name\":\"paperUnfold\"}",
+   "{\"t\":37.632,\"kind\":\"sfx\",\"name\":\"sparkle\"}",
+   "{\"t\":38.465,\"kind\":\"loop\",\"name\":\"birds\",\"auto\":true}",
+   "{\"t\":50.332,\"kind\":\"sfx\",\"name\":\"ding\"}"
+  ],
+  "errors": []
+ }
+}

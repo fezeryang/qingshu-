@@ -1,0 +1,705 @@
+{
+ "rows": [
+  {
+   "id": "perfect",
+   "dur": 27.956,
+   "durUi": 28.6,
+   "lines": 7,
+   "cuts": 5,
+   "moving": 379,
+   "music": [
+    "romance"
+   ],
+   "stages": [
+    "classroom",
+    "rooftop"
+   ],
+   "card": true,
+   "cardOk": true,
+   "camCalls": [
+    "shot",
+    "overShoulder",
+    "closeUp",
+    "cut",
+    "slowMo",
+    "irisHeart",
+    "twoShot"
+   ]
+  },
+  {
+   "id": "same_gender",
+   "dur": 30.512,
+   "durUi": 30.517,
+   "lines": 11,
+   "cuts": 7,
+   "moving": 264,
+   "music": [
+    "romance"
+   ],
+   "stages": [
+    "classroom",
+    "cherryPath",
+    "canteen"
+   ],
+   "card": true,
+   "cardOk": true,
+   "camCalls": [
+    "shot",
+    "overShoulder",
+    "cut",
+    "closeUp",
+    "irisHeart",
+    "fade",
+    "twoShot"
+   ]
+  },
+  {
+   "id": "wrong_caught",
+   "dur": 29.714,
+   "durUi": 29.733,
+   "lines": 11,
+   "cuts": 6,
+   "moving": 119,
+   "music": [
+    "tragedy"
+   ],
+   "stages": [
+    "classroom",
+    "office"
+   ],
+   "card": true,
+   "cardOk": true,
+   "camCalls": [
+    "closeUp",
+    "crashZoom",
+    "cut",
+    "fade",
+    "shot",
+    "shake"
+   ]
+  },
+  {
+   "id": "wrong_accept",
+   "dur": 25.813,
+   "durUi": 25.817,
+   "lines": 8,
+   "cuts": 5,
+   "moving": 130,
+   "music": [
+    "romance",
+    "comedy"
+   ],
+   "stages": [
+    "classroom",
+    "cherryPath",
+    "canteen",
+    "rooftop"
+   ],
+   "card": true,
+   "cardOk": true,
+   "camCalls": [
+    "overShoulder",
+    "cut",
+    "closeUp",
+    "irisHeart",
+    "twoShot",
+    "fade"
+   ]
+  },
+  {
+   "id": "caught_read",
+   "dur": 22.917,
+   "durUi": 22.917,
+   "lines": 6,
+   "cuts": 5,
+   "moving": 387,
+   "music": [
+    "shame"
+   ],
+   "stages": [
+    "classroom"
+   ],
+   "card": true,
+   "cardOk": true,
+   "camCalls": [
+    "cut",
+    "shot",
+    "shake"
+   ]
+  },
+  {
+   "id": "chalk_counter",
+   "dur": 14.858,
+   "durUi": 15.967,
+   "lines": 6,
+   "cuts": 7,
+   "moving": 245,
+   "music": [
+    "mystery",
+    "comedy"
+   ],
+   "stages": [
+    "classroom"
+   ],
+   "card": true,
+   "cardOk": true,
+   "camCalls": [
+    "dutch",
+    "closeUp",
+    "slowMo",
+    "track",
+    "flash",
+    "shake",
+    "cut",
+    "shot"
+   ]
+  },
+  {
+   "id": "graded",
+   "dur": 23.216,
+   "durUi": 23.217,
+   "lines": 6,
+   "cuts": 2,
+   "moving": 121,
+   "music": [
+    "comedy"
+   ],
+   "stages": [
+    "classroom"
+   ],
+   "card": true,
+   "cardOk": true,
+   "camCalls": [
+    "closeUp",
+    "cut",
+    "shake",
+    "shot"
+   ]
+  },
+  {
+   "id": "three_pointer",
+   "dur": 20.026,
+   "durUi": 21.417,
+   "lines": 9,
+   "cuts": 5,
+   "moving": 208,
+   "music": [
+    "sports"
+   ],
+   "stages": [
+    "classroom",
+    "court"
+   ],
+   "card": true,
+   "cardOk": true,
+   "camCalls": [
+    "cut",
+    "shake",
+    "fade",
+    "slowMo",
+    "track",
+    "shot"
+   ]
+  },
+  {
+   "id": "out_window",
+   "dur": 20.66,
+   "durUi": 20.667,
+   "lines": 7,
+   "cuts": 8,
+   "moving": 506,
+   "music": [
+    "mystery",
+    "broadcast"
+   ],
+   "stages": [
+    "classroom",
+    "schoolyard"
+   ],
+   "card": true,
+   "cardOk": true,
+   "camCalls": [
+    "cut",
+    "fade",
+    "track",
+    "shake",
+    "closeUp",
+    "shot"
+   ]
+  },
+  {
+   "id": "confetti",
+   "dur": 11.206,
+   "durUi": 12.117,
+   "lines": 5,
+   "cuts": 4,
+   "moving": 204,
+   "music": [
+    "romance"
+   ],
+   "stages": [
+    "classroom"
+   ],
+   "card": true,
+   "cardOk": true,
+   "camCalls": [
+    "shot",
+    "cut"
+   ]
+  },
+  {
+   "id": "self_love",
+   "dur": 16.938,
+   "durUi": 16.95,
+   "lines": 4,
+   "cuts": 2,
+   "moving": 333,
+   "music": [
+    "romance"
+   ],
+   "stages": [
+    "classroom"
+   ],
+   "card": true,
+   "cardOk": true,
+   "camCalls": [
+    "cut",
+    "shot"
+   ]
+  },
+  {
+   "id": "lost",
+   "dur": 16,
+   "durUi": 16,
+   "lines": 5,
+   "cuts": 4,
+   "moving": 84,
+   "music": [
+    "lonely"
+   ],
+   "stages": [
+    "classroom"
+   ],
+   "card": true,
+   "cardOk": true,
+   "camCalls": [
+    "cut",
+    "fade",
+    "shot"
+   ]
+  },
+  {
+   "id": "coward",
+   "dur": 13.2,
+   "durUi": 13.2,
+   "lines": 3,
+   "cuts": 2,
+   "moving": 312,
+   "music": [
+    "lonely"
+   ],
+   "stages": [
+    "classroom"
+   ],
+   "card": true,
+   "cardOk": true,
+   "camCalls": [
+    "shot",
+    "cut",
+    "shake"
+   ]
+  }
+ ],
+ "pairs": [
+  {
+   "a": "perfect",
+   "b": "same_gender",
+   "d": 61.85
+  },
+  {
+   "a": "perfect",
+   "b": "wrong_caught",
+   "d": 66.95
+  },
+  {
+   "a": "perfect",
+   "b": "wrong_accept",
+   "d": 73.32
+  },
+  {
+   "a": "perfect",
+   "b": "caught_read",
+   "d": 60.17
+  },
+  {
+   "a": "perfect",
+   "b": "chalk_counter",
+   "d": 65.75
+  },
+  {
+   "a": "perfect",
+   "b": "graded",
+   "d": 68.84
+  },
+  {
+   "a": "perfect",
+   "b": "three_pointer",
+   "d": 54.07
+  },
+  {
+   "a": "perfect",
+   "b": "out_window",
+   "d": 59.5
+  },
+  {
+   "a": "perfect",
+   "b": "confetti",
+   "d": 58.09
+  },
+  {
+   "a": "perfect",
+   "b": "self_love",
+   "d": 55.83
+  },
+  {
+   "a": "perfect",
+   "b": "lost",
+   "d": 126.33
+  },
+  {
+   "a": "perfect",
+   "b": "coward",
+   "d": 73.44
+  },
+  {
+   "a": "same_gender",
+   "b": "wrong_caught",
+   "d": 73.11
+  },
+  {
+   "a": "same_gender",
+   "b": "wrong_accept",
+   "d": 70.9
+  },
+  {
+   "a": "same_gender",
+   "b": "caught_read",
+   "d": 61.32
+  },
+  {
+   "a": "same_gender",
+   "b": "chalk_counter",
+   "d": 70.98
+  },
+  {
+   "a": "same_gender",
+   "b": "graded",
+   "d": 70.88
+  },
+  {
+   "a": "same_gender",
+   "b": "three_pointer",
+   "d": 58.61
+  },
+  {
+   "a": "same_gender",
+   "b": "out_window",
+   "d": 60.61
+  },
+  {
+   "a": "same_gender",
+   "b": "confetti",
+   "d": 63.14
+  },
+  {
+   "a": "same_gender",
+   "b": "self_love",
+   "d": 58.71
+  },
+  {
+   "a": "same_gender",
+   "b": "lost",
+   "d": 119.84
+  },
+  {
+   "a": "same_gender",
+   "b": "coward",
+   "d": 75.93
+  },
+  {
+   "a": "wrong_caught",
+   "b": "wrong_accept",
+   "d": 73.21
+  },
+  {
+   "a": "wrong_caught",
+   "b": "caught_read",
+   "d": 61.45
+  },
+  {
+   "a": "wrong_caught",
+   "b": "chalk_counter",
+   "d": 71.25
+  },
+  {
+   "a": "wrong_caught",
+   "b": "graded",
+   "d": 80.28
+  },
+  {
+   "a": "wrong_caught",
+   "b": "three_pointer",
+   "d": 70.63
+  },
+  {
+   "a": "wrong_caught",
+   "b": "out_window",
+   "d": 69.69
+  },
+  {
+   "a": "wrong_caught",
+   "b": "confetti",
+   "d": 72.41
+  },
+  {
+   "a": "wrong_caught",
+   "b": "self_love",
+   "d": 60.3
+  },
+  {
+   "a": "wrong_caught",
+   "b": "lost",
+   "d": 100.33
+  },
+  {
+   "a": "wrong_caught",
+   "b": "coward",
+   "d": 82.29
+  },
+  {
+   "a": "wrong_accept",
+   "b": "caught_read",
+   "d": 72.81
+  },
+  {
+   "a": "wrong_accept",
+   "b": "chalk_counter",
+   "d": 70.72
+  },
+  {
+   "a": "wrong_accept",
+   "b": "graded",
+   "d": 64.74
+  },
+  {
+   "a": "wrong_accept",
+   "b": "three_pointer",
+   "d": 67.52
+  },
+  {
+   "a": "wrong_accept",
+   "b": "out_window",
+   "d": 76.59
+  },
+  {
+   "a": "wrong_accept",
+   "b": "confetti",
+   "d": 69.07
+  },
+  {
+   "a": "wrong_accept",
+   "b": "self_love",
+   "d": 70.35
+  },
+  {
+   "a": "wrong_accept",
+   "b": "lost",
+   "d": 99.13
+  },
+  {
+   "a": "wrong_accept",
+   "b": "coward",
+   "d": 79.32
+  },
+  {
+   "a": "caught_read",
+   "b": "chalk_counter",
+   "d": 65.96
+  },
+  {
+   "a": "caught_read",
+   "b": "graded",
+   "d": 68.76
+  },
+  {
+   "a": "caught_read",
+   "b": "three_pointer",
+   "d": 62.01
+  },
+  {
+   "a": "caught_read",
+   "b": "out_window",
+   "d": 61.96
+  },
+  {
+   "a": "caught_read",
+   "b": "confetti",
+   "d": 66.42
+  },
+  {
+   "a": "caught_read",
+   "b": "self_love",
+   "d": 57.06
+  },
+  {
+   "a": "caught_read",
+   "b": "lost",
+   "d": 120.31
+  },
+  {
+   "a": "caught_read",
+   "b": "coward",
+   "d": 89.63
+  },
+  {
+   "a": "chalk_counter",
+   "b": "graded",
+   "d": 67.18
+  },
+  {
+   "a": "chalk_counter",
+   "b": "three_pointer",
+   "d": 67.19
+  },
+  {
+   "a": "chalk_counter",
+   "b": "out_window",
+   "d": 71.52
+  },
+  {
+   "a": "chalk_counter",
+   "b": "confetti",
+   "d": 59.42
+  },
+  {
+   "a": "chalk_counter",
+   "b": "self_love",
+   "d": 60.23
+  },
+  {
+   "a": "chalk_counter",
+   "b": "lost",
+   "d": 95.52
+  },
+  {
+   "a": "chalk_counter",
+   "b": "coward",
+   "d": 81.32
+  },
+  {
+   "a": "graded",
+   "b": "three_pointer",
+   "d": 71.43
+  },
+  {
+   "a": "graded",
+   "b": "out_window",
+   "d": 76.54
+  },
+  {
+   "a": "graded",
+   "b": "confetti",
+   "d": 68.06
+  },
+  {
+   "a": "graded",
+   "b": "self_love",
+   "d": 76.8
+  },
+  {
+   "a": "graded",
+   "b": "lost",
+   "d": 87.35
+  },
+  {
+   "a": "graded",
+   "b": "coward",
+   "d": 85.59
+  },
+  {
+   "a": "three_pointer",
+   "b": "out_window",
+   "d": 63.08
+  },
+  {
+   "a": "three_pointer",
+   "b": "confetti",
+   "d": 63.97
+  },
+  {
+   "a": "three_pointer",
+   "b": "self_love",
+   "d": 55.8
+  },
+  {
+   "a": "three_pointer",
+   "b": "lost",
+   "d": 115.22
+  },
+  {
+   "a": "three_pointer",
+   "b": "coward",
+   "d": 74.87
+  },
+  {
+   "a": "out_window",
+   "b": "confetti",
+   "d": 59.65
+  },
+  {
+   "a": "out_window",
+   "b": "self_love",
+   "d": 53.23
+  },
+  {
+   "a": "out_window",
+   "b": "lost",
+   "d": 136.64
+  },
+  {
+   "a": "out_window",
+   "b": "coward",
+   "d": 60.55
+  },
+  {
+   "a": "confetti",
+   "b": "self_love",
+   "d": 57.78
+  },
+  {
+   "a": "confetti",
+   "b": "lost",
+   "d": 121.53
+  },
+  {
+   "a": "confetti",
+   "b": "coward",
+   "d": 69.37
+  },
+  {
+   "a": "self_love",
+   "b": "lost",
+   "d": 120.94
+  },
+  {
+   "a": "self_love",
+   "b": "coward",
+   "d": 70.8
+  },
+  {
+   "a": "lost",
+   "b": "coward",
+   "d": 124.46
+  }
+ ]
+}

@@ -38,7 +38,6 @@ async function boot() {
     settings: { masterVolume: 0.8, musicVolume: 0.7, sfxVolume: 0.9, sensitivity: 1, reducedMotion: false, playerGender: 'm', ...store.get('qingshu.settings', {}) },
     round: null,
   };
-  if (config.mute) ctx.settings.masterVolume = 0;
   window.__qsCtx = ctx;
   installDebug(ctx); // first, so it captures errors thrown during install
 

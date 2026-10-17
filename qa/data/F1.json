@@ -1,0 +1,255 @@
+[
+ {
+  "id": "perfect",
+  "label": "crush#0:su_nian@r2c2",
+  "frames": 248,
+  "follow": 248,
+  "ratio": 100,
+  "behind": 0,
+  "maxNdc": 0.64,
+  "hiddenNear": 0,
+  "hiddenNearWhat": null,
+  "hiddenFar": 0,
+  "occChecks": 83,
+  "camInside": 0,
+  "camInsideWhat": null,
+  "modes": {
+   "follow": 248
+  },
+  "camMetric": {
+   "ratio": 1,
+   "frames": 249,
+   "occluded": 0
+  }
+ },
+ {
+  "id": "same_gender",
+  "label": "sameGender#0:jiang_bei@r2c1",
+  "frames": 214,
+  "follow": 214,
+  "ratio": 100,
+  "behind": 0,
+  "maxNdc": 0.65,
+  "hiddenNear": 0,
+  "hiddenNearWhat": null,
+  "hiddenFar": 0,
+  "occChecks": 72,
+  "camInside": 0,
+  "camInsideWhat": null,
+  "modes": {
+   "follow": 214
+  },
+  "camMetric": {
+   "ratio": 1,
+   "frames": 215,
+   "occluded": 0
+  }
+ },
+ {
+  "id": "wrong_caught",
+  "label": "oppSnitch#0:lin_xiaoyu@r1c3",
+  "frames": 253,
+  "follow": 253,
+  "ratio": 100,
+  "behind": 0,
+  "maxNdc": 0.64,
+  "hiddenNear": 0,
+  "hiddenNearWhat": null,
+  "hiddenFar": 0,
+  "occChecks": 85,
+  "camInside": 0,
+  "camInsideWhat": null,
+  "modes": {
+   "follow": 253
+  },
+  "camMetric": {
+   "ratio": 1,
+   "frames": 254,
+   "occluded": 0
+  }
+ },
+ {
+  "id": "wrong_accept",
+  "label": "oppNormal#0:su_nian@r2c1",
+  "frames": 208,
+  "follow": 208,
+  "ratio": 100,
+  "behind": 0,
+  "maxNdc": 0.65,
+  "hiddenNear": 0,
+  "hiddenNearWhat": null,
+  "hiddenFar": 0,
+  "occChecks": 70,
+  "camInside": 0,
+  "camInsideWhat": null,
+  "modes": {
+   "follow": 208
+  },
+  "camMetric": {
+   "ratio": 1,
+   "frames": 209,
+   "occluded": 0
+  }
+ },
+ {
+  "id": "chalk_counter",
+  "label": "teacher",
+  "frames": 289,
+  "follow": 289,
+  "ratio": 100,
+  "behind": 0,
+  "maxNdc": 0.64,
+  "hiddenNear": 0,
+  "hiddenNearWhat": null,
+  "hiddenFar": 0,
+  "occChecks": 97,
+  "camInside": 0,
+  "camInsideWhat": null,
+  "modes": {
+   "follow": 289
+  },
+  "camMetric": {
+   "ratio": 1,
+   "frames": 290,
+   "occluded": 0
+  }
+ },
+ {
+  "id": "graded",
+  "label": "podium",
+  "frames": 243,
+  "follow": 243,
+  "ratio": 100,
+  "behind": 0,
+  "maxNdc": 0.64,
+  "hiddenNear": 0,
+  "hiddenNearWhat": null,
+  "hiddenFar": 0,
+  "occChecks": 81,
+  "camInside": 0,
+  "camInsideWhat": null,
+  "modes": {
+   "follow": 243
+  },
+  "camMetric": {
+   "ratio": 1,
+   "frames": 244,
+   "occluded": 0
+  }
+ },
+ {
+  "id": "three_pointer",
+  "label": "trash",
+  "frames": 188,
+  "follow": 188,
+  "ratio": 100,
+  "behind": 0,
+  "maxNdc": 0.64,
+  "hiddenNear": 0,
+  "hiddenNearWhat": null,
+  "hiddenFar": 0,
+  "occChecks": 63,
+  "camInside": 0,
+  "camInsideWhat": null,
+  "modes": {
+   "follow": 188
+  },
+  "camMetric": {
+   "ratio": 1,
+   "frames": 189,
+   "occluded": 0
+  }
+ },
+ {
+  "id": "out_window",
+  "label": "window",
+  "frames": 104,
+  "follow": 104,
+  "ratio": 100,
+  "behind": 0,
+  "maxNdc": 0.65,
+  "hiddenNear": 2,
+  "hiddenNearWhat": "curtains<classroom",
+  "hiddenFar": 0,
+  "occChecks": 35,
+  "camInside": 0,
+  "camInsideWhat": null,
+  "modes": {
+   "follow": 104
+  },
+  "camMetric": {
+   "ratio": 1,
+   "frames": 105,
+   "occluded": 0
+  }
+ },
+ {
+  "id": "confetti",
+  "label": "fan",
+  "frames": 71,
+  "follow": 71,
+  "ratio": 100,
+  "behind": 0,
+  "maxNdc": 0.65,
+  "hiddenNear": 0,
+  "hiddenNearWhat": null,
+  "hiddenFar": 0,
+  "occChecks": 24,
+  "camInside": 0,
+  "camInsideWhat": null,
+  "modes": {
+   "follow": 71
+  },
+  "camMetric": {
+   "ratio": 1,
+   "frames": 72,
+   "occluded": 0
+  }
+ },
+ {
+  "id": "self_love",
+  "label": "self",
+  "frames": 181,
+  "follow": 181,
+  "ratio": 100,
+  "behind": 0,
+  "maxNdc": 0.65,
+  "hiddenNear": 0,
+  "hiddenNearWhat": null,
+  "hiddenFar": 0,
+  "occChecks": 61,
+  "camInside": 0,
+  "camInsideWhat": null,
+  "modes": {
+   "follow": 181
+  },
+  "camMetric": {
+   "ratio": 1,
+   "frames": 182,
+   "occluded": 0
+  }
+ },
+ {
+  "id": "lost",
+  "label": "floor",
+  "frames": 219,
+  "follow": 219,
+  "ratio": 100,
+  "behind": 0,
+  "maxNdc": 0.65,
+  "hiddenNear": 0,
+  "hiddenNearWhat": null,
+  "hiddenFar": 0,
+  "occChecks": 73,
+  "camInside": 0,
+  "camInsideWhat": null,
+  "modes": {
+   "follow": 219
+  },
+  "camMetric": {
+   "ratio": 1,
+   "frames": 220,
+   "occluded": 0
+  }
+ }
+]

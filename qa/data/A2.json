@@ -1,0 +1,106 @@
+[
+ {
+  "id": "perfect",
+  "status": "ok",
+  "card": true,
+  "errors": [],
+  "crashes": [],
+  "warnings": 0
+ },
+ {
+  "id": "same_gender",
+  "status": "ok",
+  "card": true,
+  "errors": [],
+  "crashes": [],
+  "warnings": 0
+ },
+ {
+  "id": "wrong_caught",
+  "status": "ok",
+  "card": true,
+  "errors": [],
+  "crashes": [],
+  "warnings": 0
+ },
+ {
+  "id": "wrong_accept",
+  "status": "ok",
+  "card": true,
+  "errors": [],
+  "crashes": [],
+  "warnings": 0
+ },
+ {
+  "id": "caught_read",
+  "status": "ok",
+  "card": true,
+  "errors": [],
+  "crashes": [],
+  "warnings": 0
+ },
+ {
+  "id": "chalk_counter",
+  "status": "ok",
+  "card": true,
+  "errors": [],
+  "crashes": [],
+  "warnings": 0
+ },
+ {
+  "id": "graded",
+  "status": "ok",
+  "card": true,
+  "errors": [],
+  "crashes": [],
+  "warnings": 0
+ },
+ {
+  "id": "three_pointer",
+  "status": "ok",
+  "card": true,
+  "errors": [],
+  "crashes": [],
+  "warnings": 0
+ },
+ {
+  "id": "out_window",
+  "status": "ok",
+  "card": true,
+  "errors": [],
+  "crashes": [],
+  "warnings": 0
+ },
+ {
+  "id": "confetti",
+  "status": "ok",
+  "card": true,
+  "errors": [],
+  "crashes": [],
+  "warnings": 0
+ },
+ {
+  "id": "self_love",
+  "status": "ok",
+  "card": true,
+  "errors": [],
+  "crashes": [],
+  "warnings": 0
+ },
+ {
+  "id": "lost",
+  "status": "ok",
+  "card": true,
+  "errors": [],
+  "crashes": [],
+  "warnings": 0
+ },
+ {
+  "id": "coward",
+  "status": "ok",
+  "card": true,
+  "errors": [],
+  "crashes": [],
+  "warnings": 0
+ }
+]

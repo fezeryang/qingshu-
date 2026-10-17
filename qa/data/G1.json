@@ -1,0 +1,177 @@
+{
+ "shots": [
+  {
+   "name": "01-title",
+   "file": "qa/shots/keyframes/01-title.png",
+   "lum": 173.003,
+   "stdev": 57.251
+  },
+  {
+   "name": "02-letter",
+   "file": "qa/shots/keyframes/02-letter.png",
+   "lum": 149.468,
+   "stdev": 71.674
+  },
+  {
+   "name": "03-crumple",
+   "file": "qa/shots/keyframes/03-crumple.png",
+   "lum": 125.825,
+   "stdev": 59.942
+  },
+  {
+   "name": "04-intro",
+   "file": "qa/shots/keyframes/04-intro.png",
+   "lum": 116.996,
+   "stdev": 83.066
+  },
+  {
+   "name": "05-aim",
+   "file": "qa/shots/keyframes/05-aim.png",
+   "lum": 167.735,
+   "stdev": 59.41
+  },
+  {
+   "name": "06-charge",
+   "file": "qa/shots/keyframes/06-charge.png",
+   "lum": 180.582,
+   "stdev": 55.819
+  },
+  {
+   "name": "07-flight-launch",
+   "file": "qa/shots/keyframes/07-flight-launch.png",
+   "lum": 146.36,
+   "stdev": 58.073
+  },
+  {
+   "name": "08-flight-apex",
+   "file": "qa/shots/keyframes/08-flight-apex.png",
+   "lum": 161.32,
+   "stdev": 51.477
+  },
+  {
+   "name": "09-flight-descent",
+   "file": "qa/shots/keyframes/09-flight-descent.png",
+   "lum": 123.3,
+   "stdev": 57.634
+  },
+  {
+   "name": "10-landing",
+   "file": "qa/shots/keyframes/10-landing.png",
+   "lum": 124.081,
+   "stdev": 80.128
+  },
+  {
+   "name": "11-settings",
+   "file": "qa/shots/keyframes/11-settings.png",
+   "lum": 138.82,
+   "stdev": 61.588
+  },
+  {
+   "name": "12-gallery",
+   "file": "qa/shots/keyframes/12-gallery.png",
+   "lum": 226.355,
+   "stdev": 56.247
+  },
+  {
+   "name": "13-pause",
+   "file": "qa/shots/keyframes/13-pause.png",
+   "lum": 127.231,
+   "stdev": 54.247
+  },
+  {
+   "name": "14-phone-title",
+   "file": "qa/shots/keyframes/14-phone-title.png",
+   "lum": 164.541,
+   "stdev": 60.275
+  },
+  {
+   "name": "15-phone-aim",
+   "file": "qa/shots/keyframes/15-phone-aim.png",
+   "lum": 155.149,
+   "stdev": 74.231
+  },
+  {
+   "name": "16-phone-card",
+   "file": "qa/shots/keyframes/16-phone-card.png",
+   "lum": 121.746,
+   "stdev": 96.522
+  },
+  {
+   "name": "17-normal-title",
+   "file": "qa/shots/keyframes/17-normal-title.png",
+   "lum": 151.916,
+   "stdev": 69.825
+  },
+  {
+   "name": "18-normal-aim",
+   "file": "qa/shots/keyframes/18-normal-aim.png",
+   "lum": 148.552,
+   "stdev": 63.861
+  }
+ ],
+ "endingShots": [
+  "qa/shots/endings/perfect-1_5s.png",
+  "qa/shots/endings/perfect-5s.png",
+  "qa/shots/endings/perfect-climax.png",
+  "qa/shots/endings/perfect-card.png",
+  "qa/shots/endings/same_gender-1_5s.png",
+  "qa/shots/endings/same_gender-5s.png",
+  "qa/shots/endings/same_gender-climax.png",
+  "qa/shots/endings/same_gender-card.png",
+  "qa/shots/endings/wrong_caught-1_5s.png",
+  "qa/shots/endings/wrong_caught-5s.png",
+  "qa/shots/endings/wrong_caught-climax.png",
+  "qa/shots/endings/wrong_caught-card.png",
+  "qa/shots/endings/wrong_accept-1_5s.png",
+  "qa/shots/endings/wrong_accept-5s.png",
+  "qa/shots/endings/wrong_accept-climax.png",
+  "qa/shots/endings/wrong_accept-card.png",
+  "qa/shots/endings/caught_read-1_5s.png",
+  "qa/shots/endings/caught_read-5s.png",
+  "qa/shots/endings/caught_read-climax.png",
+  "qa/shots/endings/caught_read-card.png",
+  "qa/shots/endings/chalk_counter-1_5s.png",
+  "qa/shots/endings/chalk_counter-5s.png",
+  "qa/shots/endings/chalk_counter-climax.png",
+  "qa/shots/endings/chalk_counter-card.png",
+  "qa/shots/endings/graded-1_5s.png",
+  "qa/shots/endings/graded-5s.png",
+  "qa/shots/endings/graded-climax.png",
+  "qa/shots/endings/graded-card.png",
+  "qa/shots/endings/three_pointer-1_5s.png",
+  "qa/shots/endings/three_pointer-5s.png",
+  "qa/shots/endings/three_pointer-climax.png",
+  "qa/shots/endings/three_pointer-card.png",
+  "qa/shots/endings/out_window-1_5s.png",
+  "qa/shots/endings/out_window-5s.png",
+  "qa/shots/endings/out_window-climax.png",
+  "qa/shots/endings/out_window-card.png",
+  "qa/shots/endings/confetti-1_5s.png",
+  "qa/shots/endings/confetti-climax.png",
+  "qa/shots/endings/confetti-5s.png",
+  "qa/shots/endings/confetti-card.png",
+  "qa/shots/endings/self_love-1_5s.png",
+  "qa/shots/endings/self_love-5s.png",
+  "qa/shots/endings/self_love-climax.png",
+  "qa/shots/endings/self_love-card.png",
+  "qa/shots/endings/lost-1_5s.png",
+  "qa/shots/endings/lost-5s.png",
+  "qa/shots/endings/lost-climax.png",
+  "qa/shots/endings/lost-card.png",
+  "qa/shots/endings/coward-1_5s.png",
+  "qa/shots/endings/coward-5s.png",
+  "qa/shots/endings/coward-climax.png",
+  "qa/shots/endings/coward-card.png"
+ ],
+ "selectors": {
+  "letter.preset": "role=button name=/^中二$/",
+  "letter.confirm": "role=button name=/^写好了$/",
+  "crumple": "hold@centre",
+  "title.female": "role=button name=/^我是女生$/",
+  "title.start": "role=button name=/^开始$/",
+  "title.settings": "role=button name=/^设置$/",
+  "settings.done": "role=button name=/^完成$/",
+  "title.gallery": "role=button name=/^结局图鉴/",
+  "gallery.back": "role=button name=/^返回$/"
+ }
+}

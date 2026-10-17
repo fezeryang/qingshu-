@@ -1,0 +1,28 @@
+{
+ "a": {
+  "before": 1,
+  "best": {
+   "calls": 2,
+   "pip": true,
+   "t": 0.1,
+   "flying": "flying"
+  },
+  "pipCalls": [],
+  "teacher": "warning",
+  "phase": "flight",
+  "shot": "qa/shots/F3/pip-trigger.png"
+ },
+ "b": {
+  "before": 1,
+  "best": {
+   "calls": 2,
+   "pip": true,
+   "t": 0.1,
+   "flying": "flying"
+  },
+  "pipCalls": [],
+  "teacher": "watching",
+  "phase": "flight",
+  "shot": "qa/shots/F3/pip-force.png"
+ }
+}

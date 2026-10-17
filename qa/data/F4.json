@@ -1,0 +1,98 @@
+[
+ {
+  "id": "perfect",
+  "used": [
+   "irisHeart"
+  ],
+  "fxState": "{\"fade\":0,\"flash\":0,\"letterbox\":0,\"iris\":\"open\",\"pip\":false,\"roll\":0,\"vignette\":0}",
+  "issues": []
+ },
+ {
+  "id": "same_gender",
+  "used": [
+   "irisHeart",
+   "fade"
+  ],
+  "fxState": "{\"fade\":0,\"flash\":0,\"letterbox\":0,\"iris\":\"open\",\"pip\":false,\"roll\":0,\"vignette\":0}",
+  "issues": []
+ },
+ {
+  "id": "wrong_caught",
+  "used": [
+   "fade"
+  ],
+  "fxState": "{\"fade\":0,\"flash\":0,\"letterbox\":0,\"iris\":\"open\",\"pip\":false,\"roll\":0,\"vignette\":0}",
+  "issues": []
+ },
+ {
+  "id": "wrong_accept",
+  "used": [
+   "irisHeart",
+   "fade"
+  ],
+  "fxState": "{\"fade\":0,\"flash\":0,\"letterbox\":0,\"iris\":\"open\",\"pip\":false,\"roll\":0,\"vignette\":0}",
+  "issues": []
+ },
+ {
+  "id": "caught_read",
+  "used": [],
+  "fxState": "{\"fade\":0,\"flash\":0,\"letterbox\":0,\"iris\":\"open\",\"pip\":false,\"roll\":0,\"vignette\":0}",
+  "issues": []
+ },
+ {
+  "id": "chalk_counter",
+  "used": [
+   "flash"
+  ],
+  "fxState": "{\"fade\":0,\"flash\":0,\"letterbox\":0,\"iris\":\"open\",\"pip\":false,\"roll\":0,\"vignette\":0}",
+  "issues": []
+ },
+ {
+  "id": "graded",
+  "used": [],
+  "fxState": "{\"fade\":0,\"flash\":0,\"letterbox\":0,\"iris\":\"open\",\"pip\":false,\"roll\":0,\"vignette\":0}",
+  "issues": []
+ },
+ {
+  "id": "three_pointer",
+  "used": [
+   "fade"
+  ],
+  "fxState": "{\"fade\":0,\"flash\":0,\"letterbox\":0,\"iris\":\"open\",\"pip\":false,\"roll\":0,\"vignette\":0}",
+  "issues": []
+ },
+ {
+  "id": "out_window",
+  "used": [
+   "fade"
+  ],
+  "fxState": "{\"fade\":0,\"flash\":0,\"letterbox\":0,\"iris\":\"open\",\"pip\":false,\"roll\":0,\"vignette\":0}",
+  "issues": []
+ },
+ {
+  "id": "confetti",
+  "used": [],
+  "fxState": "{\"fade\":0,\"flash\":0,\"letterbox\":0,\"iris\":\"open\",\"pip\":false,\"roll\":0,\"vignette\":0}",
+  "issues": []
+ },
+ {
+  "id": "self_love",
+  "used": [],
+  "fxState": "{\"fade\":0,\"flash\":0,\"letterbox\":0,\"iris\":\"open\",\"pip\":false,\"roll\":0,\"vignette\":0}",
+  "issues": []
+ },
+ {
+  "id": "lost",
+  "used": [
+   "fade"
+  ],
+  "fxState": "{\"fade\":0,\"flash\":0,\"letterbox\":0,\"iris\":\"open\",\"pip\":false,\"roll\":0,\"vignette\":0}",
+  "issues": []
+ },
+ {
+  "id": "coward",
+  "used": [],
+  "fxState": "{\"fade\":0,\"flash\":0,\"letterbox\":0,\"iris\":\"open\",\"pip\":false,\"roll\":0,\"vignette\":0}",
+  "issues": []
+ }
+]

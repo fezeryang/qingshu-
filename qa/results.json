@@ -1,0 +1,888 @@
+{
+ "generatedAt": "2026-10-17T10:14:22.935Z",
+ "mode": "full",
+ "strict": false,
+ "srcHash": "c04e2bf099",
+ "gitHead": "53f0edd",
+ "dirtyModules": [],
+ "stubs": [],
+ "durationSec": 738,
+ "ranIds": [
+  "A4"
+ ],
+ "specs": [
+  {
+   "id": "A1",
+   "title": "Boots to the title (normal + lowfx) with 0 console errors / unhandled rejections",
+   "priority": "P0",
+   "owners": [
+    "core",
+    "world",
+    "ui",
+    "camera",
+    "characters",
+    "audio"
+   ],
+   "method": "Fresh browser context per mode (`?lowfx=1&mute=1`, and `?mute=1` in full runs), real-time loop running; wait for phase `title` + 3 s; read `__qs.errors` and page console errors/pageerrors; composited screenshot must not be blank. Boot time vs the 3 s budget is reported (warn only, SwiftShader).",
+   "status": "warn",
+   "pending": null,
+   "details": "lowfx: boot 7844 ms, 0 errors, 0 warnings; normal: boot 3972 ms, 0 errors, 0 warnings · lowfx: boot 7844 ms > 3 s budget (headless SwiftShader) · normal: boot 3972 ms > 3 s budget (headless SwiftShader)",
+   "evidence": [
+    "qa/shots/A1/title-lowfx.png",
+    "qa/shots/A1/title-normal.png"
+   ],
+   "metrics": {
+    "bootMs": [
+     7844,
+     3972
+    ]
+   },
+   "exception": false,
+   "partial": false,
+   "durationSec": 30.3,
+   "ranAt": "2026-10-17T04:41:03.178Z",
+   "quick": false,
+   "data": "data/A1.json"
+  },
+  {
+   "id": "A2",
+   "title": "All 13 endings run to completion (script-driven) with __qs.errors empty",
+   "priority": "P0",
+   "owners": [
+    "story",
+    "camera",
+    "characters",
+    "ui",
+    "audio",
+    "world"
+   ],
+   "method": "Ending sweep (tests/lib/endings.mjs): each scenario on a freshly loaded page, played from `qs.start` to the ending card with `__qa.tick`; `__qs.errors` and console errors are collected per scenario (all attempts).",
+   "status": "pass",
+   "pending": null,
+   "details": "13/13 endings reached the card; 0 with errors. ",
+   "evidence": [],
+   "metrics": null,
+   "exception": false,
+   "partial": false,
+   "durationSec": 802.2,
+   "ranAt": "2026-10-17T05:58:10.581Z",
+   "quick": false,
+   "data": "data/A2.json"
+  },
+  {
+   "id": "A3",
+   "title": "10 consecutive rounds (retry / rewrite / title) without crash; GPU memory plateaus after round 3",
+   "priority": "P0",
+   "owners": [
+    "core",
+    "story",
+    "world",
+    "characters",
+    "ui",
+    "camera"
+   ],
+   "method": "One page, 10 rounds: start → retry → rewrite (real UI: preset tab + 写好了 + hold-to-crumple) → title → … Each round throws at crush / floor / trash in turn (perfect, lost, three_pointer sets) and plays to the card. At every card: `renderer.info.memory`, JS heap, errors. Endings are rendered every 1.5 s so `renderer.info.memory` sees real uploads. Leak check: 4 of the rounds are then replayed twice with identical seed + target (content already uploaded); geometries/textures must not grow between the two replay passes (tolerance 2). First-use growth (new characters' faces, lazily built sets) is reported but not a failure.",
+   "status": "pass",
+   "pending": null,
+   "details": "10/10 rounds completed. First-use growth over the 10 rounds: geometries 82→97→117→117→117→118→118→118→118→118, textures 81→93→111→112→112→113→113→113→113→113. Replay of 4 identical rounds ×2: geometries 118→118→118→118→118→118→118→118, textures 113→113→113→113→113→113→113→113. ",
+   "evidence": [],
+   "metrics": null,
+   "exception": false,
+   "partial": false,
+   "durationSec": 723.3,
+   "ranAt": "2026-10-17T09:44:22.332Z",
+   "quick": false,
+   "data": "data/A3.json"
+  },
+  {
+   "id": "A4",
+   "title": "After any ending, 再来一局 returns to a clean aim view",
+   "priority": "P0",
+   "owners": [
+    "camera",
+    "ui",
+    "story",
+    "core"
+   ],
+   "method": "For every ending in the sweep: `cardChoice(\"retry\")` (falls back to clicking 再来一局) → intro → aim + 0.8 s; compare with the fresh-round aim snapshot taken before the throw: phase/timeScale=1/not paused/cam fp/stage classroom/input enabled/ball held, no new full-screen DOM overlays, top/bottom band not black (letterbox), overall luminance within ±40 % (fade/flash), one render call per frame (no PiP), no HUD line of the fresh view missing (digits and names normalised; new lines such as lecture bubbles are ignored).",
+   "status": "pass",
+   "pending": null,
+   "details": "13 retries checked. ",
+   "evidence": [
+    "qa/shots/a4/perfect-retry.png",
+    "qa/shots/a4/same_gender-retry.png",
+    "qa/shots/a4/wrong_caught-retry.png",
+    "qa/shots/a4/wrong_accept-retry.png",
+    "qa/shots/a4/caught_read-retry.png",
+    "qa/shots/a4/chalk_counter-retry.png"
+   ],
+   "metrics": null,
+   "exception": false,
+   "partial": false,
+   "durationSec": 725.8,
+   "ranAt": "2026-10-17T10:14:18.808Z",
+   "quick": false,
+   "data": "data/A4.json"
+  },
+  {
+   "id": "B1",
+   "title": "Real input: title → gender → letter (preset + custom) → hold to crumple → intro → aim",
+   "priority": "P0",
+   "owners": [
+    "ui",
+    "story",
+    "core"
+   ],
+   "method": "Natural real-time mode (rAF loop + SwiftShader rendering), Playwright clicks on visible labels (我是男生/开始/preset title/自己写/写好了), keyboard typing into the textarea, `mouse.down` held until the phase leaves `letter`, one click to skip the intro. Pass 1 uses a preset; then the round is finished (manual fast-forward) and 改写情书 is clicked for pass 2 with custom text. Checks `ctx.round.letter` = exactly what was chosen/typed and phase `aim` with `cam.mode` fp.",
+   "status": "pass",
+   "pending": null,
+   "details": "preset: phase aim, letter \"今天的夕阳很好看。\n如果能和你一起看…\"; custom: phase aim, letter \"放学后的走廊很长，我想和你一起走完它…\". Intro skip: 1019 ms, 6712 ms. ",
+   "evidence": [
+    "qa/shots/B1/1-title.png",
+    "qa/shots/B1/2-letter.png",
+    "qa/shots/B1/3-crumple.png",
+    "qa/shots/B1/3-crumple.png",
+    "qa/shots/B1/p1-intro.png",
+    "qa/shots/B1/p1-aim.png",
+    "qa/shots/B1/p2-intro.png",
+    "qa/shots/B1/p2-aim.png"
+   ],
+   "metrics": null,
+   "exception": false,
+   "partial": false,
+   "durationSec": 164.2,
+   "ranAt": "2026-10-17T05:07:44.010Z",
+   "quick": false,
+   "data": "data/B1.json"
+  },
+  {
+   "id": "B2",
+   "title": "Real input: moving the mouse in aim changes the view within angle limits",
+   "priority": "P0",
+   "owners": [
+    "camera"
+   ],
+   "method": "Fresh round at aim (teacher forced writing). Playwright `mouse.move` to centre / left / right / top / bottom edges, 1.5 s of game time each (manual stepping). Camera yaw/pitch are read from the rendered camera's world direction. Pass: left > centre > right yaw, top > bottom pitch, yaw range ≥ 40°, pitch range ≥ 20°, |yaw| ≤ 90°, pitch within [−60°, 60°].",
+   "status": "pass",
+   "pending": null,
+   "details": "yaw L/C/R 75°/0°/-75°, pitch T/C/B 45°/0°/-35°. ",
+   "evidence": [
+    "qa/shots/B2/look-top-left.png"
+   ],
+   "metrics": null,
+   "exception": false,
+   "partial": false,
+   "durationSec": 28,
+   "ranAt": "2026-10-17T05:08:19.337Z",
+   "quick": false,
+   "data": "data/B2.json"
+  },
+  {
+   "id": "B3",
+   "title": "Real input: hold LMB charges (power rises, arm lifts) → release throws, camera follows",
+   "priority": "P0",
+   "owners": [
+    "gameplay",
+    "camera",
+    "characters"
+   ],
+   "method": "Fresh aim round. `document.elementFromPoint` at the press point must be the game canvas. Real `mouse.down` → 0.7 s manual stepping: `aim.charging`, `aim.power` rising, mean camera-local Y of the meshes parented to the camera (FP arms) must rise > 1 cm. `mouse.up` → within 0.2 s ball `flying`, phase `flight`, `ball:launched`; within 0.5 s `cam.mode` = follow; launch heading within 10° of the view yaw.",
+   "status": "pass",
+   "pending": null,
+   "details": "power 0.174→0.331→0.471→0.595→0.702→0.793→0.868; arms ΔY 3.5 cm; after release flight/flying/cam follow; heading Δ 0.0°. ",
+   "evidence": [
+    "qa/shots/B3/charging.png",
+    "qa/shots/B3/flight.png"
+   ],
+   "metrics": null,
+   "exception": false,
+   "partial": false,
+   "durationSec": 17.4,
+   "ranAt": "2026-10-17T05:08:37.672Z",
+   "quick": false,
+   "data": "data/B3.json"
+  },
+  {
+   "id": "B4",
+   "title": "Real input: hold RMB / Space to pretend to study — suspicion drops, charging impossible",
+   "priority": "P0",
+   "owners": [
+    "gameplay",
+    "ai",
+    "camera"
+   ],
+   "method": "Fresh aim round, teacher forced `watching`, suspicion 0.6. (1) real right-button hold 1.5 s: `aim.studying`, suspicion falls ≥ 0.15, camera pitch drops (looks at the book). (2) real Space hold, then real LMB press 0.6 s: no charging, power 0; release: no launch. (3) LMB charge then Space mid-charge: `aim:cancel`, release does not throw.",
+   "status": "pass",
+   "pending": null,
+   "details": "study: suspicion 0.525→0, pitch 0°→-50°; Space+LMB power 0; cancel events [aim:study,aim:cancel,aim:study]. ",
+   "evidence": [
+    "qa/shots/B4/study.png"
+   ],
+   "metrics": null,
+   "exception": false,
+   "partial": false,
+   "durationSec": 17.8,
+   "ranAt": "2026-10-17T05:08:56.382Z",
+   "quick": false,
+   "data": "data/B4.json"
+  },
+  {
+   "id": "B5",
+   "title": "Real input in flight: C cycles camera styles; Space = slow motion; A/D shift the landing point",
+   "priority": "P0",
+   "owners": [
+    "gameplay",
+    "camera"
+   ],
+   "method": "Same seed + same solved throw (first solvable of r0c3 / r0c2 / r1c3 / r0c4 / podium) replayed on fresh pages. Baseline twice (determinism), then real Space+D held from 0.15 s after launch, then Space+A, then KeyC presses. Pass: baselines identical (< 1 cm), Space → timeScale < 0.9 and `ball:willpower {on:true}`, D and A each move the landing ≥ 0.15 m and to opposite sides, each C press changes the follow style (cam:mode event with a different style or camera→ball offset change > 25°).",
+   "status": "pass",
+   "pending": null,
+   "details": "baseline desk@r0c3; determinism Δ 0.000 m; Space+D Δ 1.02 m (timeScale 0.30, willpower true); Space+A Δ 2.33 m; C styles [\"side\",\"fpStay\",\"cinematic\"]. ",
+   "evidence": [
+    "qa/shots/B5/after-c.png"
+   ],
+   "metrics": null,
+   "exception": false,
+   "partial": false,
+   "durationSec": 75.8,
+   "ranAt": "2026-10-17T05:10:20.841Z",
+   "quick": false,
+   "data": "data/B5.json"
+  },
+  {
+   "id": "B6",
+   "title": "Real input: Esc pauses (game time stops), resuming continues",
+   "priority": "P0",
+   "owners": [
+    "ui",
+    "core"
+   ],
+   "method": "Aim: real `Escape` press, 1 s of stepping → `ctx.time.now` must not advance, pause menu text visible; resume by clicking 继续 → time advances again. Flight: Escape mid-flight → ball position frozen across 1 s of stepping; resume with Escape.",
+   "status": "pass",
+   "pending": null,
+   "details": "aim: Δt paused 0.000 s, after resume 1.00 s; flight: ball moved 0.0000 m while paused. ",
+   "evidence": [
+    "qa/shots/B6/paused.png"
+   ],
+   "metrics": null,
+   "exception": false,
+   "partial": false,
+   "durationSec": 13.2,
+   "ranAt": "2026-10-17T05:10:34.950Z",
+   "quick": false,
+   "data": "data/B6.json"
+  },
+  {
+   "id": "B7",
+   "title": "Timer reaching zero → coward ending",
+   "priority": "P0",
+   "owners": [
+    "core",
+    "story",
+    "ui"
+   ],
+   "method": "Fresh round with `roundSeconds: 6`, teacher forced writing, no input. HUD text is sampled at t = 1 s and 3 s (the timer should be visible and change). Step until the ending phase: expect `round:timeout`, `bell`, `endingId` = coward.",
+   "status": "pass",
+   "pending": null,
+   "details": "timeLeft 5.0 → 3.0; events round:timeout,bell,phase; ending coward. ",
+   "evidence": [],
+   "metrics": null,
+   "exception": false,
+   "partial": false,
+   "durationSec": 9.6,
+   "ranAt": "2026-10-17T05:10:52.125Z",
+   "quick": false,
+   "data": "data/B7.json"
+  },
+  {
+   "id": "C1",
+   "title": "solveLaunch + launch lands on the target seat for ≥ 90 % of solvable seats (29 seats)",
+   "priority": "P0",
+   "owners": [
+    "gameplay",
+    "world",
+    "characters"
+   ],
+   "method": "Physics sandbox (tests swallow ball:launched/landed so the round stays in aim): quiet class (`setAmbient(false)`), teacher forced writing, wind frozen. For every non-player seat: `solveLaunch(__qs.target(seat))` → `launch` → step until landed. Hit = Landing desk/chair with that seatId. Full run: seeds 11 and 23 (different occupants); quick: seed 11, every 3rd seat. Also reports unsolvable seats and solver-prediction mismatches.",
+   "status": "warn",
+   "pending": null,
+   "details": "56/57 solvable seats hit (98.2 %), 1/58 unsolvable; solve time avg 38 ms, max 151 ms. unsolvable: r0c1(s11) · misses: r0c1(s23)→floor@- [solver predicted a hit]",
+   "evidence": [],
+   "metrics": {
+    "rate": 98.2,
+    "solved": 57,
+    "unsolvable": 1
+   },
+   "exception": false,
+   "partial": false,
+   "durationSec": 143.6,
+   "ranAt": "2026-10-17T05:13:31.254Z",
+   "quick": false,
+   "data": "data/C1.json"
+  },
+  {
+   "id": "C2",
+   "title": "200 random throws: 0 NaN, 0 tunnelling, all land within 8 s",
+   "priority": "P0",
+   "owners": [
+    "gameplay",
+    "world"
+   ],
+   "method": "Physics sandbox, quiet class, teacher frozen, wind frozen. Seeded random yaw ∈ [−85°, 85°], pitch ∈ [−15°, 75°], power ∈ [0, 1] via `gameplay.launch`. Every tick: finite pos/vel; centre never leaves the room except through the open window w1 (crossing point checked); never crosses a thin desk/chair/podium/book slab from above its top to below its bottom inside its footprint. `ball:landed` must arrive within 8 s of game time. A fresh round every 50 throws.",
+   "status": "pass",
+   "pending": null,
+   "details": "200 throws; landings {\"floor\":163,\"chair\":7,\"outside\":9,\"podium\":4,\"self\":1,\"desk\":14,\"fan\":2}; slowest landing 2.23 s. ",
+   "evidence": [],
+   "metrics": {
+    "n": 200,
+    "nan": 0,
+    "tunnels": 0,
+    "late": 0
+   },
+   "exception": false,
+   "partial": false,
+   "durationSec": 494.5,
+   "ranAt": "2026-10-17T05:22:50.877Z",
+   "quick": false,
+   "data": "data/C2.json"
+  },
+  {
+   "id": "C3",
+   "title": "Bounces, rolling and settling are plausible; a head hit bounces off and triggers a reaction",
+   "priority": "P0",
+   "owners": [
+    "gameplay",
+    "ai",
+    "characters"
+   ],
+   "method": "Sandbox. (1) A flat throw (pitch ~20°) onto a desk with the full position log: bounce apex heights must decrease, the ball must come to rest (drift < 5 mm over 1 s after ball:landed), roll distance after first contact < 1.5 m; 6 frames from a QA side camera go to qa/shots/C3/ for review. (2) In the normal flow (reactions only run in `flight`), flat throws at the heads of the nearest classmates in front (ballistic aim at the head centre): a `ball:hit` tagged head must occur, the post-hit velocity must point away from the head, and a reaction must follow within 1.5 s (`student:event` or `ai.students.react` for that id, or an expression/clip change visible as a student:event).",
+   "status": "pass",
+   "pending": null,
+   "details": "desk: {\"landing\":\"desk@r2c1\",\"bounces\":4,\"apexes\":[0.81],\"roll\":0,\"drift\":0,\"flight\":1.483}; head: sun_xiaokong hit at 4.42 m/s, bounced away true, reactions [hit] character calls [setExpression(dizzy), emote(?), play(sitIdle), setExpression(neutral), play(sitIdle)]. ",
+   "evidence": [
+    "qa/shots/C3/desk-1.png",
+    "qa/shots/C3/desk-2.png",
+    "qa/shots/C3/desk-3.png",
+    "qa/shots/C3/desk-4.png",
+    "qa/shots/C3/desk-5.png",
+    "qa/shots/C3/desk-6.png"
+   ],
+   "metrics": null,
+   "exception": false,
+   "partial": false,
+   "durationSec": 33.8,
+   "ranAt": "2026-10-17T05:24:33.600Z",
+   "quick": false,
+   "data": "data/C3.json"
+  },
+  {
+   "id": "D1",
+   "title": "Teacher writing → warning → watching cycle; warning tell lasts 0.5–0.9 s and is visible/audible",
+   "priority": "P0",
+   "owners": [
+    "ai",
+    "characters",
+    "audio"
+   ],
+   "method": "Fresh round, AI unforced, player idle looking at the board; observe 60 s of game time (30 s quick). From `teacher:state` events: the sequence must contain writing→warning→watching; every warning lasts 0.5–0.9 s (game time). Tell: during each warning the teacher character gets a clip/emote/lookAt/expression call, a bubble/say, or the head rotates ≥ 4° (visible), and an audio event appears in `ctx.audio.debug.recent` or an `audio.sfx` call (audible). FP screenshots of writing / warning / watching.",
+   "status": "pass",
+   "pending": null,
+   "details": "states: watching; writing; warning; drinking; writing; warning; watching; writing; warning; watching; writing; warning; watching; writing; … (+10); warnings 0.6s→drinking, 0.517s→watching, 0.7s→watching, 0.75s→watching, 0.717s→watching, 0.867s→watching, 0.567s→drinking; tells e.g. [\"play(idle)\",\"lookAt(vec)\",\"emote(?)\"] / [\"{\\\"t\\\":7.533,\\\"kind\\\":\\\"sfx\\\",\\\"name\\\":\\\"stingDanger\\\",\\\"auto\\\":true}\",\"{\\\"t\\\":7.533,\\\"kind\\\":\\\"sfx\\\",\\\"name\\\":\\\"hmm\\\",\\\"auto\\\":true}\"]. ",
+   "evidence": [
+    "qa/shots/D1/writing.png",
+    "qa/shots/D1/warning.png",
+    "qa/shots/D1/watching.png"
+   ],
+   "metrics": null,
+   "exception": false,
+   "partial": false,
+   "durationSec": 82.9,
+   "ranAt": "2026-10-17T05:26:04.684Z",
+   "quick": false,
+   "data": "data/D1.json"
+  },
+  {
+   "id": "D2",
+   "title": "Teacher facing class + player in view + continuous charging → teacher:caught within 3 s",
+   "priority": "P0",
+   "owners": [
+    "ai"
+   ],
+   "method": "Fresh round, teacher forced `watching`, suspicion 0, `ctx.input.simulate({down:\"Mouse0\"})` held. Measure game time from the first tick where `teacher.canSee(PLAYER_EYE)` (or charging visibility) is true to `teacher:caught`. Repeated for 3 seeds; all must be ≤ 3 s.",
+   "status": "pass",
+   "pending": null,
+   "details": "seed 16: in view at 0.02 s, caught at 1.97 s; seed 17: in view at 0.02 s, caught at 1.97 s; seed 18: in view at 0.02 s, caught at 1.97 s",
+   "evidence": [],
+   "metrics": null,
+   "exception": false,
+   "partial": false,
+   "durationSec": 32.6,
+   "ranAt": "2026-10-17T05:27:34.660Z",
+   "quick": false,
+   "data": "data/D2.json"
+  },
+  {
+   "id": "D3",
+   "title": "Studying lowers suspicion; charging with the teacher's back turned does not raise it",
+   "priority": "P0",
+   "owners": [
+    "ai",
+    "gameplay"
+   ],
+   "method": "Fresh round. (a) teacher forced watching, suspicion 0.6, simulated RMB (study) 1.5 s → must drop ≥ 0.15. (b) teacher forced writing, suspicion 0.2, simulated LMB charging 3 s → must not rise (≤ +0.005); then the charge is cancelled with Space so nothing is thrown.",
+   "status": "pass",
+   "pending": null,
+   "details": "study 0.59→0.00 in 1.5 s; back-turned charging 0.193→max 0.190 over 3 s. ",
+   "evidence": [],
+   "metrics": null,
+   "exception": false,
+   "partial": false,
+   "durationSec": 8.1,
+   "ranAt": "2026-10-17T05:27:54.328Z",
+   "quick": false,
+   "data": "data/D3.json"
+  },
+  {
+   "id": "D4",
+   "title": "A ball flying long enough inside the teacher's view cone → teacherSawBall",
+   "priority": "P0",
+   "owners": [
+    "ai"
+   ],
+   "method": "Fresh round, teacher forced watching, suspicion 0; high lob to a front-row desk / the podium. Counts flight time with `teacher.canSee(ball.pos)`; after landing `ctx.round.teacherSawBall` must be true (and `teacher:caught {reason:\"ball\"}` emitted). Control: same throw with the teacher forced writing → teacherSawBall false.",
+   "status": "pass",
+   "pending": null,
+   "details": "watching: 1.64s in view → saw true (caught_read); writing control → saw false (lost). ",
+   "evidence": [],
+   "metrics": null,
+   "exception": false,
+   "partial": false,
+   "durationSec": 27.9,
+   "ranAt": "2026-10-17T05:28:40.266Z",
+   "quick": false,
+   "data": "data/D4.json"
+  },
+  {
+   "id": "D5",
+   "title": "≥ 6 in-flight accidents can be triggered with ai.students.trigger and are visible",
+   "priority": "P0",
+   "owners": [
+    "ai",
+    "characters",
+    "world"
+   ],
+   "method": "Per kind (stretch, raiseHand, standUp, sneeze, catch, witness, gust, teacherTurn), three deterministic flights on fresh pages (seed 24, quiet class, teacher forced writing, lob to the podium; trigger 0.2 s into the flight with no id, so the AI picks the classmate nearest the path): (1) discover who/what is affected from `student:event`/`incident`; (2) control without trigger and (3) with trigger, both rendered by a close QA camera on the affected classmate (or the open window for gust, the teacher for teacherTurn) just before and 0.7 s after the trigger time. Visible = the affected character's maximum bone displacement over those 0.7 s exceeds max(1.5 × control, control + 6 cm) (a pixel metric was too noisy because classmates track the ball with their gaze); gust = `classroom.wind.strength` peak > 0.3 plus a pixel change at the window (wind is not frozen here). Screenshots are for eyeballing. Pass: ≥ 6 kinds return true, emit an event and are visible. Screenshots: qa/shots/D5/<kind>.png (after) and <kind>-before.png.",
+   "status": "fail",
+   "pending": null,
+   "details": "5/8 kinds OK: stretch✓(0.566/0.099 m) raiseHand✓(0.426/0.1 m) standUp✓(0.297/0.105 m) sneeze✓(0.192/0.104 m) catch✗(0.017/0.017 m) witness✗(0.107/0.1 m) gust✓(wind 0.97) teacherTurn✗(0.71/0.75 m). only 5 kinds triggerable + observable + visible: catch(ret true, event true, pose Δ 0.017 vs ctl 0.017, wind 0), witness(ret true, event true, pose Δ 0.107 vs ctl 0.1, wind 0), teacherTurn(ret true, event true, pose Δ 0.71 vs ctl 0.75, wind 0)",
+   "evidence": [
+    "qa/shots/D5/stretch.png",
+    "qa/shots/D5/raiseHand.png",
+    "qa/shots/D5/standUp.png",
+    "qa/shots/D5/sneeze.png",
+    "qa/shots/D5/catch.png",
+    "qa/shots/D5/witness.png",
+    "qa/shots/D5/gust.png",
+    "qa/shots/D5/teacherTurn.png"
+   ],
+   "metrics": null,
+   "exception": false,
+   "partial": false,
+   "durationSec": 171.4,
+   "ranAt": "2026-10-17T09:47:14.601Z",
+   "quick": false,
+   "data": "data/D5.json"
+  },
+  {
+   "id": "E1",
+   "title": "All 13 endings reachable by deterministic scripts; resolve() matches the GDD §7 table",
+   "priority": "P0",
+   "owners": [
+    "story",
+    "gameplay",
+    "ai"
+   ],
+   "method": "(1) Ending sweep: one scenario per ending (tests/lib/endings.mjs) with fixed seeds; each attempt checks the physical precondition (e.g. landed on the crush's desk, unseen) and then that `ctx.round.endingId` is the expected ending. >1 attempt needed = unstable (warn). (2) `ctx.story.resolve()` is called on 24 synthetic rounds built from the live roster (all GDD §7 rows + priority edges); strict rows must match, interpretation rows only warn.",
+   "status": "warn",
+   "pending": null,
+   "details": "13/13 scripted endings OK; resolve table 24/24. perfect: unstable — needed attempt #2 (crush#0:xia_mo@r0c1 → no launch solution)",
+   "evidence": [],
+   "metrics": null,
+   "exception": false,
+   "partial": false,
+   "durationSec": 6.4,
+   "ranAt": "2026-10-17T06:14:05.982Z",
+   "quick": false,
+   "data": "data/E1.json"
+  },
+  {
+   "id": "E2",
+   "title": "Each ending lasts 8–45 s, has its own camera work / dialogue / music, ends on the card; key frames all differ",
+   "priority": "P0",
+   "owners": [
+    "story",
+    "camera",
+    "audio",
+    "ui"
+   ],
+   "method": "From the ending sweep recording (phase `ending` → `card`): game-time duration in [8, 45] s; ≥ 1 dialogue line (`say` event) or caption; camera work = ≥ 1 cut or ≥ 30 frames of camera motion; at least one music track other than classroom/flight/title in `ctx.audio.debug.music` (or an `audio.music` call); card text contains the ending title (the part after ·, the card shows the tag separately). Key frames: the canvas thumbnail at the story climax beat (else +5 s) of every pair of endings must differ (mean abs diff > 6/255).",
+   "status": "pass",
+   "pending": null,
+   "details": "13 endings: perfect 27.956s/7 lines/5 cuts/romance; same_gender 30.512s/11 lines/7 cuts/romance; wrong_caught 29.714s/11 lines/6 cuts/tragedy; wrong_accept 25.813s/8 lines/5 cuts/romance; caught_read 22.917s/6 lines/5 cuts/shame; chalk_counter 14.858s/6 lines/7 cuts/mystery; graded 23.216s/6 lines/2 cuts/comedy; three_pointer 20.026s/9 lines/5 cuts/sports; out_window 20.66s/7 lines/8 cuts/mystery; confetti 11.206s/5 lines/4 cuts/romance; self_love 16.938s/4 lines/2 cuts/romance; lost 16s/5 lines/4 cuts/lonely; coward 13.2s/3 lines/2 cuts/lonely. Min key-frame diff 53.23. ",
+   "evidence": [
+    "qa/shots/endings/perfect-5s.png",
+    "qa/shots/endings/same_gender-5s.png",
+    "qa/shots/endings/wrong_caught-5s.png",
+    "qa/shots/endings/wrong_accept-5s.png",
+    "qa/shots/endings/caught_read-5s.png",
+    "qa/shots/endings/chalk_counter-5s.png"
+   ],
+   "metrics": null,
+   "exception": false,
+   "partial": false,
+   "durationSec": 708.5,
+   "ranAt": "2026-10-17T09:59:03.878Z",
+   "quick": false,
+   "data": "data/E2.json"
+  },
+  {
+   "id": "E3",
+   "title": "caught_read reads the player's own (custom) letter verbatim",
+   "priority": "P0",
+   "owners": [
+    "story",
+    "ui",
+    "audio"
+   ],
+   "method": "The sweep's caught_read scenario starts with the custom letter \"教室第四排的风都知道，我偷看了你一百零八次<3\" (contains \"<3\" to catch HTML escaping bugs). While the ending plays, the visible DOM text is sampled every 0.1 s; the full normalised letter must appear on screen (typewriter allowed) or in a `say`/`letterReveal` text. Read-aloud evidence: `audio.speak` / speechSynthesis with the full text, or dialogue blips.",
+   "status": "pass",
+   "pending": null,
+   "details": "on screen: 23/23 chars (full true), say false, letterReveal true; voice true (speak calls 1, blips 38). ",
+   "evidence": [
+    "qa/shots/endings/caught_read-1_5s.png",
+    "qa/shots/endings/caught_read-5s.png",
+    "qa/shots/endings/caught_read-climax.png"
+   ],
+   "metrics": null,
+   "exception": false,
+   "partial": false,
+   "durationSec": 0,
+   "ranAt": "2026-10-17T06:14:11.098Z",
+   "quick": false,
+   "data": "data/E3.json"
+  },
+  {
+   "id": "E4",
+   "title": "Gallery: unlocks persist across reloads; locked endings show hints; new unlocks show NEW",
+   "priority": "P0",
+   "owners": [
+    "ui",
+    "story"
+   ],
+   "method": "Fresh browser context (empty localStorage). Play coward (roundSeconds 3) twice: first card must say NEW and `ending:shown.isNew` true, second must not. Reload: `story.gallery.unlocked()` and localStorage `qingshu.endings` still contain it. On the title screen click 结局图鉴 (fallback `ui.gallery()`): the unlocked title is listed and ≥ 90 % of locked endings show their `hint` text; screenshot.",
+   "status": "pass",
+   "pending": null,
+   "details": "first card isNew=true NEW-text=true; repeat isNew=false; after reload unlocked=[\"coward\"]; gallery via role=button name=/^结局图鉴/: 12/12 hints. ",
+   "evidence": [
+    "qa/shots/E4/card-new.png",
+    "qa/shots/E4/card-repeat.png",
+    "qa/shots/E4/gallery.png"
+   ],
+   "metrics": null,
+   "exception": false,
+   "partial": false,
+   "durationSec": 55.9,
+   "ranAt": "2026-10-17T06:15:11.255Z",
+   "quick": false,
+   "data": "data/E4.json"
+  },
+  {
+   "id": "F1",
+   "title": "Follow cam keeps the ball in the central 70 % in ≥ 90 % of flight frames; never hidden by nearby geometry",
+   "priority": "P0",
+   "owners": [
+    "camera"
+   ],
+   "method": "Every throw of the ending sweep (≈ 11 flights, different targets) is sampled each tick while phase = flight, ball flying and `cam.mode` = follow: the ball centre is projected with the render camera; in-centre = in front and |ndc x|,|y| ≤ 0.7. Every 3rd frame 5 rays (centre ± ball radius) are cast from the camera against visible opaque meshes: all 5 blocked by something < 1 m from the camera = \"hidden by nearby geometry\". Also flags the camera inside a static collider box. The camera module's own `cam.metrics` ratio is shown for comparison.",
+   "status": "fail",
+   "pending": null,
+   "details": "11 flights, 2218 follow frames: 100 % in the central 70 %; per flight perfect 100%, same_gender 100%, wrong_caught 100%, wrong_accept 100%, chalk_counter 100%, graded 100%, three_pointer 100%, out_window 100%, confetti 100%, self_love 100%, lost 100%. ball fully hidden by geometry < 1 m from the lens: out_window ×2 (curtains<classroom)",
+   "evidence": [],
+   "metrics": {
+    "ratio": 100,
+    "frames": 2218
+   },
+   "exception": false,
+   "partial": false,
+   "durationSec": 0,
+   "ranAt": "2026-10-17T06:15:14.258Z",
+   "quick": false,
+   "data": "data/F1.json"
+  },
+  {
+   "id": "F2",
+   "title": "Every throw triggers bullet time at least once; timeScale returns to 1 afterwards",
+   "priority": "P0",
+   "owners": [
+    "camera"
+   ],
+   "method": "Sweep flights: minimum `engine.timeScale` while the ball flies must be < 0.85. Afterwards: timeScale must be exactly 1 when the ending card is up, and 1 again in the aim phase after 再来一局.",
+   "status": "pass",
+   "pending": null,
+   "details": "11 flights, min timeScale perfect 0.1, same_gender 0.1, wrong_caught 0.1, wrong_accept 0.1, chalk_counter 0.1, graded 0.1, three_pointer 0.1, out_window 0.1, confetti 0.1, self_love 0.1, lost 0.1. ",
+   "evidence": [],
+   "metrics": null,
+   "exception": false,
+   "partial": false,
+   "durationSec": 0,
+   "ranAt": "2026-10-17T06:15:18.938Z",
+   "quick": false,
+   "data": "data/F2.json"
+  },
+  {
+   "id": "F3",
+   "title": "Teacher turning mid-flight opens the PiP window",
+   "priority": "P1",
+   "owners": [
+    "camera",
+    "ai"
+   ],
+   "method": "Fresh round, quiet class, teacher forced writing; long lob to the podium; 0.3 s into the flight (a) `ai.students.trigger(\"teacherTurn\")`, (b) in a second run `forceTeacher(\"watching\")`. Within 0.6 s the PiP must be detectable: > 1 renderer.render call per frame, or `cam.debug().pip`, or a `cam.pip(true)` call. Screenshot of the PiP.",
+   "status": "pass",
+   "pending": null,
+   "details": "trigger: 2 render calls/frame, pip=true after 0.1s; force: 2, pip=true. ",
+   "evidence": [
+    "qa/shots/F3/pip-trigger.png",
+    "qa/shots/F3/pip-force.png"
+   ],
+   "metrics": null,
+   "exception": false,
+   "partial": false,
+   "durationSec": 15.9,
+   "ranAt": "2026-10-17T06:15:38.956Z",
+   "quick": false,
+   "data": "data/F3.json"
+  },
+  {
+   "id": "F4",
+   "title": "Transitions (heart iris, fades, white flash, letterbox) leave no residue",
+   "priority": "P1",
+   "owners": [
+    "camera"
+   ],
+   "method": "Uses the A4 retry snapshots of every ending: `cam.debug()` must be idle: fade/flash/letterbox/vignette/speed lines 0, iris `open`, no PiP/custom render, roll 0, no slow-mo requests, no extra full-screen DOM overlays, composited screenshot luminance within ±40 % of a fresh aim view and no black top/bottom bands. Highlights endings that use irisHeart/fade/flash/letterbox (from the camera call spy).",
+   "status": "pass",
+   "pending": null,
+   "details": "13 endings checked; transitions used: perfect[irisHeart] same_gender[irisHeart,fade] wrong_caught[fade] wrong_accept[irisHeart,fade] chalk_counter[flash] three_pointer[fade] out_window[fade] lost[fade]. ",
+   "evidence": [],
+   "metrics": null,
+   "exception": false,
+   "partial": false,
+   "durationSec": 0,
+   "ranAt": "2026-10-17T06:15:39.948Z",
+   "quick": false,
+   "data": "data/F4.json"
+  },
+  {
+   "id": "G1",
+   "title": "Key-frame screenshots for visual review (title … gallery, endings, phone, normal mode)",
+   "priority": "P0",
+   "owners": [
+    "world",
+    "characters",
+    "ui",
+    "camera",
+    "story"
+   ],
+   "method": "Drives one round with real UI input and manual time, saving qa/shots/keyframes/*.png: title, letter editor, crumple (mouse held), intro, aim, charging, flight ×3 (launch / apex / descent), landing, settings, gallery, pause; phone 360×640 title/aim/card; normal (non-lowfx) title/aim. Ending frames (+1.5 s, +5 s, card) come from the sweep (qa/shots/endings/). Automatic check: no blank frame (luminance/contrast); the 1–5 scoring per ACCEPTANCE G is done by eye in mode 2.",
+   "status": "warn",
+   "pending": null,
+   "details": "18 key frames + 52 ending frames saved — awaiting visual scoring (mode 2)",
+   "evidence": [
+    "qa/shots/keyframes/01-title.png",
+    "qa/shots/keyframes/02-letter.png",
+    "qa/shots/keyframes/03-crumple.png",
+    "qa/shots/keyframes/04-intro.png",
+    "qa/shots/keyframes/05-aim.png",
+    "qa/shots/keyframes/06-charge.png",
+    "qa/shots/keyframes/07-flight-launch.png",
+    "qa/shots/keyframes/08-flight-apex.png",
+    "qa/shots/keyframes/09-flight-descent.png",
+    "qa/shots/keyframes/10-landing.png",
+    "qa/shots/keyframes/11-settings.png",
+    "qa/shots/keyframes/12-gallery.png",
+    "qa/shots/keyframes/13-pause.png",
+    "qa/shots/keyframes/14-phone-title.png",
+    "qa/shots/keyframes/15-phone-aim.png",
+    "qa/shots/keyframes/16-phone-card.png",
+    "qa/shots/keyframes/17-normal-title.png",
+    "qa/shots/keyframes/18-normal-aim.png"
+   ],
+   "metrics": null,
+   "exception": false,
+   "partial": false,
+   "durationSec": 147,
+   "ranAt": "2026-10-17T10:01:31.564Z",
+   "quick": false,
+   "data": "data/G1.json"
+  },
+  {
+   "id": "H1",
+   "title": "AudioContext running after the first click; music track switches per phase",
+   "priority": "P1",
+   "owners": [
+    "audio"
+   ],
+   "method": "Unmuted page (`?lowfx=1`). AudioContext instances are tracked from document start. Real click on 我是男生 → context state must be `running`. One round through the real UI (letter, crumple, intro) then scripted aim → throw → ending; `ctx.audio.debug.music` is recorded at every phase change. Expect title→title, aim→classroom, flight→flight, ending→an ending track (romance, comedy, …). Signal level at the destination is sampled (analyser) for information.",
+   "status": "pass",
+   "pending": null,
+   "details": "contexts before/after click []→[\"running\"]; music title [\"title\"], intro [\"classroom\"], aim [\"classroom\"], flight [\"flight\"], ending [null,\"romance\"]; peak level intro 0.394, ending 0.389. ",
+   "evidence": [],
+   "metrics": null,
+   "exception": false,
+   "partial": false,
+   "durationSec": 95,
+   "ranAt": "2026-10-17T05:39:02.224Z",
+   "quick": false,
+   "data": "data/H1.json"
+  },
+  {
+   "id": "H2",
+   "title": "Key events have sounds (crumple, whoosh, desk thud, bell, teacher sting, heartbeat) in audio.debug.recent",
+   "priority": "P1",
+   "owners": [
+    "audio"
+   ],
+   "method": "Same unmuted round as H1 (real crumple, intro bell, forced teacher warning, charging, throw onto a desk). Every new entry of `ctx.audio.debug.recent` is collected each tick; each required name must appear. Names seen only through `ctx.audio.sfx` call spies (not in debug.recent) give a warning.",
+   "status": "pass",
+   "pending": null,
+   "details": "paperCrumple:recent whoosh:recent thudDesk:recent bell:recent stingDanger:recent heartbeat:recent; 47 debug.recent entries (sample [\"{\\\"t\\\":32.215,\\\"kind\\\":\\\"sfx\\\",\\\"name\\\":\\\"stingReveal\\\"}\",\"{\\\"t\\\":32.215,\\\"kind\\\":\\\"sfx\\\",\\\"name\\\":\\\"paperUnfold\\\"}\"]). ",
+   "evidence": [],
+   "metrics": null,
+   "exception": false,
+   "partial": false,
+   "durationSec": 0,
+   "ranAt": "2026-10-17T05:39:05.282Z",
+   "quick": false,
+   "data": "data/H2.json"
+  },
+  {
+   "id": "H3",
+   "title": "Master volume 0 = total silence; settings persist",
+   "priority": "P1",
+   "owners": [
+    "audio",
+    "ui"
+   ],
+   "method": "Unmuted page. Every connection to the AudioContext destination is routed through a QA analyser (installed before boot). Title → 设置 → the 主音量 slider is set to 0 with a real fill → sfx(\"ding\") + sfx(\"bell\") + title music → peak at the destination must be < 1e-4 over 0.6 s. Sanity: at 0.8 the same sounds must be audible (peak > 1e-3), otherwise the measurement is inconclusive. Reload → `ctx.settings.masterVolume` and localStorage `qingshu.settings` keep 0. Also `?mute=1` boot must be silent and must not persist: reloading the same profile without mute=1 must restore audible volume.",
+   "status": "fail",
+   "pending": null,
+   "details": "start masterVolume 0.8; peak default 0.0000, master 0 0.000000, after reload 0.000000 (masterVolume 0), ?mute=1 0.000000, masterVolume after a mute boot + normal reload 0; set via ui slider. ?mute=1 is persisted: a later load without mute=1 in the same profile still has masterVolume 0 (BUG-002); sanity check inconclusive: peak 0 at default volume",
+   "evidence": [],
+   "metrics": null,
+   "exception": false,
+   "partial": false,
+   "durationSec": 115.6,
+   "ranAt": "2026-10-17T05:41:06.672Z",
+   "quick": false,
+   "data": "data/H3.json"
+  },
+  {
+   "id": "I1",
+   "title": "Aim view ≤ 800 draw calls and ≤ 800k triangles",
+   "priority": "P1",
+   "owners": [
+    "world",
+    "characters",
+    "ui"
+   ],
+   "method": "Fresh aim round (ambient on) in lowfx and in normal mode (shadows on); the camera is turned left / centre / right / up with real mouse moves; `__qs.render()` then `__qs.state().drawCalls/triangles` (renderer.info of the last render, shadow passes included). Max over views must be within budget.",
+   "status": "pass",
+   "pending": null,
+   "details": "lowfx/centre: 103 dc, 230k tri; lowfx/left: 41 dc, 70k tri; lowfx/right: 125 dc, 291k tri; lowfx/up: 66 dc, 144k tri; normal/centre: 148 dc, 431k tri; normal/left: 48 dc, 113k tri; normal/right: 188 dc, 553k tri; normal/up: 84 dc, 258k tri",
+   "evidence": [],
+   "metrics": {
+    "maxDC": 188,
+    "maxTri": 552788
+   },
+   "exception": false,
+   "partial": false,
+   "durationSec": 23.7,
+   "ranAt": "2026-10-17T05:41:31.194Z",
+   "quick": false,
+   "data": "data/I1.json"
+  },
+  {
+   "id": "I2",
+   "title": "lowfx: average tick time (no rendering) ≤ 4 ms",
+   "priority": "P1",
+   "owners": [
+    "ai",
+    "characters",
+    "gameplay",
+    "camera",
+    "world",
+    "ui",
+    "story",
+    "audio"
+   ],
+   "method": "lowfx page, manual mode. `engine.tick(1/60)` is timed with performance.now() (yields between ticks are not counted) over 10 s of aim with ambient classmates and the natural teacher, then a full flight, then 8 s of an ending. Reports avg / p95 / max per phase and the slowest update order slot is not measured (contract-level only). Machine-dependent: also compare with `node -e` CPU speed if it fails.",
+   "status": "pass",
+   "pending": null,
+   "details": "overall avg 2.91 ms; aim: avg 3.039 / p95 5 / max 14.5 ms (600 ticks); flight: avg 3.769 / p95 5.7 / max 9.9 ms (249 ticks); ending: avg 2.314 / p95 3.4 / max 9 ms (480 ticks). ",
+   "evidence": [],
+   "metrics": {
+    "avg": 2.914
+   },
+   "exception": false,
+   "partial": false,
+   "durationSec": 30.4,
+   "ranAt": "2026-10-17T05:42:11.139Z",
+   "quick": false,
+   "data": "data/I2.json"
+  },
+  {
+   "id": "J1",
+   "title": "No placeholder text; all player-facing text in Chinese (typos: manual)",
+   "priority": "P1",
+   "owners": [
+    "ui",
+    "story",
+    "ai",
+    "world"
+   ],
+   "method": "Collects player-facing text: DOM text on title, settings, how-to, letter editor, HUD, pause, gallery; every DOM line, `say` line, caption and reveal seen during the ending sweep; ENDINGS titles/subtitles/hints, letter presets, roster names, blackboard text. Flags placeholder patterns (TODO, stub, lorem, 测试, undefined, NaN, [object …], null) and lines with ≥ 3 consecutive Latin letters that are not whitelisted (NEW, P.S., …). Typos need a human read of qa/data/J1.json.",
+   "status": "warn",
+   "pending": null,
+   "details": "261 distinct text lines scanned. non-Chinese words: [title] LOVE LETTER PARABOLA (LOVE,LETTER,PARABOLA); [pause] 也可以再按一次 Esc (Esc) · typo check needs a human read of qa/data/J1.json",
+   "evidence": [],
+   "metrics": null,
+   "exception": false,
+   "partial": false,
+   "durationSec": 20.8,
+   "ranAt": "2026-10-17T06:18:28.284Z",
+   "quick": false,
+   "data": "data/J1.json"
+  },
+  {
+   "id": "J2",
+   "title": "Each ending's joke / emotional beat can be summarised in one sentence",
+   "priority": "P1",
+   "owners": [
+    "story"
+   ],
+   "method": "Collects every ending's script as played (dialogue lines with speakers, captions, letter reveals, music, sets) into qa/data/J2.json together with the +1.5 s / +5 s / card screenshots, for a human one-sentence summary in the report (manual). Automatic part: an ending with no dialogue, caption or reveal at all fails.",
+   "status": "warn",
+   "pending": null,
+   "details": "13 ending scripts captured for manual review",
+   "evidence": [],
+   "metrics": null,
+   "exception": false,
+   "partial": false,
+   "durationSec": 0,
+   "ranAt": "2026-10-17T06:18:29.129Z",
+   "quick": false,
+   "data": "data/J2.json"
+  }
+ ]
+}

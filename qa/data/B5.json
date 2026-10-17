@@ -1,0 +1,361 @@
+{
+ "b1": {
+  "sol": {
+   "yaw": -0.547762938325501,
+   "pitch": 0.8726646259971648,
+   "power": 0.707763671875
+  },
+  "target": "r0c3",
+  "extra": null,
+  "phase": "ending",
+  "pos": [
+   0.22572426495921083,
+   0.8270221972744911,
+   -3.275836907892905
+  ],
+  "type": "desk",
+  "seatId": "r0c3",
+  "minScale": 0.13781358285268278,
+  "events": [
+   {
+    "type": "slowmo",
+    "p": {
+     "scale": 1
+    },
+    "t": 0.35
+   },
+   {
+    "type": "slowmo",
+    "p": {
+     "scale": 0.4
+    },
+    "t": 0.947
+   },
+   {
+    "type": "slowmo",
+    "p": {
+     "scale": 1
+    },
+    "t": 1.179
+   },
+   {
+    "type": "slowmo",
+    "p": {
+     "scale": 0.25
+    },
+    "t": 1.302
+   },
+   {
+    "type": "slowmo",
+    "p": {
+     "scale": 1
+    },
+    "t": 1.878
+   },
+   {
+    "type": "cam:mode",
+    "p": {
+     "mode": "cinematic"
+    },
+    "t": 2.007
+   }
+  ]
+ },
+ "b2": {
+  "sol": {
+   "yaw": -0.547762938325501,
+   "pitch": 0.8726646259971648,
+   "power": 0.707763671875
+  },
+  "target": "r0c3",
+  "extra": null,
+  "phase": "ending",
+  "pos": [
+   0.22572426495921083,
+   0.8270221972744911,
+   -3.275836907892905
+  ],
+  "type": "desk",
+  "seatId": "r0c3",
+  "minScale": 0.18162757283289835,
+  "events": [
+   {
+    "type": "slowmo",
+    "p": {
+     "scale": 0.4
+    },
+    "t": 0.862
+   },
+   {
+    "type": "slowmo",
+    "p": {
+     "scale": 1
+    },
+    "t": 1.094
+   },
+   {
+    "type": "slowmo",
+    "p": {
+     "scale": 0.25
+    },
+    "t": 1.217
+   },
+   {
+    "type": "slowmo",
+    "p": {
+     "scale": 1
+    },
+    "t": 1.793
+   },
+   {
+    "type": "cam:mode",
+    "p": {
+     "mode": "cinematic"
+    },
+    "t": 1.921
+   }
+  ]
+ },
+ "right": {
+  "sol": {
+   "yaw": -0.547762938325501,
+   "pitch": 0.8726646259971648,
+   "power": 0.707763671875
+  },
+  "target": "r0c3",
+  "extra": {
+   "active": true,
+   "value": 0.775106749412049,
+   "scale": 0.3
+  },
+  "phase": "ending",
+  "pos": [
+   1.2349042570161008,
+   0.040000000000000015,
+   -3.1283831846811285
+  ],
+  "type": "floor",
+  "seatId": null,
+  "minScale": 0.25,
+  "events": [
+   {
+    "type": "slowmo",
+    "p": {
+     "scale": 0.3
+    },
+    "t": 0.301
+   },
+   {
+    "type": "ball:willpower",
+    "p": {
+     "on": true
+    },
+    "t": 0.301
+   },
+   {
+    "type": "slowmo",
+    "p": {
+     "scale": 1
+    },
+    "t": 0.641
+   },
+   {
+    "type": "ball:willpower",
+    "p": {
+     "on": false
+    },
+    "t": 0.641
+   },
+   {
+    "type": "slowmo",
+    "p": {
+     "scale": 0.4
+    },
+    "t": 0.899
+   },
+   {
+    "type": "slowmo",
+    "p": {
+     "scale": 1
+    },
+    "t": 1.129
+   },
+   {
+    "type": "slowmo",
+    "p": {
+     "scale": 0.25
+    },
+    "t": 1.296
+   },
+   {
+    "type": "slowmo",
+    "p": {
+     "scale": 1
+    },
+    "t": 1.874
+   },
+   {
+    "type": "cam:mode",
+    "p": {
+     "mode": "cinematic"
+    },
+    "t": 2.154
+   }
+  ]
+ },
+ "left": {
+  "sol": {
+   "yaw": -0.547762938325501,
+   "pitch": 0.8726646259971648,
+   "power": 0.707763671875
+  },
+  "target": "r0c3",
+  "extra": {
+   "active": true,
+   "value": 0.775106749412049,
+   "scale": 0.3
+  },
+  "phase": "ending",
+  "pos": [
+   -1.3775415283316221,
+   2.734846230588063,
+   -1.582399199932376
+  ],
+  "type": "fan",
+  "seatId": null,
+  "minScale": 0.3547758859379127,
+  "events": [
+   {
+    "type": "slowmo",
+    "p": {
+     "scale": 0.3
+    },
+    "t": 0.251
+   },
+   {
+    "type": "ball:willpower",
+    "p": {
+     "on": true
+    },
+    "t": 0.251
+   },
+   {
+    "type": "slowmo",
+    "p": {
+     "scale": 1
+    },
+    "t": 0.591
+   },
+   {
+    "type": "ball:willpower",
+    "p": {
+     "on": false
+    },
+    "t": 0.591
+   },
+   {
+    "type": "slowmo",
+    "p": {
+     "scale": 0.4
+    },
+    "t": 0.85
+   },
+   {
+    "type": "cam:mode",
+    "p": {
+     "mode": "cinematic"
+    },
+    "t": 1.019
+   }
+  ]
+ },
+ "cyc": {
+  "sol": {
+   "yaw": -0.4529198994293433,
+   "pitch": 0.8726646259971648,
+   "power": 0.678466796875
+  },
+  "target": "r0c2",
+  "extra": [
+   {
+    "ang": 86.6,
+    "dRatio": 2.24,
+    "style": "side"
+   },
+   {
+    "ang": 77.5,
+    "dRatio": 2.08,
+    "style": "fpStay"
+   }
+  ],
+  "phase": "ending",
+  "pos": [
+   -0.4264770380127608,
+   0.78,
+   -3.1842634686165425
+  ],
+  "type": "desk",
+  "seatId": "r0c2",
+  "minScale": 0.25,
+  "events": [
+   {
+    "type": "cam:mode",
+    "p": {
+     "mode": "follow",
+     "style": "side"
+    },
+    "t": 0.3
+   },
+   {
+    "type": "slowmo",
+    "p": {
+     "scale": 1
+    },
+    "t": 0.3
+   },
+   {
+    "type": "cam:mode",
+    "p": {
+     "mode": "follow",
+     "style": "fpStay"
+    },
+    "t": 0.601
+   },
+   {
+    "type": "slowmo",
+    "p": {
+     "scale": 0.4
+    },
+    "t": 0.881
+   },
+   {
+    "type": "slowmo",
+    "p": {
+     "scale": 1
+    },
+    "t": 1.112
+   },
+   {
+    "type": "slowmo",
+    "p": {
+     "scale": 0.25
+    },
+    "t": 1.249
+   },
+   {
+    "type": "slowmo",
+    "p": {
+     "scale": 1
+    },
+    "t": 1.826
+   },
+   {
+    "type": "cam:mode",
+    "p": {
+     "mode": "cinematic"
+    },
+    "t": 1.998
+   }
+  ]
+ }
+}

@@ -1,0 +1,43 @@
+{
+ "passes": [
+  {
+   "pass": "preset",
+   "phase": "aim",
+   "letter": {
+    "text": "今天的夕阳很好看。\n如果能和你一起看，应该会更好看吧。\n放学后，可以一起走一段路吗？",
+    "presetId": "shy"
+   },
+   "cam": "fp",
+   "gender": "m"
+  },
+  {
+   "pass": "custom",
+   "phase": "aim",
+   "letter": {
+    "text": "放学后的走廊很长，我想和你一起走完它。",
+    "presetId": null
+   },
+   "cam": "fp"
+  }
+ ],
+ "intro": [
+  {
+   "label": "p1",
+   "skipMs": 1019
+  },
+  {
+   "label": "p2",
+   "skipMs": 6712
+  }
+ ],
+ "selectors": {
+  "title.male": "role=button name=/^我是男生$/",
+  "title.start": "role=button name=/^开始$/",
+  "letter.preset": "role=button name=/^含蓄$/",
+  "letter.confirm": "role=button name=/^写好了$/",
+  "crumple": "hold@text=/按住鼠标/",
+  "card.rewrite": "role=button name=/^改写情书$/",
+  "letter.customTab": "role=button name=/^自己写$/",
+  "letter.textbox": "css=textarea"
+ }
+}

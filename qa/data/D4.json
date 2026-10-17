@@ -1,0 +1,20 @@
+{
+ "seen": {
+  "target": "r0c2",
+  "inView": 1.64,
+  "saw": true,
+  "caught": [
+   "ball"
+  ],
+  "landing": "desk",
+  "endingId": "caught_read"
+ },
+ "ctrl": {
+  "target": "r0c2",
+  "inView": 0,
+  "saw": false,
+  "caught": [],
+  "landing": "desk",
+  "endingId": "lost"
+ }
+}

@@ -1,0 +1,329 @@
+{
+ "table": [
+  {
+   "name": "coward: timer ran out, never threw",
+   "expect": "coward",
+   "strict": true,
+   "got": "coward"
+  },
+  {
+   "name": "caught during aim",
+   "expect": "caught_read",
+   "strict": true,
+   "got": "caught_read"
+  },
+  {
+   "name": "ball hit the teacher (unseen)",
+   "expect": "chalk_counter",
+   "strict": true,
+   "got": "chalk_counter"
+  },
+  {
+   "name": "ball hit the teacher (seen)",
+   "expect": "chalk_counter",
+   "strict": true,
+   "got": "chalk_counter"
+  },
+  {
+   "name": "podium",
+   "expect": "graded",
+   "strict": true,
+   "got": "graded"
+  },
+  {
+   "name": "podium (seen)",
+   "expect": "graded",
+   "strict": true,
+   "got": "graded"
+  },
+  {
+   "name": "trash",
+   "expect": "three_pointer",
+   "strict": true,
+   "got": "three_pointer"
+  },
+  {
+   "name": "outside",
+   "expect": "out_window",
+   "strict": true,
+   "got": "out_window"
+  },
+  {
+   "name": "fan",
+   "expect": "confetti",
+   "strict": true,
+   "got": "confetti"
+  },
+  {
+   "name": "own desk (self)",
+   "expect": "self_love",
+   "strict": true,
+   "got": "self_love"
+  },
+  {
+   "name": "crush desk, unseen",
+   "expect": "perfect",
+   "strict": true,
+   "got": "perfect"
+  },
+  {
+   "name": "crush chair, unseen",
+   "expect": "perfect",
+   "strict": true,
+   "got": "perfect"
+  },
+  {
+   "name": "crush desk, seen",
+   "expect": "caught_read",
+   "strict": true,
+   "got": "caught_read"
+  },
+  {
+   "name": "same-gender desk, unseen",
+   "expect": "same_gender",
+   "strict": true,
+   "got": "same_gender"
+  },
+  {
+   "name": "same-gender desk, seen",
+   "expect": "caught_read",
+   "strict": true,
+   "got": "caught_read"
+  },
+  {
+   "name": "opposite snitch desk, unseen",
+   "expect": "wrong_caught",
+   "strict": true,
+   "got": "wrong_caught"
+  },
+  {
+   "name": "opposite normal desk, seen",
+   "expect": "wrong_caught",
+   "strict": true,
+   "got": "wrong_caught"
+  },
+  {
+   "name": "opposite normal desk, unseen",
+   "expect": "wrong_accept",
+   "strict": true,
+   "got": "wrong_accept"
+  },
+  {
+   "name": "floor, unseen",
+   "expect": "lost",
+   "strict": true,
+   "got": "lost"
+  },
+  {
+   "name": "floor, seen",
+   "expect": "caught_read",
+   "strict": true,
+   "got": "caught_read"
+  },
+  {
+   "name": "self, seen (GDD: self_love is above the caught_read floor/crush rule)",
+   "expect": "self_love",
+   "strict": false,
+   "got": "self_love"
+  },
+  {
+   "name": "intercept by opposite non-snitch (PE-rep catch = their desk)",
+   "expect": "wrong_accept",
+   "strict": false,
+   "got": "wrong_accept"
+  },
+  {
+   "name": "same-gender snitch, unseen (same_gender outranks?)",
+   "expect": "same_gender",
+   "strict": false,
+   "got": "same_gender"
+  },
+  {
+   "name": "empty desk, unseen",
+   "expect": "lost",
+   "strict": false,
+   "got": "lost"
+  }
+ ],
+ "rows": [
+  {
+   "id": "perfect",
+   "status": "ok",
+   "attempts": 2,
+   "used": 1,
+   "got": "perfect",
+   "tries": [
+    "crush#0:xia_mo@r0c1 → no launch solution",
+    "crush#0:su_nian@r2c2 → desk@r2c2 → perfect"
+   ]
+  },
+  {
+   "id": "same_gender",
+   "status": "ok",
+   "attempts": 1,
+   "used": 0,
+   "got": "same_gender",
+   "tries": [
+    "sameGender#0:jiang_bei@r2c1 → desk@r2c1 → same_gender"
+   ]
+  },
+  {
+   "id": "wrong_caught",
+   "status": "ok",
+   "attempts": 1,
+   "used": 0,
+   "got": "wrong_caught",
+   "tries": [
+    "oppSnitch#0:lin_xiaoyu@r1c3 [snitch recipient] → desk@r1c3 → wrong_caught"
+   ]
+  },
+  {
+   "id": "wrong_accept",
+   "status": "ok",
+   "attempts": 1,
+   "used": 0,
+   "got": "wrong_accept",
+   "tries": [
+    "oppNormal#0:su_nian@r2c1 → desk@r2c1 → wrong_accept"
+   ]
+  },
+  {
+   "id": "caught_read",
+   "status": "ok",
+   "attempts": 1,
+   "used": 0,
+   "got": "caught_read",
+   "tries": [
+    "charge [caught while charging (aim)] → undefined → caught_read"
+   ]
+  },
+  {
+   "id": "chalk_counter",
+   "status": "ok",
+   "attempts": 1,
+   "used": 0,
+   "got": "chalk_counter",
+   "tries": [
+    "teacher → teacher → chalk_counter"
+   ]
+  },
+  {
+   "id": "graded",
+   "status": "ok",
+   "attempts": 1,
+   "used": 0,
+   "got": "graded",
+   "tries": [
+    "podium → podium → graded"
+   ]
+  },
+  {
+   "id": "three_pointer",
+   "status": "ok",
+   "attempts": 1,
+   "used": 0,
+   "got": "three_pointer",
+   "tries": [
+    "trash → trash → three_pointer"
+   ]
+  },
+  {
+   "id": "out_window",
+   "status": "ok",
+   "attempts": 1,
+   "used": 0,
+   "got": "out_window",
+   "tries": [
+    "window → outside → out_window"
+   ]
+  },
+  {
+   "id": "confetti",
+   "status": "ok",
+   "attempts": 1,
+   "used": 0,
+   "got": "confetti",
+   "tries": [
+    "fan → fan → confetti"
+   ]
+  },
+  {
+   "id": "self_love",
+   "status": "ok",
+   "attempts": 1,
+   "used": 0,
+   "got": "self_love",
+   "tries": [
+    "self → self@r4c0 → self_love"
+   ]
+  },
+  {
+   "id": "lost",
+   "status": "ok",
+   "attempts": 1,
+   "used": 0,
+   "got": "lost",
+   "tries": [
+    "floor → floor → lost"
+   ]
+  },
+  {
+   "id": "coward",
+   "status": "ok",
+   "attempts": 1,
+   "used": 0,
+   "got": "coward",
+   "tries": [
+    "idle → undefined → coward"
+   ]
+  }
+ ],
+ "rs": {
+  "crush": {
+   "id": "xia_mo",
+   "name": "夏沫",
+   "gender": "f",
+   "trait": "jock",
+   "seatId": "r0c1",
+   "isCrush": true,
+   "dist": 5.041
+  },
+  "same": {
+   "id": "song_shuhang",
+   "name": "宋书航",
+   "gender": "m",
+   "trait": "nerd",
+   "seatId": "r1c5",
+   "isCrush": false,
+   "dist": 7.28
+  },
+  "sameSnitch": {
+   "id": "yan_zheng",
+   "name": "严正",
+   "gender": "m",
+   "trait": "disciplinarian",
+   "seatId": "r2c2",
+   "isCrush": false,
+   "dist": 3.754
+  },
+  "oppSnitch": {
+   "id": "lin_xiaoyu",
+   "name": "林晓雨",
+   "gender": "f",
+   "trait": "monitor",
+   "seatId": "r0c2",
+   "isCrush": false,
+   "dist": 5.731
+  },
+  "oppNormal": {
+   "id": "gu_xiaosuan",
+   "name": "顾小算",
+   "gender": "f",
+   "trait": "nerd",
+   "seatId": "r1c4",
+   "isCrush": false,
+   "dist": 6.74
+  },
+  "emptySeat": "r0c0"
+ }
+}
