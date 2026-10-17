@@ -6,19 +6,20 @@
 // director applies a hard framing constraint afterwards (ball within the central 60 %).
 // (owner: qs-camera-director)
 import * as THREE from 'three';
-import { PLAYER_EYE, ROOM } from '../core/layout.js';
+import { PLAYER_EYE, ROOM, WINDOWS } from '../core/layout.js';
 import { clamp, damp } from '../core/util.js';
 import { DEG, lookQuat, wrapAngle, forwardOf } from './rig.js';
 
 export const FOLLOW_STYLES = ['chase', 'side', 'fpStay'];
 const ZERO = new THREE.Vector3();
+const OPEN_WIN = WINDOWS.find((w) => w.open) || null;
 
 export function createFollow(ctx, D, col) {
   const eye = new THREE.Vector3(PLAYER_EYE.x, PLAYER_EYE.y, PLAYER_EYE.z);
   const st = {
     style: 'chase', backYaw: 0, orbit: 0, orbitSign: 1, offset: new THREE.Vector3(), arm: 0.8, rise: 0,
     look: new THREE.Vector3(), sideN: new THREE.Vector3(1, 0, 0), sideY: 1.4, fov: 62, init: false,
-    lean: 0, leanT: 0, riseT: 0, elev: 0,
+    lean: 0, leanT: 0, riseT: 0, elev: 0, winK: 0, outside: false, outPos: new THREE.Vector3(),
   };
   const _ideal = new THREE.Vector3(), _want = new THREE.Vector3(), _off = new THREE.Vector3(), _dir = new THREE.Vector3();
   const _lt = new THREE.Vector3(), _vh = new THREE.Vector3(), _f = new THREE.Vector3(), _q = new THREE.Vector3();
@@ -46,7 +47,7 @@ export function createFollow(ctx, D, col) {
     if (Math.hypot(v.x, v.z) > 0.05) st.backYaw = Math.atan2(-v.x, -v.z);
     else { forwardOf(D.base.quat, _f); st.backYaw = Math.atan2(-_f.x, -_f.z); }
     chooseSide(p, v);
-    st.orbit = 0; st.elev = 0; st.rise = 0; st.riseT = 0; st.lean = 0; st.leanT = 0; st.init = false;
+    st.orbit = 0; st.winK = 0; st.outside = false; st.elev = 0; st.rise = 0; st.riseT = 0; st.lean = 0; st.leanT = 0; st.init = false;
     st.sideY = p.y + 0.2;
     st.look.copy(p);
   }
@@ -120,6 +121,34 @@ export function createFollow(ctx, D, col) {
     st.arm = out.pos.distanceTo(ball);
   }
 
+  /**
+   * BUG-004: near the open window the cloth curtains (no physics collider; camera-only soft volumes in
+   * collide.js) can hide the ball from inside the room. If the inside view is blocked, film from OUTSIDE
+   * the window (fixed camera, set once) as long as that line is clear; stay out there once used.
+   */
+  function windowGuard(out, p, v, list) {
+    if (!OPEN_WIN) return;
+    const near = p.x < ROOM.minX + 1.0 && Math.abs(p.z - OPEN_WIN.z) < OPEN_WIN.w / 2 + 0.6;
+    if (!near && !st.outside) return;
+    const clear = (from, skip) => col.segment(from, p, list, 0, { charPad: 0, skip }).t >= 0.97;
+    // the cloth hangs ~0.15 m inside the wall: once the ball is past that plane, an outside camera sees it in front of the cloth
+    const pastCloth = p.x < ROOM.minX + 0.14;
+    const skipCurtain = pastCloth ? (c) => c.camOnly : null;
+    if (!st.outside) {
+      if (clear(out.pos)) return;
+      const sz = Math.abs(v.z) > 0.2 ? Math.sign(v.z) : 1;
+      _q.set(ROOM.minX - 1.15, p.y + 0.3, p.z + 0.45 * sz);
+      if (!pastCloth || !clear(_q, skipCurtain)) return;
+      st.outside = true;
+      st.outPos.copy(_q);
+      D.blend.active = false; // hard cut through the wall
+    } else if (!clear(st.outPos, skipCurtain)) { return; }
+    out.pos.copy(st.outPos);
+    st.look.copy(p);
+    lookQuat(out.pos, p, 0, out.quat);
+    out.fov = 55;
+  }
+
   function chase(dt, uiDt, out, b) {
     const p = b.pos, v = b.vel || ZERO;
     const speed = v.length(), hs = Math.hypot(v.x, v.z);
@@ -130,8 +159,13 @@ export function createFollow(ctx, D, col) {
     const steep = speed > 0.01 ? clamp(-v.y / speed, 0, 1) : 0.5;
     const slowAmt = clamp((1 - ctx.engine.timeScale) / 0.6, 0, 1);
     st.orbit += (st.orbitSign * 26 * DEG * slowAmt - st.orbit) * damp(2.2, uiDt);
+    // window exit (BUG-004): near the open window look straight out along the wall normal, through the
+    // clear middle of the opening, instead of past the curtains beside it
+    const nearWin = !!OPEN_WIN && p.x < ROOM.minX + 1.5 && Math.abs(p.z - OPEN_WIN.z) < OPEN_WIN.w / 2 + 0.6 && v.x < -0.2;
+    st.winK += ((nearWin ? 1 : 0) - st.winK) * (st.init ? damp(nearWin ? 9 : 3, uiDt) : nearWin ? 1 : 0);
+    st.orbit *= 1 - st.winK;
     const back = 0.84 - 0.16 * steep, up = 0.36 + 0.32 * steep;
-    const yaw = st.backYaw + st.orbit;
+    const yaw = st.backYaw + st.orbit + wrapAngle(Math.PI / 2 - (st.backYaw + st.orbit)) * st.winK;
     _ideal.set(Math.sin(yaw) * back, up, Math.cos(yaw) * back);
     if (!st.init) st.offset.copy(_ideal); else st.offset.lerp(_ideal, damp(7, uiDt));
     const list = col.all();
@@ -146,6 +180,7 @@ export function createFollow(ctx, D, col) {
     const fovT = clamp(60 + speed * 0.8, 58, 69) - 7 * slowAmt;
     st.fov = st.init ? st.fov + (fovT - st.fov) * damp(4, uiDt) : fovT;
     out.fov = st.fov;
+    windowGuard(out, p, v, list);
   }
 
   function side(dt, uiDt, out, b) {

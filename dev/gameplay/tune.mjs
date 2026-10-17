@@ -23,6 +23,6 @@ for (const [k, t] of Object.entries(targets)) {
   const sol = solveLaunch({ origin, target: t, scene, fans: fanZones(FAN_LIST), lookups: ch.lookups, opts: {} });
   if (!sol) { fails.push(k); continue; }
   ms += sol.ms; mx = Math.max(mx, sol.ms); pw = Math.max(pw, sol.power);
-  if (sol.robust < 4 || !/^r/.test(k)) console.log(k, (sol.pitch * 57.3).toFixed(0), sol.power.toFixed(3), 'robust', sol.robust, sol.expect.type, sol.ms + 'ms');
+  console.log(k, 'sims', sol.sims, 'arcs', sol.arcs, sol.pass, (sol.pitch * 57.3).toFixed(0), sol.power.toFixed(3), 'robust', sol.robust, sol.expect.type, sol.ms + 'ms');
 }
 console.log(`vmax ${P.PHYS.SPEED_MAX} drag ${P.PHYS.DRAG_QUAD}/${P.PHYS.DRAG_LIN}: fails [${fails}] avg ${(ms / (Object.keys(targets).length - fails.length)).toFixed(1)}ms max ${mx.toFixed(0)}ms maxPower ${pw.toFixed(2)}`);

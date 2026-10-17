@@ -42,7 +42,7 @@ node tools/shot.mjs --script dev/gameplay/shots.js     --out dev/gameplay/shots
   - Gravity 9.8.
   - Air drag `a = −(0.016|v| + 0.03) v`.
   - Wind: only for `x < −2.6`, ramping up toward the window, `1.6 m/s² × strength` along `classroom.wind.dir`.
-  - Telekinesis: `2.5 m/s²` sideways relative to the flight direction. It is flipped when the camera looks back at the ball, so "A" is always screen-left.
+  - Telekinesis: `1.0 m/s²` sideways (lowered from 2.5 by lead decision: ≈0.5–1 m landing shift at full willpower) relative to the flight direction. It is flipped when the camera looks back at the ball, so "A" is always screen-left.
 - **Contact response.**
   - Restitution along the normal. Paper gets deader at speed: `e × clamp(1.12 − 0.08·v, 0.45, 1)`. Contacts slower than 0.3 m/s are perfectly inelastic.
   - Coulomb friction impulse.
@@ -106,12 +106,15 @@ Extra Landing fields: `support {tag, ownerId}`, `reason` (`rest`/`trigger`/`fan`
    - `flat`: starts at 8°.
    - `pitchDeg` tries ±16° around the given value first.
    - `minPitchDeg` / `maxPitchDeg` restrict the range.
-3. **Power by bisection.** For each pitch, the power is bisected so the obstacle-free, drag-correct arc passes through an aim point. Aim points are the target plus small along/side offsets. Arcs that would scrape the ceiling, or cross a spinning fan's disc, are pruned.
+3. **Power by bisection.** For each pitch, the power is bisected so the obstacle-free, drag-correct arc passes through an aim point. This arc uses a lightweight 1/120 s integrator, because it only picks the aim power. Aim points are the target plus small along/side offsets; seat targets include forward offsets (+0.12 m) so the ball can land beyond the occupant's head. Arcs that would scrape the ceiling, or cross a spinning fan's disc, are pruned.
 4. **Verification.**
    - Every candidate is fully simulated: static colliders + a snapshot of `cast.colliders()` + non-fan dynamic colliders. Fan discs act as keep-out zones; for the `fan` goal, success means lingering ≥ 0.1 s in the blade plane.
-   - Successful candidates are re-run with yaw ±0.26° and power ±0.004 to measure robustness (0–4).
-   - The first robust candidate with no character contacts and the rest point within 0.2 m wins. Otherwise the best candidate found within the budget wins.
-5. **Return value.** `{yaw, pitch, power, expect: {type, seatId, ownerId, pos, flightTime}, goal, robust, sims, ms}`. The budget is 140 ms by default (`opts.budgetMs`). Typical solves take 2–40 ms; far seats and the podium take ~100–140 ms.
+   - **Pass 1, "clean"** (BUG-001): characters are inflated (heads +4 cm, bodies/arms +3 cm) and any contact with them is rejected. A path that touches nobody in the inflated scene touches nobody in the real scene either. Its outcome is then decided by the static world alone, independent of head animation or gaze tracking.
+   - **Pass 2, "contact"**: runs only when pass 1 finds nothing (or only a fragile path, robust < 2). It uses the real snapshot and allows character contacts, e.g. a bounce off a head. Goals of kind `person` use only this pass.
+   - Successful candidates are re-run with yaw ±0.26° and power ±0.004 (in the same pass's scene) to measure robustness (0–4).
+   - The first candidate with robust 4 and the rest point within 0.2 m wins. Otherwise the best candidate found within the budget wins.
+5. **Deterministic budget** (BUG-003): at most `opts.maxSims` (240) full simulations and `opts.maxArcs` (9000) arc evaluations. The same scene and target always give the same answer, whatever the machine load. `opts.budgetMs` (2500) is only a safety cap far above the real cost. Measured costs: 5–40 simulations for most targets, ~120 for the hardest (r0c4, r3c5, podium), typically 5–120 ms on an idle machine.
+6. **Return value.** `{yaw, pitch, power, expect: {type, seatId, ownerId, pos, flightTime}, goal, robust, clean, pass, sims, arcs, ms}`. `clean` means no character contact.
 
 ## Input feel (`index.js`)
 
@@ -121,11 +124,10 @@ Extra Landing fields: `support {tag, ownerId}`, `reason` (`rest`/`trigger`/`fan`
 - **Launch origin.** `launchOrigin()` depends only on `PLAYER_EYE` and the current `ctx.cam.fp` yaw/pitch: 0.17 m right, 0.13 m down, ~0.29 m forward. It never depends on the arm animation. At launch the ball mesh starts at `arms.handWorld()` and blends into the physical path over ~0.1 s; this is visual only.
 - **Trajectory dots.** While charging, 14 `Points` dots (one draw call) show the first 0.35 s of the real simulated arc. They update every frame with power and view.
 - **Hold breath (flight).** Holding `Space` sets `willpower.active` and emits `ball:willpower {on}`. Willpower drains over 1.5 s of game time, once per throw. `KeyA` / `KeyD` push the ball sideways while it is active.
-- **FP arms.** States follow the phase:
-  - `holdBall` / `charge` (with `setCharge`) / `study` in aim;
-  - `throw` for 0.35 s after launch, then `hidden`;
-  - `write` in the letter phase.
-  - Arms are forced hidden whenever `ctx.cam.mode !== 'fp'`.
+- **FP arms.** Visible only in the aim phase (camera request):
+  - `holdBall` / `charge` (with `setCharge`) / `study`, and `throw` until the flow switches to flight.
+  - On every other phase change they are set to `hidden` immediately, including endings with no throw (`caught_read`, `coward`).
+  - They are also hidden whenever `ctx.cam.mode !== 'fp'`.
 - **Incidents.** Gameplay pushes these to `ctx.round.incidents` and emits `incident`:
   - `{kind: 'wind', pos, drift}` once per flight, when wind displaced the ball by > 0.1 m;
   - `{kind: 'fanHit', id, pos}`.
@@ -144,7 +146,7 @@ Extra Landing fields: `support {tag, ownerId}`, `reason` (`rest`/`trigger`/`fan`
 | `ball.nearMisses` | Near misses this flight |
 | `ball.power` | Power of the current throw |
 | `predict(spec, seconds)` | Also accepts `{vel}` or `{origin}` overrides. Returns points every 1/60 s and stops at the landing |
-| `solveLaunch(target, opts)` | Also accepts `opts.budgetMs`, `opts.minPitchDeg`, `opts.maxPitchDeg` |
+| `solveLaunch(target, opts)` | Also accepts `opts.maxSims`, `opts.maxArcs`, `opts.budgetMs` (safety cap), `opts.minPitchDeg`, `opts.maxPitchDeg` |
 
 ## Notes for other modules
 

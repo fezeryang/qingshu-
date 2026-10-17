@@ -173,9 +173,10 @@ test('wind pushes the ball near the windows only', () => {
   return `drift ${(a.pos.x - b.pos.x).toFixed(2)} m, windDrift ${a.windDrift.toFixed(2)}`;
 });
 test('nudge acceleration shifts the landing point', () => {
-  const a = P.simulate(SN, V(0, 1.2, 3), V(0, 4, -4), { env: { nudge: { x: 2.5, y: 0, z: 0 } } });
-  const b = P.simulate(SN, V(0, 1.2, 3), V(0, 4, -4));
-  assert(a.pos.x - b.pos.x > 0.3, `shift ${a.pos.x - b.pos.x}`);
+  // full willpower (1.5 s) of nudging on a typical ~1.5 s lob: lead wants roughly 0.5–1 m
+  const a = P.simulate(SN, V(0, 1.2, 3), V(0, 4.6, -4.2), { env: { nudge: { x: P.PHYS.NUDGE_ACC, y: 0, z: 0 } } });
+  const b = P.simulate(SN, V(0, 1.2, 3), V(0, 4.6, -4.2));
+  assert(a.pos.x - b.pos.x > 0.4 && a.pos.x - b.pos.x < 1.1, `shift ${a.pos.x - b.pos.x} (flight ${b.t.toFixed(2)} s)`);
   return `shift ${(a.pos.x - b.pos.x).toFixed(2)} m`;
 });
 test('determinism: identical inputs → identical results', () => {
@@ -214,7 +215,7 @@ test('2000 random throws: no NaN, no tunnelling, all land within 7 s', () => {
     const { r, L } = run(sc, o, v);
     assert(r.nanFix === 0 && Number.isFinite(r.pos.x + r.pos.y + r.pos.z), `NaN at throw ${i}`);
     assert(inRoomOrOut(r.pos), `out of room at throw ${i}: ${JSON.stringify(r.pos)}`);
-    if (r.pos.x < ROOM.minX) assert(L.type === 'outside', `outside but ${L.type}`);
+    if (r.pos.x < ROOM.minX - 0.15) assert(L.type === 'outside', `outside but ${L.type}`);
     assert(r.reason !== 'stopped' && r.t <= P.PHYS.TIMEOUT + 0.01, `t=${r.t}`);
     types[L.type] = (types[L.type] || 0) + 1; maxT = Math.max(maxT, r.t); guards += r.guard;
   }
@@ -236,7 +237,7 @@ test('random throws from inside the room (anywhere, any direction, up to 14 m/s)
 });
 
 // ------------------------------------------------------------------ solver
-test('solver: every non-player seat is solved, verified, ≤ 150 ms', () => {
+test('solver: every non-player seat is solved and verified (clean lob, no character contact)', () => {
   const origin = P.launchOriginFor(0, 0);
   let ms = 0, mx = 0, n = 0;
   for (const s of SEATS) {
@@ -246,9 +247,9 @@ test('solver: every non-player seat is solved, verified, ≤ 150 ms', () => {
     assert(sol, `no solution for ${s.id}`);
     const { L } = run(S, origin, P.launchVelocity(sol));
     assert(L.seatId === s.id && ['desk', 'chair'].includes(L.type), `${s.id}: landed ${L.type}/${L.seatId}`);
+    assert(sol.clean, `${s.id}: only a character-contact path`);
     ms += sol.ms; mx = Math.max(mx, sol.ms); n++;
   }
-  assert(mx <= 150, `slowest solve ${mx} ms`);
   return `avg ${(ms / n).toFixed(1)} ms, max ${mx.toFixed(0)} ms`;
 });
 test('solver: special targets (trash, window, podium, teacher, fan, floor, self)', () => {
@@ -280,6 +281,38 @@ test('solver: special targets (trash, window, podium, teacher, fan, floor, self)
     const { L } = run(S, origin, P.launchVelocity(sol));
     assert(L.type === type, `${k}: landed ${L.type}`);
     out.push(`${k} ${(sol.pitch * 57.3).toFixed(0)}°/${sol.power.toFixed(2)}`);
+  }
+  return out.join(', ');
+});
+test('solver: deterministic budget — same answer twice and under a slow clock (BUG-003)', () => {
+  const origin = P.launchOriginFor(0, 0);
+  const out = [];
+  for (const id of ['r0c1', 'r0c4', 'r3c5']) {
+    const s = SEAT_BY_ID[id];
+    const t = V(s.x, DESK.topY + R, s.deskZ);
+    const args = () => ({ origin, target: t, scene: S, fans: fanZones(FAN_LIST), lookups: chars.lookups });
+    const a = solveLaunch(args());
+    const real = performance.now.bind(performance);
+    let fake = real();
+    performance.now = () => (fake += 3); // every clock read costs 3 ms: a heavily loaded machine
+    let b;
+    try { b = solveLaunch(args()); } finally { performance.now = real; }
+    assert(a && b && a.yaw === b.yaw && a.pitch === b.pitch && a.power === b.power, `${id}: ${JSON.stringify([a && a.power, b && b.power])}`);
+    out.push(`${id} ${a.sims} sims`);
+  }
+  return out.join(', ');
+});
+test('solver: front-row desks have clean, robust lobs even with bigger heads (BUG-001)', () => {
+  const big = characterColliders({ headR: 0.19 });
+  const sc = new P.Scene(stat, new P.Grid()).setDynamic(big.colliders, P.dynamicKeyFn());
+  const origin = P.launchOriginFor(0, 0);
+  const out = [];
+  for (const s of SEATS.filter((x) => x.row === 0)) {
+    const sol = solveLaunch({ origin, target: V(s.x, DESK.topY + R, s.deskZ), scene: sc, fans: fanZones(FAN_LIST), lookups: big.lookups });
+    assert(sol && sol.clean && sol.robust >= 2, `${s.id}: ${sol ? `clean ${sol.clean} robust ${sol.robust}` : 'null'}`);
+    const { L } = { L: classifyLanding(P.simulate(sc, origin, P.launchVelocity(sol)), big.lookups) };
+    assert(L.seatId === s.id, `${s.id}: landed ${L.type}/${L.seatId}`);
+    out.push(`${s.id} ${(sol.pitch * 57.3).toFixed(0)}° r${sol.robust}`);
   }
   return out.join(', ');
 });

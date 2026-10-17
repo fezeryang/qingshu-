@@ -209,6 +209,22 @@ export function wrap(text, n = 14, maxLines = 4) {
   return lines.length > maxLines ? [...lines.slice(0, maxLines - 1), lines[maxLines - 1].slice(0, n - 1) + '…'] : lines;
 }
 
+/**
+ * BUG-006: the reveal sheet covers the reader while the letter is on screen. Close it and cut to a clean
+ * face close-up for the emotional beat (expression + emote), held for `hold` seconds.
+ */
+export async function reactionCloseUp(d, ch, { expr, emote, hold = 1.4, angle = 0.4, sfx, beat } = {}) {
+  d.closeReveal();
+  d.hold(ch, null);
+  d.stop(ch, 'read');
+  if (expr) d.expr(ch, expr);
+  await front(d, ch, { angle, dist: 1.25, height: 0.04, fov: 44 });
+  if (beat) d.beat(beat);
+  if (emote) d.emote(ch, emote, hold + 0.4);
+  if (sfx) d.sfx(sfx);
+  await d.wait(hold);
+}
+
 export async function finalHold(d, sec = 2) {
   d.beat('final');
   await d.wait(sec);

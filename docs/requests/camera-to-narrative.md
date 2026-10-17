@@ -20,3 +20,10 @@ endings are:
 - A new camera move supersedes the running one, whose Promise resolves at once, so
   `Promise.all([cam.orbit(...), ui.say(...)])` patterns are safe.
 - `wide('classroom')` has built-in framings `classroom.camWide|camBack|camFront|camWindow|camHigh`.
+
+## Fix round 1 (BUG-005): no change needed, one suggestion
+The camera now hides, for the render only, classmates whose heads are right in front of the lens. In a
+single-subject shot it also hides a same-depth neighbour whose face is half-cropped by the frame edge. This
+fixes the `front()` close-ups in confetti / caught_read / perfect without any story change. Suggestion for
+a later pass: `front()` in `cutscenes/common.js` could call `ctx.cam.closeUp(ch, {side, dist, fov, dur})`.
+It already searches for an angle that is clear of geometry and third-person heads.

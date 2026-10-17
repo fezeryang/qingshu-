@@ -34,7 +34,7 @@ export const PHYS = {
   NEAR_MISS: 0.35,            // m from a head's surface
   WIND_ACC: 1.6,              // m/s² at wind strength 1, right at the window
   WIND_X: -2.6,               // wind only acts for x < WIND_X
-  NUDGE_ACC: 2.5,             // m/s² telekinesis
+  NUDGE_ACC: 1.0,             // m/s² telekinesis (≈0.5–1 m landing shift at full willpower; lead call, was 2.5)
   MAX_SPEED: 30,              // safety clamp
 };
 

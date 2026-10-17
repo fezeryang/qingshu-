@@ -31,6 +31,7 @@ export function createShots(ctx, D, col) {
     };
   }
 
+  const setLook = (out, l) => { if (out.look) { out.look.copy(l); out.hasLook = true; } };
   function finish(m) { if (m && !m.done) { m.done = true; m.resolve(); } }
   function mkMove(evalFn) {
     const m = { k: 0, done: false, eval: evalFn, resolve: null };
@@ -48,12 +49,13 @@ export function createShots(ctx, D, col) {
   /** Director hook: evaluate the current move. */
   function pose(dt, uiDt, out) {
     if (!cur) { holdHere(); }
+    out.hasLook = false;
     cur.eval(out, dt, uiDt);
     return out;
   }
   function holdHere() {
     const p = D.base.pos.clone(), l = p.clone().add(forwardOf(D.base.quat, _f).multiplyScalar(3)), fov = D.base.fov;
-    const m = mkMove((out) => { out.pos.copy(p); lookQuat(p, l, 0, out.quat); out.fov = fov; });
+    const m = mkMove((out) => { out.pos.copy(p); lookQuat(p, l, 0, out.quat); out.fov = fov; setLook(out, l); });
     m.k = 1; finish(m); cur = m;
   }
 
@@ -80,6 +82,7 @@ export function createShots(ctx, D, col) {
       out.pos.lerpVectors(p0, P1, k);
       _l.lerpVectors(l0, L1, k);
       lookQuat(out.pos, _l, 0, out.quat);
+      setLook(out, _l);
       out.fov = f0 + (f1 - f0) * k;
     });
     m.k = dur > 0 ? 0 : 1;
@@ -267,7 +270,9 @@ export function createShots(ctx, D, col) {
     if (!pos) { pos = hf.clone().addScaledVector(dir, -0.6).addScaledVector(right, 0.3 * pref); pos.y += 0.14; col.clampRoom(pos, 0.1); }
     const look = ht.clone().lerp(hf, 0.08); look.y -= 0.05;
     D.rollTo(numOr(o.roll, 0) * DEG, dur, o.ease);
-    return lerpMove(pos, look, fov, { dur, ease: o.ease });
+    const pr = lerpMove(pos, look, fov, { dur, ease: o.ease });
+    if (cur && cf) cur.keep = [cf.id];
+    return pr;
   }
 
   function resolveAnchor(arg) {
@@ -310,6 +315,7 @@ export function createShots(ctx, D, col) {
       const ang = from + (to - from) * m.k;
       out.pos.set(c.x - Math.sin(ang) * radius, hAbs ?? c.y + 0.3, c.z - Math.cos(ang) * radius);
       lookQuat(out.pos, c, 0, out.quat);
+      setLook(out, c);
       out.fov = fov;
     });
     begin(m, numOr(o.blend, 0.35));
@@ -375,6 +381,7 @@ export function createShots(ctx, D, col) {
       out.pos.copy(st.pos);
       if (col.inClassroom()) col.clampRoom(out.pos, 0.08);
       lookQuat(out.pos, st.look, 0, out.quat);
+      setLook(out, st.look);
       out.fov = fov;
     });
     begin(m, numOr(o.blend, 0));
@@ -394,6 +401,7 @@ export function createShots(ctx, D, col) {
   return {
     pose, cancelAll, lerpMove, holdHere,
     get current() { return cur; },
+    get keepIds() { return cur?.keep || null; },
     shot: safe('shot', shot), cut: safe('cut', cut), sequence: (list, cam) => sequence(list, cam).catch(() => {}),
     closeUp: safe('closeUp', closeUp), twoShot: safe('twoShot', twoShot), overShoulder: safe('overShoulder', overShoulder),
     wide: safe('wide', wide), orbit: safe('orbit', orbit), crashZoom: safe('crashZoom', crashZoom), dutch: safe('dutch', dutch),

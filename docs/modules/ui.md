@@ -37,7 +37,7 @@ The text content of each button is exactly the label below. Each label is unique
 | Ending card | `再来一局` (`retry`), `改写情书` (`rewrite`), `回到标题` (`title`). The buttons fade in 0.45 s after the card appears (`visibility` animation), so Playwright waits for them automatically. |
 | Gallery | `返回` |
 | Pause menu | `继续`, `设置`, `结局图鉴` |
-| Touch (width ≤ 768 px or coarse pointer) | `装认真` (aim) and `屏息` (flight). Both simulate holding Space through `ctx.input.simulate`. |
+| Touch (width ≤ 768 px or coarse pointer) | `装认真` (aim, lower left) and `屏息` (flight, lower left) simulate holding Space. `左` / `右` (flight, lower right) simulate holding KeyA / KeyD for the nudge. All of them go through `ctx.input.simulate`. The hold buttons sit on the left because the first-person hand is at the lower right. |
 
 ## Behaviour that matters to other modules
 
@@ -74,6 +74,23 @@ The text content of each button is exactly the label below. Each label is unique
   - If something else has already paused the engine, the menu does not open.
 - **`closeAll()`** closes the title, letter and crumple screens, the card, reveal, captions, bubbles, dialogue, toasts, modals and pause. Pending promises resolve, except title/card choices. On `round:setup` the UI runs the same reset, but it spares items created in that same tick by another `round:setup` handler.
 - **Audio unlock.** The first `pointerdown` or `keydown` anywhere calls `ctx.audio.unlock()`, and so does every UI button click.
+
+## Touch / phone layout
+
+When the pointer is coarse or the window is ≤ 768 px wide (checked at each phase change), the HUD shows touch hints instead of mouse and keyboard hints:
+- aim: `按住屏幕蓄力，松手扔出 · 老师回头就按住「装认真」`
+- flight: `按住「屏息」慢动作 · 按「左」「右」意念微调`
+
+On touch layouts the willpower bar is raised above the touch buttons.
+
+## Camera overlays and the PiP
+
+- Camera effects (`#cam-fx`) sit under `#ui-root`. No UI element uses a negative z-index: the bubble tail is an inline SVG, and impact speed lines are ordered by DOM position.
+- During flight, the HUD keeps the camera's top-right PiP rectangle clear. That rectangle is x ≥ W − 0.28·W − margin, y ≥ max(68 px, 0.14·H). In flight the alarm clock is hidden (`visibility:hidden`). The willpower bar and hints stay at the bottom centre, and the eye sticker stays at the top centre, above and left of the PiP.
+
+## Latin text (BUG-009, design decision)
+
+"LOVE LETTER PARABOLA" under the title logo is intentional: it is the logo's decorative subtitle. "Esc" in the pause hint is the name of the key as printed on keyboards. Both stay as they are.
 
 ## Additions to `ctx.ui` (beyond the contract)
 

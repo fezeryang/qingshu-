@@ -18,7 +18,7 @@ export default async function confetti(d) {
 
   // 1 — shredded
   d.beat('react');
-  d.cut({ pos: V(fan.x + 1.3, 1.35, fan.z + 1.7), look: V(fan.x, fan.bladeY, fan.z), fov: 50 });
+  d.cut({ pos: V(fan.x, 1.75, fan.z + 2.3), look: V(fan.x, fan.bladeY, fan.z), fov: 52 }); // aisle line, above the heads
   d.sfx('shatter', { volume: 0.5 });
   d.sfx('fanHum');
   d.slowMo(0.5, 1.6);
@@ -43,7 +43,7 @@ export default async function confetti(d) {
   d.crowd((ch) => { d.look(ch, V(fan.x, fan.bladeY - 0.6, fan.z)); d.expr(ch, d.pick(['happy', 'shock', 'smile'])); }, { stagger: 0.8 });
   d.stop(t);
   d.look(t, V(fan.x, fan.bladeY, fan.z));
-  d.bg(d.shot({ pos: V(0.8, 0.95, 2.7), look: V(fan.x * 0.6, 2.0, fan.z), fov: 62, dur: 3 }));
+  d.bg(d.shot({ pos: V(fan.x, 1.05, fan.z + 3.4), look: V(fan.x, 2.0, fan.z), fov: 62, dur: 3 })); // low in the aisle
   const poet = d.byTrait('artsy')[0];
   await d.say(poet || '同学', '……下雪了。', { mood: 'whisper' });
   d.bg(d.caption('下 雪 了', 'whisper', 2));
@@ -55,7 +55,7 @@ export default async function confetti(d) {
   scrap.scale.setScalar(0.35);
   d.anim(crush, 'catch');
   d.hold(crush, scrap);
-  await front(d, crush, { angle: 0.4, dist: 1.3, fov: 34, dur: 0 });
+  await front(d, crush, { angle: 0.4, dist: 1.4, fov: 46, dur: 0 });
   d.look(crush, d.handPos(crush));
   d.expr(crush, 'smile');
   await d.wait(0.6);
@@ -75,6 +75,6 @@ export default async function confetti(d) {
   else d.bubble(t, '……谁把风扇开这么大的？', 1.6);
 
   // final: wide from below, scraps drifting over the class
-  await d.shot({ pos: V(-0.6, 0.9, 3.6), look: V(0.2, 1.9, -1.5), fov: 60, dur: 1.4 });
+  await d.shot({ pos: V(fan.x, 1.75, 4.2), look: V(fan.x * 0.5, 2.0, -1.5), fov: 58, dur: 1.4 }); // back of the aisle, above the heads
   await finalHold(d, 2.6);
 }

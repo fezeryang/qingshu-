@@ -1,6 +1,6 @@
 // perfect — 完美 · 天台之约. The crush reads your letter, blushes line by line, writes back and lobs
 // the reply to you; "放学后，天台见。" → heart iris → sunset rooftop, side by side.
-import { begin, settleClass, front, pickUpAndRead, hitPrelude, expressionRamp, traitLine, PLAYER_DESK_TOP, EYE, finalHold } from './common.js';
+import { begin, settleClass, front, reactionCloseUp, pickUpAndRead, hitPrelude, expressionRamp, traitLine, PLAYER_DESK_TOP, EYE, finalHold } from './common.js';
 import { V } from '../direct.js';
 
 const REPLY = {
@@ -44,6 +44,7 @@ export default async function perfect(d) {
   d.bg(front(d, crush, { angle: 0.3, dist: 1.0, fov: 30, dur: 6 }));
   expressionRamp(d, crush, [[0, 'shock'], [1.6, 'embarrassed', 'sweat'], [3.4, 'blush', 'blush']]);
   await d.reveal(letter, { mode: 'read' });
+  await reactionCloseUp(d, crush, { expr: 'blush', emote: 'blush', sfx: 'heartbeat', beat: 'climax', hold: 1.8 });
 
   // 3 — a glance back at you over the shoulder
   d.beat('glance');
@@ -63,8 +64,8 @@ export default async function perfect(d) {
   d.bubble(t, d.pick(['所以这道题的答案是……', '同学们，这里是重点。', '看黑板，别走神。']), 1.8);
   await d.wait(1.8);
 
-  // 5 — the reply flies back (reverse parabola, camera rides along)
-  d.beat('climax');
+  // 5 — the reply flies back (reverse parabola)
+  d.beat('reply');
   const note = d.prop('replyNote');
   d.anim(crush, 'throw');
   d.sfx('whoosh');

@@ -275,6 +275,7 @@ export function createDirector(ctx, shared, label) {
       const r = d.try('ui.letterReveal', () => ctx.ui?.letterReveal?.(text, opts));
       await d.settle(r, { cap: opts.cap ?? 4 + len * 0.22, fallback: 2 + len * 0.06 });
     },
+    closeReveal() { d.try('ui.closeReveal', () => ctx.ui?.closeReveal?.()); },
     hud(show) { d.try('hud.show', () => ctx.ui?.hud?.show?.(show)); },
     objective(text) { d.try('hud.setObjective', () => ctx.ui?.hud?.setObjective?.(text)); },
 

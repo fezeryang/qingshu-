@@ -1,5 +1,5 @@
 // self_love — 隐藏 · 爱自己. It bounces back onto your own desk; you read it and are deeply moved.
-import { begin, settleClass, front, pickUpAndRead, expressionRamp, neighbour, EYE, finalHold } from './common.js';
+import { begin, settleClass, front, reactionCloseUp, pickUpAndRead, expressionRamp, neighbour, EYE, finalHold } from './common.js';
 import { V } from '../direct.js';
 
 export default async function selfLove(d) {
@@ -24,10 +24,12 @@ export default async function selfLove(d) {
   d.bg(front(d, me, { angle: 0.25, dist: 1.05, fov: 30, dur: 5 }));
   expressionRamp(d, me, [[0, 'shock'], [1.4, 'blush', 'blush'], [3.2, 'cry']]);
   await d.reveal(letter, { mode: 'read' });
+  await reactionCloseUp(d, me, { expr: 'cry', emote: 'sparkle', hold: 0.6, beat: 'reaction' });
   await d.say(me, d.pick(['……写得真好。', '原来……我这么会说话。', '这个人……好懂我。']), { mood: 'love', expr: 'cry' });
 
   // 3 — hug the letter; your deskmate is baffled
   d.beat('climax');
+  d.hold(me, d.prop('letterOpen'));
   d.anim(me, 'blushShy');
   d.emote(me, 'hearts', 2.5);
   d.sfx('sparkle');

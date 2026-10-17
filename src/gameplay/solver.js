@@ -9,17 +9,18 @@
 //      Arcs that would scrape the ceiling or cross a spinning fan's disc are pruned cheaply.
 //   3. Fully simulate the candidate (static colliders + a snapshot of the characters + fan discs as
 //      keep-out zones) and classify the landing. Successful candidates are re-simulated with small
-//      yaw/power perturbations; the first fully robust one wins, else the best one found in budget.
-import { PHYS, Grid, Scene, newBall, resetBall, stepBall, simulate, launchVelocity, dirFromYawPitch, K_TRIGGER } from './physics.js';
+//      yaw/power perturbations. A first pass inflates the characters and rejects any contact with
+//      them (paths that never touch anybody); only if none exists, a second pass allows contacts.
+//      The budget is a deterministic count of simulations (no wall clock), so results never depend on load.
+import { PHYS, Grid, Scene, simulate, launchVelocity, dirFromYawPitch, K_TRIGGER } from './physics.js';
 import { classifyLanding } from './landing.js';
 import { ROOM, SEAT_BY_ID } from '../core/layout.js';
 import * as THREE from 'three';
 
 const DEG = Math.PI / 180;
-const EMPTY = new Scene(new Grid({ cell: 50 }), new Grid({ cell: 50 }));
 const now = () => (globalThis.performance ? performance.now() : Date.now());
 
-const LOB = [58, 62, 54, 66, 50, 70, 46, 74, 42, 38, 34, 30, 26, 22, 18, 14, 10, 6, 2, -2, -6, -10, 78, 82, -16, -24, -34, -48, -62];
+const LOB = [58, 62, 54, 66, 50, 70, 46, 74, 60, 56, 64, 52, 68, 48, 72, 44, 76, 42, 40, 38, 36, 34, 30, 26, 22, 18, 14, 10, 6, 2, -2, -6, -10, 78, 82, -16, -24, -34, -48, -62];
 const FLAT = [8, 4, 12, 0, 16, 20, -4, 24, 28, 32, -8, 36, 40, 44, 48, 52, 56, 60, 64, 68, 72, 78, -16, -24, -34, -48, -62];
 
 function pitchOrder(opts) {
@@ -101,25 +102,26 @@ function evaluate(goal, res, landing) {
  * @param {object} a
  *   origin: Vector3, target: Vector3, scene: Scene (static + snapshot), fans: [{x,z,y,r,hh}],
  *   opts: {pitchDeg?, mode?}, lookups: {occupant, seatOf}, env: base env for simulate (openings), budgetMs
- * @returns {{yaw, pitch, power, expect, robust, sims, ms}|null}
+ * Budget (deterministic): opts.maxSims (240) full simulations, opts.maxArcs (9000) free-arc evaluations;
+ *   opts.budgetMs (2500) is only a safety cap.
+ * @returns {{yaw, pitch, power, expect, robust, clean, pass, sims, arcs, ms}|null}
  */
 export function solveLaunch(a) {
   const t0 = now();
   const { origin, target, scene } = a;
   const opts = a.opts || {};
-  const budget = a.budgetMs ?? 140;
   const fans = a.fans || [];
   const goal = makeGoal(target, scene, fans);
   const env = { bounds: true, ...(a.env || {}), wind: null, nudge: null };
   const lookups = a.lookups || {};
-  let sims = 0;
+  let sims = 0, arcs = 0;
 
   // fan discs: keep-out zones (or the goal itself)
   scene.zones = fans.map((f) => ({ ...f }));
   let zoneTime = 0;
   const zoneEv = {
     zone(b, zn, dt) {
-      if (goal.kind === 'fan' && zn === scene.zones[fans.indexOf(goal.fan)]) {
+      if (goal.kind === 'fan' && zn.id === goal.fan.id) {
         zoneTime += dt;
         if (zoneTime >= 0.1) { b.done = true; b.reason = 'fan'; b.fanOwner = zn.id ?? null; }
       } else if (goal.kind !== 'fan') { b.done = true; b.reason = 'zone'; }
@@ -130,24 +132,30 @@ export function solveLaunch(a) {
   const D = Math.hypot(dx, dz);
   const ux = D > 1e-6 ? dx / D : 0, uz = D > 1e-6 ? dz / D : -1;     // horizontal unit toward target
   const vel = new THREE.Vector3();
-  const fb = newBall();
 
   /** Height of the obstacle-free arc where it reaches horizontal distance `dist` (+ pruning info). */
   function arcAt(yaw, pitch, power, dist) {
+    // Lightweight obstacle-free integration (same forces as stepBall, 1/120 s steps). It only picks the
+    // aim power for a candidate; every candidate is then verified with the exact simulator.
+    arcs++;
     launchVelocity({ yaw, pitch, power }, vel);
-    resetBall(fb, origin, vel);
-    let px = 0, py = origin.y, prevD = 0;
-    let crossedZone = false;
-    for (let i = 0; i < 1400; i++) {
-      stepBall(fb, EMPTY, { bounds: false }, PHYS.H);
-      const d = (fb.px - origin.x) * ux + (fb.pz - origin.z) * uz;
-      if (goal.kind !== 'fan') for (const f of fans) if (Math.abs(fb.py - f.y) < f.hh + PHYS.R + 0.03 && Math.hypot(fb.px - f.x, fb.pz - f.z) < f.r + PHYS.R + 0.06) crossedZone = true;
+    const h = 1 / 120, G = PHYS.G, kq = PHYS.DRAG_QUAD, kl = PHYS.DRAG_LIN;
+    let vx = vel.x, vy = vel.y, vz = vel.z, x = origin.x, y = origin.y, z = origin.z;
+    let py = y, prevD = 0, maxH = y, crossedZone = false;
+    const checkZones = goal.kind !== 'fan' && fans.length;
+    for (let i = 0; i < 480; i++) {
+      const sp = Math.sqrt(vx * vx + vy * vy + vz * vz), dr = kq * sp + kl;
+      vx -= dr * vx * h; vy -= (G + dr * vy) * h; vz -= dr * vz * h;
+      x += vx * h; y += vy * h; z += vz * h;
+      if (y > maxH) maxH = y;
+      if (checkZones) for (const f of fans) if (Math.abs(y - f.y) < f.hh + PHYS.R + 0.03 && Math.hypot(x - f.x, z - f.z) < f.r + PHYS.R + 0.06) crossedZone = true;
+      const d = (x - origin.x) * ux + (z - origin.z) * uz;
       if (d >= dist) {
         const k = (dist - prevD) / Math.max(1e-9, d - prevD);
-        return { y: py + (fb.py - py) * k, maxH: fb.maxHeight, crossedZone, descending: fb.vy < 0 };
+        return { y: py + (y - py) * k, maxH, crossedZone, descending: vy < 0 };
       }
-      if (fb.py < -1 || fb.t > 4) return null;
-      px = d; py = fb.py; prevD = d;
+      if (y < -1) return null;
+      py = y; prevD = d;
     }
     return null;
   }
@@ -167,57 +175,97 @@ export function solveLaunch(a) {
     return (a0 + a1) / 2;
   }
 
-  function run(yaw, pitch, power) {
+  function run(sc, yaw, pitch, power) {
     sims++;
     zoneTime = 0;
     launchVelocity({ yaw, pitch, power }, vel);
-    const res = simulate(scene, origin, vel, { env, ev: zoneEv });
+    sc.zones = scene.zones;
+    const res = simulate(sc, origin, vel, { env, ev: zoneEv });
     const landing = classifyLanding(res, lookups);
     return { res, landing, ...evaluate(goal, res, landing) };
   }
 
   const ceilingY = ROOM.height - PHYS.R - 0.03;
   const offsets = goal.kind === 'seat' || goal.kind === 'podium' || goal.kind === 'floor'
-    ? [[0, 0], [-0.1, 0], [0.07, 0], [0, 0.12], [0, -0.12], [-0.16, 0], [-0.1, 0.12], [-0.1, -0.12]]
+    ? [[0, 0], [-0.1, 0], [0.07, 0], [0.12, 0], [0, 0.12], [0, -0.12], [-0.16, 0], [0.12, 0.1], [0.12, -0.1], [-0.1, 0.12], [-0.1, -0.12]]
     : goal.kind === 'trigger' && goal.tag === 'trash' ? [[0, 0], [-0.05, 0], [0.05, 0], [0, 0.05], [0, -0.05]]
       : [[0, 0], [-0.08, 0], [0.08, 0]];
   const dYaw = 0.0045, dPow = 0.004;
-  let best = null;
   const pitches = pitchOrder(opts);
 
-  outer:
-  for (let pi = 0; pi < pitches.length; pi++) {
-    const pitch = pitches[pi] * DEG;
-    for (const [along, side] of offsets) {
-      if (now() - t0 > budget) break outer;
-      const ax = target.x + ux * along - uz * side, az = target.z + uz * along + ux * side;
-      const yaw = Math.atan2(-(ax - origin.x), -(az - origin.z));
-      const dist = Math.hypot(ax - origin.x, az - origin.z);
-      const power = powerFor(yaw, pitch, dist, target.y);
-      if (power == null) break; // no power reaches this aim point at this elevation; try the next one
-      const arc = arcAt(yaw, pitch, power, dist);
-      if (!arc || arc.maxH > ceilingY || arc.crossedZone) break;
-      if (goal.kind === 'fan' && arc.descending && Math.abs(arc.y - target.y) > 0.3) continue;
-      const c = run(yaw, pitch, power);
-      if (!c.ok) continue;
-      let robust = 0;
-      for (const [dy, dp] of [[dYaw, 0], [-dYaw, 0], [0, dPow], [0, -dPow]]) {
-        if (power + dp < 0 || power + dp > 1) continue;
-        if (run(yaw + dy, pitch, power + dp).ok) robust++;
+  // Deterministic budget: counts of simulations / arc evaluations, never wall-clock time.
+  // budgetMs is only a safety cap far above the normal cost (BUG-003).
+  const maxSims = opts.maxSims ?? a.maxSims ?? 240;
+  const maxArcs = opts.maxArcs ?? a.maxArcs ?? 9000;
+  const capMs = opts.budgetMs ?? a.budgetMs ?? 2500;
+  const over = () => sims >= maxSims || arcs >= maxArcs || now() - t0 > capMs;
+
+  // Pass 1 ("clean"): characters inflated by a margin, character contacts rejected. Such a path never
+  // touches anybody in the real scene either, so it does not depend on head animation / gaze (BUG-001).
+  // Pass 2 ("contact"): the real snapshot, character contacts allowed (only if no clean path exists).
+  const passes = goal.kind === 'person' ? ['contact'] : ['clean', 'contact'];
+  const cleanScene = passes[0] === 'clean' ? inflatedScene(scene) : null;
+  let best = null;
+  for (const pass of passes) {
+    const sc = pass === 'clean' ? cleanScene : scene;
+    const accept = (c) => c.ok && (pass === 'contact' || c.charHits === 0);
+    let found = null;
+    outer:
+    for (let pi = 0; pi < pitches.length; pi++) {
+      const pitch = pitches[pi] * DEG;
+      for (const [along, side] of offsets) {
+        if (over()) break outer;
+        const ax = target.x + ux * along - uz * side, az = target.z + uz * along + ux * side;
+        const yaw = Math.atan2(-(ax - origin.x), -(az - origin.z));
+        const dist = Math.hypot(ax - origin.x, az - origin.z);
+        const power = powerFor(yaw, pitch, dist, target.y);
+        if (power == null) break; // no power reaches this aim point at this elevation; try the next one
+        const arc = arcAt(yaw, pitch, power, dist);
+        if (!arc || arc.maxH > ceilingY || arc.crossedZone) break;
+        if (goal.kind === 'fan' && arc.descending && Math.abs(arc.y - target.y) > 0.3) continue;
+        const c = run(sc, yaw, pitch, power);
+        if (!accept(c)) continue;
+        let robust = 0;
+        for (const [dy, dp] of [[dYaw, 0], [-dYaw, 0], [0, dPow], [0, -dPow]]) {
+          if (power + dp < 0 || power + dp > 1) continue;
+          if (accept(run(sc, yaw + dy, pitch, power + dp))) robust++;
+        }
+        const cand = { yaw, pitch, power, robust, err: c.err, charHits: c.charHits, rank: pi, landing: c.landing, res: c.res, pass };
+        const better = !found || cand.robust > found.robust || (cand.robust === found.robust && (cand.charHits < found.charHits || (cand.charHits === found.charHits && cand.err < found.err - 0.05)));
+        if (better) found = cand;
+        if (cand.robust >= 4 && cand.err < 0.2 && (cand.charHits === 0 || pi > 6)) break outer;
       }
-      const cand = { yaw, pitch, power, robust, err: c.err, charHits: c.charHits, rank: pi, landing: c.landing, res: c.res };
-      const better = !best || cand.robust > best.robust || (cand.robust === best.robust && (cand.charHits < best.charHits || (cand.charHits === best.charHits && cand.err < best.err - 0.05)));
-      if (better) best = cand;
-      if (cand.robust >= 4 && cand.err < 0.2 && cand.charHits === 0) break outer;
-      if (cand.robust >= 4 && cand.err < 0.2 && pi > 6) break outer;
     }
+    // a clean path is preferred unless it is clearly fragile and a sturdier contact path exists
+    if (found && (found.pass === 'clean' ? found.robust >= 2 : true)) { best = found; break; }
+    if (found && !best) best = found;
+    if (over()) break;
   }
   if (!best) return null;
   return {
     yaw: best.yaw, pitch: best.pitch, power: best.power,
     expect: { type: best.landing.type, seatId: best.landing.seatId, ownerId: best.landing.ownerId, pos: best.res.pos, flightTime: +best.res.t.toFixed(2) },
-    goal: goal.kind, robust: best.robust, sims, ms: +(now() - t0).toFixed(1),
+    goal: goal.kind, robust: best.robust, clean: best.charHits === 0, pass: best.pass, sims, arcs, ms: +(now() - t0).toFixed(1),
   };
+}
+
+// Characters grown by a safety margin (heads +4 cm, bodies/arms +3 cm) for the "clean" pass.
+const INFL = new Grid();
+function inflatedScene(scene) {
+  const list = [];
+  for (const o of scene.dynamic.all) {
+    const c = o.src;
+    if (!c) continue;
+    if (o.tag === 'head' || o.tag === 'body') {
+      const m = o.tag === 'head' ? 0.04 : 0.03;
+      if (c.kind === 'sphere') list.push({ ...c, radius: c.radius + m });
+      else if (c.kind === 'box') list.push({ ...c, min: { x: c.min.x - m, y: c.min.y - m, z: c.min.z - m }, max: { x: c.max.x + m, y: c.max.y + m, z: c.max.z + m } });
+      else if (c.kind === 'obb') list.push({ ...c, halfSize: { x: c.halfSize.x + m, y: c.halfSize.y + m, z: c.halfSize.z + m } });
+      else list.push(c);
+    } else list.push(c);
+  }
+  const keys = scene.dynamic.all.map((o) => o.key);
+  return new Scene(scene.static, INFL.setColliders(list, (c, i) => keys[i] ?? `d${i}`));
 }
 
 /** Fan discs (solver keep-out zones) from the world's fan list. */

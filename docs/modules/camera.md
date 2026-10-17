@@ -8,7 +8,7 @@ Owner: qs-camera-director. Contract: `docs/CONTRACTS.md` §4.5 (unchanged; every
 |---|---|
 | `index.js` | Director: mode switching, per-tick pipeline, event automation (launch / apex / approach / near miss / hold-breath / PiP / landing), round reset, public `ctx.cam` |
 | `rig.js` | Pose math, `lookQuat`, target resolution (`Character` / char id / `'teacher'` / `'crush'` / Vector3 / `[x,y,z]` / Object3D / anchor `{pos, look}`), framing constraint |
-| `collide.js` | Segment casts, push-out and room clamping against `world.classroom.colliders` + `cast.colliders()` (spring arm, preset anti-clipping) |
+| `collide.js` | Segment casts, push-out and room clamping against `world.classroom.colliders` + `cast.colliders()` + camera-only curtain volumes (spring arm, preset anti-clipping) |
 | `fp.js` | First person (mode `fp`) |
 | `follow.js` | Ball follow cam (mode `follow`): `chase`, `side`, `fpStay` |
 | `shots.js` | Cinematic moves and presets (mode `cinematic`) |
@@ -160,3 +160,27 @@ roll, shake, FOV 70, mode `fp`). Phases `title` and `aim` fade out leftovers (0.
 `dev/camera/flight.js` (flight sequence + PiP), `dev/camera/f1.js` (F1 over 16 targets × 3 styles),
 `dev/camera/presets.js` (presets + heart iris), `dev/camera/fp.js` (title / aim / charge / study / side /
 fpStay / landing), `dev/camera/reset.js` (junk arguments, KeyC, hold-breath, residue across retry).
+
+## Fix round 1 (QA BUG-004 / BUG-005)
+
+- **Curtains (BUG-004).** The cloth curtains have no physics collider. `collide.js` therefore adds
+  camera-only soft volumes (`tag:'curtain'`, `camOnly:true`) beside every window. They match the world's
+  panels and are deeper for the open window, whose curtains billow. The spring arm, push-out and preset
+  clearance all treat them as solid. `cam.metrics.occluded` ignores them because they are deliberately
+  conservative.
+  - Near the open window the chase camera swings to straight behind the ball along the wall normal, so it
+    looks through the clear middle of the opening (the bullet-time orbit swing is disabled there).
+  - If the inside view is still blocked and the ball is already past the cloth plane, the camera hard-cuts
+    to a fixed camera **outside** the window.
+  - The window landing shot is also filmed from outside.
+  - Result on seeds 91–93 (real-mesh rays, as in QA's F1): 0 hidden frames, against 2–9 before.
+- **Foreground clean-up (BUG-005).** In `cinematic` mode a character is hidden **for the render only**
+  (the same mechanism as the FP-arm mask; no state changes) if either:
+  1. its head is within 1.0 m of the lens, at least 0.5 m nearer than the shot's look point, and overlaps
+     the frame; or
+  2. a single subject is centred and the character is a neighbour at about the subject's depth (< 1.6 m)
+     whose head is half-cropped by the side edge (|ndc x| 0.72–1.35).
+
+  This covers the story's own `shot`/`cut` framings as well as the presets. `overShoulder`'s `from` is
+  always kept. `debug().fgHidden` lists who is hidden in the current frame.
+- The FP eye height now comes from `PLAYER_EYE` (1.24 m) automatically.

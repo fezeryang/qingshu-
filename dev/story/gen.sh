@@ -31,3 +31,10 @@ gen endings5.js "[
  {expect:'lost', target:'floor'},
  {expect:'graded', target:'podium'},
 ]"
+gen fix1.js "[
+ {expect:'perfect', target:'crush', shotFinal: false},
+ {expect:'same_gender', target:'wang_dazhuang', extraBeat: 'reaction', shotFinal: false},
+ {expect:'self_love', target:'self', extraBeat: 'reaction', shotFinal: false},
+ {expect:'confetti', target:'fan', opts: { budgetMs: 400 }, synthetic: { type: 'fan', fanId: 'f0' }},
+ {expect:'caught_read', mode:'caught', shotFinal: false},
+]"

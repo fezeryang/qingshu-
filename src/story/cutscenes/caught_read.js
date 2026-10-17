@@ -89,7 +89,7 @@ export default async function caughtRead(d) {
   // your POV: slow push toward the laughing classmates
   const head = d.headPos(me);
   d.cut({ pos: head.clone().add(V(0, 0.02, 0.25)), look: V(-0.6, 1.0, 1.5), fov: 55 });
-  await d.shot({ pos: head.clone().add(V(0.1, -0.05, 1.3)), look: V(-0.4, 1.0, 1.8), fov: 48, dur: 2.6 });
+  await d.shot({ pos: V(-1.4, head.y + 0.1, head.z + 1.3), look: V(-0.4, 1.0, 1.8), fov: 48, dur: 2.6 }); // ends in the aisle
 
   // 6 — the teacher's verdict, your soul leaves
   await d.say(t, d.pick(['……文笔还行。下课来办公室。', '下次写作文也这么用心就好了。', '"的地得"都没分清。回去重写。']));

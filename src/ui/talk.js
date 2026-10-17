@@ -140,7 +140,7 @@ export function createTalk(U) {
     return new Promise((resolve) => {
       const style = opts.style || (opts.mood === 'shout' ? 'shout' : opts.mood === 'think' ? 'think' : 'speech');
       const txt = h('div.qs-bubble-text');
-      const tail = h('div.qs-bubble-tail');
+      const tail = h('div.qs-bubble-tail', { html: '<svg viewBox="0 0 24 18" aria-hidden="true"><path class="f" d="M0 0H24L7 17Z"/><path class="s" d="M1 0L7 17L23 0"/></svg>' });
       const el = h(`div.qs-bubble.qs-bubble-${style}`, {}, txt, tail);
       U.L.world.appendChild(el);
       const len = [...String(text ?? '')].length;

@@ -1,6 +1,6 @@
 // wrong_accept — 误投 B · 将错就错. The wrong (opposite-gender) classmate blushes and says yes before you
 // can explain. A baffling "and somehow we're dating" montage: day 1, day 30, day 100.
-import { begin, settleClass, front, pickUpAndRead, recipient, expressionRamp, traitLine, finalHold } from './common.js';
+import { begin, settleClass, front, reactionCloseUp, pickUpAndRead, recipient, expressionRamp, traitLine, finalHold } from './common.js';
 import { V } from '../direct.js';
 
 const YES = {
@@ -31,6 +31,7 @@ export default async function wrongAccept(d) {
   await pickUpAndRead(d, rec);
   expressionRamp(d, rec, [[0, 'shock'], [1.4, 'embarrassed'], [2.6, 'blush', 'heart']]);
   await d.reveal(letter, { mode: 'read' });
+  await reactionCloseUp(d, rec, { expr: 'blush', emote: 'heart', hold: 1.0, beat: 'reaction' });
 
   // 2 — a shy glance back… and an answer
   d.look(rec, me);

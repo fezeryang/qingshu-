@@ -21,7 +21,8 @@ import { createPip } from './pip.js';
 
 const DANGER = new Set(['warning', 'watching', 'patrol', 'suspicious', 'alert', 'fakeout']);
 const FRAME_LIMIT = 0.6;      // follow cam keeps the ball within |ndc| <= 0.6 (F1 checks 0.7)
-const MIN_BALL_DIST = 0.3;    // follow cam never gets closer to the ball than this
+const MIN_BALL_DIST = 0.3;    // follow cam never gets closer to the ball than this (during blends)
+const FG_NEAR = 1.0;          // cinematic: classmates' heads nearer than this to the lens are hidden for the render
 
 export async function install(ctx) {
   const { engine, bus, time, input } = ctx;
@@ -125,7 +126,48 @@ export async function install(ctx) {
     const fov = clamp(pose.fov, 5, 120);
     if (Math.abs(camera.fov - fov) > 1e-4) { camera.fov = fov; camera.updateProjectionMatrix(); }
     camera.updateMatrixWorld();
+    computeForeground(pose);
     if (!full) syncRenderFn();
+  }
+
+  // ------------------------------------------------------------------ foreground clean-up (BUG-005)
+  // In cinematic shots, a classmate whose head is right in front of the lens (< 0.75 m, clearly nearer
+  // than the shot's focus point, overlapping the frame) is hidden for the render only ("cheating the shot").
+  // Intentional foreground (overShoulder's `from`) is kept. State is never touched.
+  const fgHidden = [];
+  const _hv = new THREE.Vector3(), _hq = new THREE.Quaternion();
+  function computeForeground(pose) {
+    fgHidden.length = 0;
+    if (D.mode !== 'cinematic') return;
+    let list;
+    try { list = ctx.cast?.all?.() || []; } catch { return; }
+    const focus = pose.hasLook ? pose.pos.distanceTo(pose.look) : 3;
+    const keep = shots.keepIds;
+    _hq.copy(camera.quaternion).invert();
+    const tanV = Math.tan((camera.fov * DEG) / 2), tanH = tanV * (camera.aspect || 1.7);
+    const near = [];
+    let subj = null;
+    for (const ch of list) {
+      if (!ch?.root?.visible || (keep && keep.includes(ch.id))) continue;
+      const h = headOf(ctx, ch, _hv);
+      if (!h) continue;
+      const d = h.distanceTo(camera.position);
+      if (d > 2.5) continue;
+      _hv.sub(camera.position).applyQuaternion(_hq);
+      if (_hv.z > 0.3) continue; // well behind the lens
+      const z = Math.max(0.05, -_hv.z);
+      const cx = _hv.x / z / tanH, cy = _hv.y / z / tanV;
+      const e = { ch, d, cx, cy, nx: (Math.abs(_hv.x) - 0.3) / z / tanH, ny: (Math.abs(_hv.y) - 0.3) / z / tanV };
+      near.push(e);
+      if (_hv.z < 0 && Math.abs(cx) < 0.35 && Math.abs(cy) < 0.6 && (!subj || Math.abs(cx) + Math.abs(cy) < Math.abs(subj.cx) + Math.abs(subj.cy))) subj = e;
+    }
+    for (const e of near) {
+      if (e === subj) continue;
+      // 1) head right in front of the lens, clearly nearer than the focus point
+      if (e.d <= FG_NEAR && e.d <= focus - 0.5 && e.nx < 0.9 && e.ny < 0.9) { fgHidden.push(e.ch.root); continue; }
+      // 2) a neighbour at the subject's depth, half-cropped by the side edge of a single-subject shot
+      if (subj && e.d < 1.6 && Math.abs(e.d - subj.d) < 0.6 && Math.abs(e.cx) > 0.72 && Math.abs(e.cx) < 1.35 && Math.abs(e.cy) < 1.1) fgHidden.push(e.ch.root);
+    }
   }
 
   // ------------------------------------------------------------------ render function (PiP / arm mask)
@@ -134,10 +176,11 @@ export async function install(ctx) {
   function renderFrame() {
     const hidden = [];
     if (D.mode !== 'fp') for (const c of camera.children) if (c.visible && !c.userData?.camKeep) { c.visible = false; hidden.push(c); }
+    for (const r of fgHidden) if (r.visible) { r.visible = false; hidden.push(r); }
     try { pip.render(); } finally { for (const c of hidden) c.visible = true; }
   }
   function syncRenderFn() {
-    const need = pip.on || (D.mode !== 'fp' && foreignVisible());
+    const need = pip.on || fgHidden.length > 0 || (D.mode !== 'fp' && foreignVisible());
     if (need !== customRender) { customRender = need; engine.setRenderFn(need ? renderFrame : null); }
   }
 
@@ -252,8 +295,9 @@ export async function install(ctx) {
     let p1, l1, fov = 42;
     if (L?.type === 'outside') {
       const w = WINDOWS.find((x) => x.open) || WINDOWS[1];
-      p1 = new THREE.Vector3(ROOM.minX + 0.5, w.sillY + 0.7, w.z + 0.9);
-      l1 = bp.clone(); fov = 48;
+      // outside the window, so the curtains (inside the room) can't hide the ball
+      p1 = new THREE.Vector3(Math.min(bp.x, ROOM.minX) - 1.2, bp.y + 0.35, bp.z + 0.5);
+      l1 = bp.clone(); fov = 50;
     } else if (L?.type === 'fan') {
       const f = FANS.reduce((a, c) => (Math.hypot(c.x - bp.x, c.z - bp.z) < Math.hypot(a.x - bp.x, a.z - bp.z) ? c : a), FANS[0]);
       const away = new THREE.Vector3(-f.x, 0, -f.z); if (away.lengthSq() < 1e-4) away.set(0, 0, 1); away.normalize();
@@ -308,7 +352,7 @@ export async function install(ctx) {
     m.maxAbs = Math.max(m.maxAbs, +ax.toFixed(3));
     const dist = camera.position.distanceTo(b.pos);
     m.distSum = (m.distSum || 0) + dist; if (dist < (m.minDist ?? 99)) m.minAt = { t: +(b.t ?? 0).toFixed(3), blend: D.blend.active, ball: b.pos.toArray().map((v) => +v.toFixed(2)), cam: camera.position.toArray().map((v) => +v.toFixed(2)) }; m.minDist = Math.min(m.minDist ?? 99, +dist.toFixed(3)); m.maxDist = Math.max(m.maxDist ?? 0, +dist.toFixed(3));
-    const oc = col.segment(camera.position, b.pos, col.all(), 0, { charPad: 0 });
+    const oc = col.segment(camera.position, b.pos, col.all(), 0, { charPad: 0, skip: (c) => c.camOnly });
     if (oc.t < 0.97) { m.occluded++; const k = `${oc.hit?.tag}:${oc.hit?.ownerId ?? ''}`; (m.occBy ||= {})[k] = (m.occBy[k] || 0) + 1; m.occAt ||= { t: +(b.t ?? 0).toFixed(3), ball: b.pos.toArray().map((v) => +v.toFixed(2)), cam: camera.position.toArray().map((v) => +v.toFixed(2)), hitT: +oc.t.toFixed(2) }; }
   }
 
@@ -418,7 +462,7 @@ export async function install(ctx) {
     metrics,
     debug: () => ({
       mode: D.mode, followStyle: follow.style, phase, timeScale: +engine.timeScale.toFixed(3), slowTarget: slow.target, slowRequests: slow.ids(),
-      roll: +(D.roll / DEG).toFixed(2), fov: +camera.fov.toFixed(2), pip: pip.on, customRender, ...fx.state(),
+      roll: +(D.roll / DEG).toFixed(2), fov: +camera.fov.toFixed(2), pip: pip.on, customRender, fgHidden: fgHidden.map((r) => r.name), ...fx.state(),
       pos: camera.position.toArray().map((v) => +v.toFixed(3)),
     }),
     _internals: { D, col, slow, follow, pip, fx, motion },

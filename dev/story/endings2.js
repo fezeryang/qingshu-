@@ -37,6 +37,11 @@ for (const c of CASES) {
     r.got = qs.ctx.round.endingId;
     r.landing = qs.state().landing;
     const t0 = qs.ctx.time.now;
+    if (c.extraBeat) {
+      await qs.advanceUntil(() => qs.ctx.story.debug.beat === c.extraBeat || qs.ctx.flow.phase === 'card', 50);
+      await qs.advance(0.5);
+      if (qs.ctx.flow.phase !== 'card') await shot(`${c.expect}_${c.extraBeat}`);
+    }
     await qs.advanceUntil(() => qs.ctx.story.debug.beat === 'climax' || qs.ctx.flow.phase === 'card', 50);
     await qs.advance(c.climaxDelay ?? 0.6);
     if (qs.ctx.flow.phase !== 'card') await shot(`${c.expect}_climax`);

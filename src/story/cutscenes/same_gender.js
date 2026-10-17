@@ -1,6 +1,6 @@
 // same_gender — 误投 · 认真的回应. A same-gender classmate reads it with total sincerity, stands up and
 // says "……我愿意。" Warm absurdist comedy: the joke is the mix-up and their earnestness, never mockery.
-import { begin, settleClass, front, pickUpAndRead, recipient, expressionRamp, traitLine, backToClassroom, finalHold } from './common.js';
+import { begin, settleClass, front, reactionCloseUp, pickUpAndRead, recipient, expressionRamp, traitLine, backToClassroom, finalHold } from './common.js';
 import { V } from '../direct.js';
 
 const YES = {
@@ -35,6 +35,7 @@ export default async function sameGender(d) {
   d.bg(front(d, rec, { angle: 0.2, dist: 1.1, fov: 32, dur: 5 }));
   expressionRamp(d, rec, [[0, 'shock'], [2, 'neutral'], [3.6, 'determined']]);
   await d.reveal(letter, { mode: 'read' });
+  await reactionCloseUp(d, rec, { expr: 'determined', emote: 'dots', hold: 1.2, beat: 'reaction' });
 
   // 2 — a long look back at you
   d.look(rec, me);

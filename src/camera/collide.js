@@ -2,7 +2,7 @@
 // room clamping. Used by the follow cam (spring arm) and the shot presets (anti-clipping).
 // (owner: qs-camera-director)
 import * as THREE from 'three';
-import { ROOM, FANS } from '../core/layout.js';
+import { ROOM, FANS, WINDOWS } from '../core/layout.js';
 
 const EMPTY = [];
 const _d = new THREE.Vector3();
@@ -76,15 +76,36 @@ function pushBox(p, min, max, r) {
   return true;
 }
 
+/**
+ * Camera-only soft occluders: the cloth curtains beside each window have no physics collider, but they
+ * must still block the camera (BUG-004). Volumes match src/world curtain panels (gathered 0.42 m beside
+ * the opening, hanging 0.15 m off the wall; the open window's panels billow up to ~0.8 m into the room).
+ */
+function curtainVolumes() {
+  const out = [];
+  for (const w of WINDOWS) {
+    const z0 = w.z - w.w / 2, z1 = w.z + w.w / 2;
+    const bottom = w.sillY - 0.15, top = w.sillY + w.h + 0.2;
+    const depth = w.open ? 0.8 : 0.35, reach = w.open ? 0.52 : 0.42;   // reach: from the panel's outer edge into the opening
+    out.push({ kind: 'box', tag: 'curtain', camOnly: true, min: new THREE.Vector3(ROOM.minX - 0.05, bottom, z0 - 0.2), max: new THREE.Vector3(ROOM.minX + depth, top, z0 - 0.14 + reach) });
+    out.push({ kind: 'box', tag: 'curtain', camOnly: true, min: new THREE.Vector3(ROOM.minX - 0.05, bottom, z1 + 0.14 - reach), max: new THREE.Vector3(ROOM.minX + depth, top, z1 + 0.2) });
+  }
+  return out;
+}
+const CURTAINS = curtainVolumes();
+
 export function createCollision(ctx) {
   let charFrame = -1, charCache = EMPTY;
   let landKey = null, landCache = EMPTY;
+  let staticSrc = null, staticLen = -1, staticAll = CURTAINS;
 
   const inClassroom = () => (ctx.stage?.current ?? 'classroom') === 'classroom';
   const statics = () => {
     if (!inClassroom()) return EMPTY;
     const c = ctx.world?.classroom?.colliders;
-    return Array.isArray(c) ? c : EMPTY;
+    if (!Array.isArray(c)) return CURTAINS;
+    if (staticSrc !== c || staticLen !== c.length) { staticSrc = c; staticLen = c.length; staticAll = c.concat(CURTAINS); }
+    return staticAll;
   };
   /** Character colliders; cached per tick unless `fresh`. */
   const chars = (fresh = false) => {

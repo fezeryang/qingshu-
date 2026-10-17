@@ -327,12 +327,12 @@ export async function install(ctx) {
   function updateArms(dt) {
     if (!arms) return;
     const ph = phase();
+    // visible only in the aim phase (camera request): hidden in letter/intro/flight/ending/card/title
     let want = 'hidden';
     if (ph === 'aim' && ball.state === 'held') want = aim.studying ? 'study' : aim.charging ? 'charge' : 'holdBall';
-    else if ((ph === 'aim' || ph === 'flight') && throwTimer > 0) want = 'throw';
-    else if (ph === 'letter') want = 'write';
+    else if (ph === 'aim' && throwTimer > 0) want = 'throw'; // follow-through until the flow switches to flight
     const camMode = ctx.cam?.mode;
-    if (camMode && camMode !== 'fp' && !(want === 'throw' && throwTimer > 0.2)) want = 'hidden';
+    if (camMode && camMode !== 'fp') want = 'hidden';
     if (want !== armsState) {
       armsState = want;
       try { arms.setState?.(want); } catch (e) { warnOnce('arms.setState', e); }
@@ -401,12 +401,16 @@ export async function install(ctx) {
         willpower.value = 1; willpower.active = false;
       }
     } else if (to === 'letter') {
-      ensureArms();
       if (ball.state !== 'flying') { ball.state = 'hidden'; resetBallView(); }
     } else if (to === 'title' || to === 'intro') {
       if (ball.state !== 'flying') { ball.state = 'hidden'; resetBallView(); }
     }
-    if (to !== 'aim') { cancelCharge(false); if (aim.studying) { aim.studying = false; } }
+    if (to !== 'aim') {
+      cancelCharge(false);
+      if (aim.studying) { aim.studying = false; }
+      // hide the FP arms right away on every non-aim phase (incl. caught_read / coward with no throw)
+      if (arms && armsState !== 'hidden') { armsState = 'hidden'; try { arms.setState?.('hidden'); } catch (e) { warnOnce('arms.setState', e); } }
+    }
   });
 
   // ---------------------------------------------------------------- prediction / solving
@@ -428,7 +432,7 @@ export async function install(ctx) {
     const scene = snapshot();
     const sol = solve({
       origin: launchOrigin(), target: V(target.x, target.y, target.z), scene, fans: fans(), lookups,
-      env: { openings: openings() }, opts, budgetMs: opts.budgetMs ?? 140,
+      env: { openings: openings() }, opts,
     });
     lastSolve = sol;
     if (!sol) return null;

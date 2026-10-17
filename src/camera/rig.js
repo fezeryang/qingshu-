@@ -17,7 +17,7 @@ const _d0 = new THREE.Vector3();
 const _d1 = new THREE.Vector3();
 
 /** @returns {{pos: THREE.Vector3, quat: THREE.Quaternion, fov: number}} */
-export function makePose() { return { pos: new THREE.Vector3(), quat: new THREE.Quaternion(), fov: 70 }; }
+export function makePose() { return { pos: new THREE.Vector3(), quat: new THREE.Quaternion(), fov: 70, look: new THREE.Vector3(), hasLook: false }; }
 export function copyPose(dst, src) { dst.pos.copy(src.pos); dst.quat.copy(src.quat); dst.fov = src.fov; return dst; }
 export function blendPose(from, to, w, out) {
   out.pos.lerpVectors(from.pos, to.pos, w);

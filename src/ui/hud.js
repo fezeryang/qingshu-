@@ -3,6 +3,11 @@
 import { h, esc, mix, clamp01 } from './dom.js';
 import { ICON_CHALKBOARD, ICON_CLOCK, ICON_BOOK, ICON_BREATH, HEART_D, STATE_GLYPH } from './icons.js';
 
+const TOUCH_PROMPTS = {
+  aim: '按住屏幕蓄力，松手扔出 · 老师回头就按住「装认真」',
+  flight: '按住「屏息」慢动作 · 按「左」「右」意念微调',
+};
+const isTouch = () => { try { return matchMedia('(pointer: coarse)').matches || window.innerWidth <= 768; } catch { return window.innerWidth <= 768; } };
 const PROMPTS = {
   aim: '按住 <kbd>左键</kbd> 蓄力 · <kbd>右键</kbd>/<kbd>空格</kbd> 装认真',
   flight: '按住 <kbd>空格</kbd> 屏息 · <kbd>A</kbd>/<kbd>D</kbd> 意念微调 · <kbd>C</kbd> 切换镜头',
@@ -45,7 +50,10 @@ export function createHud(U) {
   };
   const touchStudy = touchBtn('装认真', 'Space');
   const touchBreath = touchBtn('屏息', 'Space');
-  const touch = h('div.qs-touch', {}, touchStudy, touchBreath);
+  const touchLeft = touchBtn('左', 'KeyA');
+  const touchRight = touchBtn('右', 'KeyD');
+  touchLeft.classList.add('qs-touch-small'); touchRight.classList.add('qs-touch-small');
+  const touch = h('div.qs-touch', {}, h('div.qs-touch-l', {}, touchStudy, touchBreath), h('div.qs-touch-r', {}, touchLeft, touchRight));
   const root = h('div.qs-hud', { hidden: true }, vignette, objective, eye, timer, cross, will, hint, touch);
   U.L.hud.appendChild(root);
 
@@ -96,7 +104,9 @@ export function createHud(U) {
     st.phase = to;
     st.forced = null;
     applyVisible();
-    if (PROMPTS[to]) showPrompt(PROMPTS[to], false); else showPrompt('', false);
+    const P = isTouch() ? TOUCH_PROMPTS : PROMPTS;
+    root.classList.toggle('is-touch', isTouch());
+    if (P[to]) showPrompt(P[to], false); else showPrompt('', false);
     if (to === 'aim') autoObjective();
   }
   function reset() {
@@ -181,7 +191,7 @@ export function createHud(U) {
     if (!st.promptCustom && hint.classList.contains('is-on') && U.now > st.promptUntil) hint.classList.remove('is-on');
 
     // touch buttons
-    set('touch', st.phase, (v) => { touchStudy.hidden = v !== 'aim'; touchBreath.hidden = v !== 'flight'; });
+    set('touch', st.phase, (v) => { touchStudy.hidden = v !== 'aim'; touchBreath.hidden = touchLeft.hidden = touchRight.hidden = v !== 'flight'; });
   });
 
   return { api, onPhase, reset, get visible() { return !root.hidden; } };
