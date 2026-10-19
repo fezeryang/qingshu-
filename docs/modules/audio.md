@@ -1,6 +1,6 @@
 # Audio module (`src/audio/`) — qs-audio-composer
 
-Fully procedural WebAudio: no audio files. Music is sequenced live from synthesised instruments, and SFX are rendered once into AudioBuffers with `OfflineAudioContext`. The contract (`docs/CONTRACTS.md` §4.8) is implemented unchanged. Additions are listed below.
+Music and SFX use procedural WebAudio. Classroom speech uses bundled neural MP3 clips, with browser speech and soft blips as fallbacks. SFX are rendered once into AudioBuffers with `OfflineAudioContext`. The contract (`docs/CONTRACTS.md` §4.8) is implemented unchanged. Additions are listed below.
 
 ## Files
 
@@ -12,7 +12,7 @@ Fully procedural WebAudio: no audio files. Music is sequenced live from synthesi
 | `sequencer.js` | `compile(def)` turns song data into a sorted event list. `TrackPlayer` handles lookahead scheduling, loops, intro/outro, layers, tempo rate and per-track FX. |
 | `tracks.js` | The 12 compositions. |
 | `sfx.js` | 45 SFX recipes and the pre-render bank (`createBank`). |
-| `voice.js` | `blip()` (dialogue syllables) and `speak()` (speechSynthesis with a blip fallback). |
+| `voice.js` | `voiceLine()` / `speak()`: pre-rendered clip lookup (manifest), browser voice ranking + casting, sentence-level speechSynthesis, voice modes, harvest recorder; soft fallback `blip()`. |
 | `auto.js` | Event-driven automatic music and SFX, the tension computation, bullet-time treatment and declarative ambience "beds". |
 | `theory.js`, `dsp.js` | Note/chord/melody parsing, JS biquads, a formant voice synth, IR generation, loop crossfades and buffer stats. |
 
@@ -54,7 +54,9 @@ blips → voiceIn → voiceVol (follows sfxVolume) ─────────�
 | `debug.player` | `{id, state, mode, beat, ctxTime}` of the current track. |
 | `debug.meter()` | Current master-output `{peakDb, rmsDb}` from the analyser (`null` before unlock). |
 | `debug.recent[i]` | `{t, kind, name, auto?}`. `t` is game time. `auto: true` marks cues the module played by itself. Loops are logged when they start. `music` logs `'off'` for `null`. |
-| `dev.renderTrack(id, sec, {tension})`, `dev.renderSfxStats(name, variant)` | Offline renders with stats (used by `dev/audio/render.js`). |
+| `dev.renderTrack(id, sec, {tension})`, `dev.renderSfxStats(name, variant)`, `dev.setVoicesForTest(list)` | Offline renders with stats (`dev/audio/render.js`); voice-list simulation (`dev/audio/voices.js`). |
+| `voiceQuality`, `voiceHint` | See *Voices* below. |
+| `stopVoice()` / `cancelVoice()`, `voiceLine(...).cancel()`, `speak(...).cancel()` | Stop the current voice line / read-aloud (UI click-to-skip). The pending promises resolve. |
 
 `setTension(v)` sets a *manual* floor. The effective tension is `max(manual, auto)`, and the manual value resets on `round:setup`.
 
@@ -136,10 +138,121 @@ All 45 contract names exist. Each has 1–4 pre-rendered variants. Every playbac
 
 Crowd sounds (`laughCrowd`, `ooh`, `cheer`, `murmur`, `gasp`) and human sounds (`hmm`, `sneeze`, `cough`) use a JS formant-voice synth: a polyBLEP saw plus aspiration noise, fed through three formant band-passes with vowel trajectories. Paper sounds, claps, rain and chalk/pencil are granular (band-passed noise grains).
 
-## Speech
+## Pre-rendered neural voices (`tools/voices/`, `assets/voices/`)
 
-- **`blip(voice, ch)`.** A square-wave syllable through two vowel formants, 50–65 ms long. Pitch is `175 Hz × voice.pitch`, moved by a per-character pentatonic offset plus a little random jitter. Punctuation and whitespace are silent. Blips are rate-limited to one per 35 ms.
-- **`speak(text, {pitch, rate})`.** Uses `speechSynthesis` only when all of these hold: audio is unlocked, it is audible, and a `zh*` voice exists. The text is split into sentences; the call resolves on the last utterance's `onend`, or at a UI-clock deadline (`2 + 0.3 s/char + 0.5 s/sentence`), whichever comes first. Otherwise it runs a blip sequence: 0.12 s per character, 0.2 s / 0.36 s pauses at short / long punctuation, capped at `2.5 + 0.25 s/char`, so it always finishes inside story's `3 + 0.3·len` cap. Music is ducked 45 % while speaking.
+Only classroom dialogue is voiced, as specified in `docs/PLAYTEST-1.md` addendum 2. Ending dialogue and letter read-aloud remain text-only, including when the blip setting is selected.
+
+- `node tools/voices/build.mjs --static`: harvest every teacher line, named call-on/scolding variant, student answer, intro ritual, and chatter fragment; generate missing clips and publish the manifest.
+- Omit `--static` to also harvest intro/AI playthroughs. `--skip-harvest` reuses the catalog; `--dry` skips generation and leaves published assets untouched.
+- Generation uses the existing `tools/voices/.venv` (`edge-tts`) plus `ffmpeg`/`ffprobe`. Casting is recorded in `tools/voices/casting.json`; rate/pitch adjustments are capped at ±10.
+- Files are mono, 24 kHz, 32 kbps MP3. Keys are speaker + original text; filenames hash the cast and normalized spoken text. Bracketed stage directions are not spoken.
+- Budget: **6 MB**. A failed/incomplete build exits non-zero and preserves the previous manifest and clips. The manifest is replaced atomically only once every harvested line exists.
+
+The intro bell schedules “上课”, “起立”, an eight-voice classroom chorus, and “同学们好，坐”. Skipping the intro, resetting a round, or calling `stopVoice()` cancels the ritual and invalidates pending decodes. A missing manifest falls back to ordinary speech playback.
+
+Classroom chatter uses filtered, panned speech fragments with at most six simultaneous fragments per loop. The AI controls density/volume; disabling ambient behaviour stops the loop. A new round starts a fresh loop. Outside classroom play, crowd effects use the procedural SFX bank.
+
+`voiceLine()` and `speak()` return cancellable promises. Leaving classroom play cancels active speech; ending/card calls resolve silently. Muting stops browser speech as well as the WebAudio bus. Voiced bubbles wait for playback (with a finite timeout), so call-on questions and answers finish before the next speaker begins.
+
+`debug.speech` includes `activeJobs`, `ritualActive`, `chatterBuffers`, and clip coverage/decode counters. Run `node tools/shot.mjs --script dev/audio/classroom.js --query "lowfx=1" --out dev/audio/shots` for playback, cancellation, text-only endings, chatter restart, and master-mute checks.
+
+Microsoft voice service terms require review before distributing commercially.
+
+## Voices: browser speech fallback (`voiceLine`, `speak`, blips)
+
+`voiceLine(text, voice, {charId, mood?, gender?, role?}) → Promise` is the contract voice for one dialogue line; `ui.say` calls it and waits for it. `settings.voiceMode` picks the behaviour and is read on every call:
+
+| `voiceMode` | Behaviour |
+|---|---|
+| `'speech'` (default) | Real Chinese speech via `speechSynthesis` when the audio is unlocked, audible and a zh voice exists. Otherwise it falls back to blips. |
+| `'blips'` | Soft blips only. |
+| `'off'` | Resolves immediately, silently. |
+
+**How a line is spoken**
+- **Sentence by sentence.** Each sentence (split at `。！？…；`) is a separate utterance; the next one is queued on the previous one's `onend`.
+- **Cancellation.** A new `voiceLine` cancels the previous line and resolves its promise. The first utterance after a `cancel()` goes out on the next frame, because Chrome drops a `speak()` issued right after `cancel()`.
+- **Ducking.** Music ducks 40 % while a line is spoken (15 % for blips). The duck is released as soon as the line ends.
+- **Bounded time.** The promise resolves when the last sentence ends, or at a UI-clock deadline (`2.5 s + 0.3 s/char + 0.35 s/sentence`, max 28 s; local voices start from 1.2 s instead of 2.5 s).
+- **Failure fallback.** If speech has not started after 3 s (online voices) or 1.5 s (local voices), or errors before starting, the line switches to blips.
+- **Headless.** Headless or muted runs use the silent blip schedule: `0.06 s + 0.065 s/char`, plus 0.14 / 0.26 s pauses at short / long punctuation, capped at `1 + 0.12 s/char`.
+
+**`speak(text, {pitch, rate, charId?, gender?})`** (the letter read-aloud) uses the same voice ranking and casting; the player is cast by `ctx.round.playerGender`. Its blip schedule is slower (`0.12 s/char`, capped at `2.5 + 0.25 s/char`), so it always stays within story's `3 + 0.3·len` cap.
+
+**Blips** (fallback and `blip()`) are soft and round: sine + quiet triangle octave, low-passed at 1.8 kHz, peak gain 0.13, 12 ms attack, ~70 ms decay. Only every 2nd–3rd non-punctuation character sounds, with at least 70 ms between blips. Pitch is `260 Hz × √voice.pitch` on a per-character pentatonic offset.
+
+### Voice ranking (realism tiers, best first)
+
+Only zh voices are considered (`lang` starting `zh`/`cmn`/`yue`, or a Chinese name).
+
+| Tier | Voices | How they are detected |
+|---|---|---|
+| 6 | Neural zh-CN Mandarin: Edge "Microsoft Xiaoxiao / Xiaoyi / Yunxi / Yunjian / Yunyang / Yunxia … Online (Natural)" | Name contains `Natural`/`Neural`/`Online`, or `localService === false` + Microsoft; lang zh-CN; not a dialect |
+| 5 | Google online `Google 普通话（中国大陆）` | Name contains `Google`, lang zh-CN |
+| 4.5 | Neural zh-TW Mandarin (HsiaoChen, HsiaoYu, YunJhe) | as tier 6, lang zh-TW |
+| 4 | Other Google zh (`國語`, `粵語`) | |
+| 3.5 | Neural zh-HK (Cantonese: HiuGaai, HiuMaan, WanLung) | |
+| 3 | Neural dialect voices (Xiaobei / Liaoning, Xiaoni / Shaanxi) | |
+| 2 | Legacy zh-CN OS voices (Microsoft Huihui / Kangkang / Yaoyao, macOS Tingting / Li-Mu) | |
+| 1 / 0.5 | Other legacy zh / eSpeak | |
+
+`ctx.audio.voiceQuality` reports `natural` when the bundled clip manifest is available; otherwise it reports the best browser voice present: `'natural'` (tiers ≥ 3), `'online'` (Google), `'legacy'`, or `'none'`. `ctx.audio.voiceHint` is `'推荐使用 Edge 浏览器以获得最自然的语音'` when the quality is `legacy` or `none`, and `null` otherwise. The UI can show it in settings.
+
+### Casting
+
+The role comes from `charId` and the cast spec:
+
+| Role | Who | Voice preference (best first; the realism tier dominates) |
+|---|---|---|
+| teacher | `teacher` | Yunyang, Yunze, Yunjian, Yunfeng, Yunye, Kangkang |
+| principal | `npc_principal` | Yunze, Yunye, Yunjian, Yunyang |
+| coach | `npc_pe` | Yunjian, Yunfeng, Yunyang |
+| dad | `npc_dad` | Yunye, Yunjian, Yunfeng, Yunyang |
+| mom | `npc_mom` | Xiaoqiu, Xiaomo, Xiaoxiao, Xiaohan |
+| elderF | `npc_janitor` | Xiaorui, Xiaoqiu, Xiaomo, Xiaoxiao |
+| boy | male students, `player_m` | Yunxi, Yunhao, Yunxia, YunJhe (spread) |
+| girl | female students, `player_f` | Xiaoyi, Xiaoxiao, Xiaomeng, Xiaochen, Xiaohan, Xiaoshuang (spread) |
+| narrator | no `charId` and no voice | Xiaoxiao, Yunyang, Xiaohan |
+
+**How a voice is chosen**
+- **Gender first.** Gender-matching (or unknown-gender) voices are always preferred: a real male legacy voice beats a pitched-down female neural voice, which sounds uncanny. A cross-gender voice (pitch ×0.72 / ×1.3) is used only if that gender has no voice at all.
+- **Classmates (spread).** Students are spread over up to 4 top-tier voices of their gender by a hash of `charId`.
+- **Natural voices.** Pitch and rate offsets stay within ±8–10 % (hash jitter + a little of `voice.pitch` / `voice.speed`); characters differ mostly by voice choice. The teacher and principal speak 5 % slower.
+- **Legacy voices.** Larger pitch offsets are allowed (0.6–1.5).
+- **Mood.** `mood` (`shout`/`angry`/`whisper`/`sad`) nudges rate, pitch and volume slightly.
+
+Resulting casts (from `dev/audio/voices.js`, which simulates the browsers' voice lists):
+
+| Role | Edge on Windows (`natural`) | Chrome on Windows (`online`) | Safari on macOS (`legacy`, hint shown) |
+|---|---|---|---|
+| teacher | Yunyang | Kangkang | Li-Mu |
+| principal | Yunjian | Kangkang | Li-Mu |
+| coach / dad | Yunjian | Kangkang | Li-Mu |
+| mom / janitor | Xiaoxiao | Google 普通话 | Tingting |
+| boys | Yunxi / Yunxia | Kangkang | Li-Mu |
+| girls | Xiaoyi / Xiaoxiao | Google 普通话 | Tingting |
+| narrator | Xiaoxiao | Google 普通话 | Tingting |
+
+**Debug:** `debug.castTable()`, `debug.voiceList()`, `debug.speech` (counts, quality, mode). `debug.recent` logs `{kind:'voice', name, mode:'tts'|'blips'|'off', v?, role?}` for every line.
+
+### Crowd and voice SFX audit (playtest 1)
+
+The formant voice synth now uses:
+- a low-passed glottal source (natural spectral tilt);
+- vibrato with slow pitch drift;
+- smoothed amplitude;
+- a separate `voiced` vs `breath` mix.
+
+| SFX | Change |
+|---|---|
+| `laughCrowd` | 16 voices at lower level with rounder syllables, low-pass 3.2 kHz, room reverb |
+| `ooh` | 14 voices, low-pass 2.4 kHz, reverb |
+| `murmur` | 11 voices, low-pass 1.7 kHz, so no syllable stands out |
+| `cheer` | Now mainly a crowd roar (swelling band-passed noise) with a quiet "耶" layer and whistles |
+| `gasp` | Almost unvoiced breath |
+| `hmm` | A warm closed-mouth hum, low-passed at 900 Hz |
+| `sneeze`, `cough` | Mostly noise, low-passed |
+
+Zero-crossing rate, a proxy for harshness, dropped 15–25 % on each of these.
 
 ## Self-test data (offline renders, 44.1 kHz, through the real master chain at default settings)
 
@@ -166,4 +279,5 @@ Crowd sounds (`laughCrowd`, `ooh`, `cheer`, `murmur`, `gasp`) and human sounds (
 ## Known limitations
 
 - **Boot hitch.** The JS-synthesised SFX recipes (crowds, rain, murmur) take tens to a few hundred ms each on the main thread. They render one per frame during the title screen. On a slow machine this can cause a brief music stutter if the player clicks start within the first ~2 s of boot.
-- **No pause handling for TTS.** While the game is paused (Esc), `speechSynthesis` keeps talking. The blip fallback pauses with the engine.
+- **No pause handling for TTS.** While the game is paused (Esc), speechSynthesis keeps talking. The blip fallback pauses with the engine.
+- **Casting is untested on real hardware.** It was tested against simulated voice lists only; headless Chromium has no voices. Edge's neural voices are network voices, so the first line may start 0.3–1 s late.

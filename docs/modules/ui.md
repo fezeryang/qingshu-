@@ -30,7 +30,7 @@ The text content of each button is exactly the label below. Each label is unique
 | Screen | Labels |
 |---|---|
 | Title | `我是男生`, `我是女生` (toggles, `aria-pressed`), `开始`, `结局图鉴` (the button also contains an `x/13` badge), `设置`, `玩法说明` |
-| Settings panel | sliders `主音量` `音乐` `音效` `视角灵敏度` (aria-labels), checkbox `减少晃动`, button `完成` |
+| Settings panel | sliders `主音量` `音乐` `音效` `视角灵敏度` (aria-labels), 语音 choice `真人朗读` / `哔哔声` / `关闭` (`aria-pressed`), checkbox `减少晃动`, button `完成` |
 | How-to panel | `知道了` |
 | Letter editor | preset tabs use each preset's `title` (stub: `含蓄` `中二` `土味`), `自己写`, `写好了`. The custom text box is the only `<textarea>` (aria-label `自己写情书`, maxlength 60). |
 | Crumple | no button. Hold the mouse anywhere on screen (a full-screen catcher `.qs-catcher`), or hold Space. Hint text: `按住鼠标（或空格）把它揉成一团` |
@@ -74,6 +74,18 @@ The text content of each button is exactly the label below. Each label is unique
   - If something else has already paused the engine, the menu does not open.
 - **`closeAll()`** closes the title, letter and crumple screens, the card, reveal, captions, bubbles, dialogue, toasts, modals and pause. Pending promises resolve, except title/card choices. On `round:setup` the UI runs the same reset, but it spares items created in that same tick by another `round:setup` handler.
 - **Audio unlock.** The first `pointerdown` or `keydown` anywhere calls `ctx.audio.unlock()`, and so does every UI button click.
+
+## Voiced dialogue (playtest 1)
+
+- `say` calls `ctx.audio.voiceLine(text, voice, {charId, mood})`.
+  - **Typewriter pacing:** matched to the estimated spoken length, about 4.6 syllables/s, capped at 0.11 s per character.
+  - **Resolves** when the text is typed, the minimum display time has passed, and the voice Promise has resolved. A safety cap of max(6 s, 2× estimate + 3 s) means a stuck voice never blocks the flow.
+  - **First click / Space:** finishes the text and cancels the voice, via `promise.cancel()`, then `ctx.audio.stopVoice()`, then `cancelVoice()` (see `docs/requests/ui-to-audio.md`).
+  - **Second click / Space:** advances.
+  - **Blips:** none per character while `voiceLine` exists. If `voiceLine` is missing, the old per-character blips are used.
+- **Bubbles are silent by default**, so lecture bubbles never talk over dialogue. Opt in with `bubble(id, text, {voiced: true})` or an explicit `voice` object. That uses `voiceLine`, or soft blips if `voiceLine` is missing.
+- **Setting 语音:** `真人朗读` / `哔哔声` / `关闭` writes `ctx.settings.voiceMode` ('speech' | 'blips' | 'off'), then calls `ctx.audio.applySettings`, and stores the result in `qingshu.settings`. When `ctx.audio.voiceQuality` is 'legacy' or 'none', the panel shows the note 推荐使用 Edge 浏览器以获得最自然的语音.
+- Self-test: `dev/ui/voice.js`. It uses a fake 3 s `voiceLine`, checks that a short line waits for the voice, that the first Space cancels it and the second advances, and that no blips play while voiced.
 
 ## Touch / phone layout
 

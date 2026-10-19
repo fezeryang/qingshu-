@@ -13,6 +13,7 @@ import { yawTo } from '../core/util.js';
 import { NPCS, playerAvatarSpec } from './roster.js';
 
 export const CANCEL = Symbol('story-cancel');
+const CAM_MOVES = new Set(['closeUp', 'twoShot', 'overShoulder', 'wide', 'orbit', 'crashZoom', 'track']);
 const warned = new Set();
 export function warnOnce(key, err) {
   if (warned.has(key)) return;
@@ -22,6 +23,19 @@ export function warnOnce(key, err) {
 
 const isThenable = (x) => x && typeof x.then === 'function';
 export const V = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z);
+
+/**
+ * Clean a dialogue line for voicing (all ui.say text is pre-rendered by neural TTS from the exact string):
+ * drop （stage directions） when there is other text (else unwrap them), drop leading ellipses, '～',
+ * collapse repeated ！/？. Mid-sentence …… stays (a meant pause). Returns '' if nothing speakable is left.
+ */
+export function speakable(text) {
+  let t = String(text ?? '').trim();
+  const stripped = t.replace(/（[^）]*）/g, '').trim();
+  t = /[\p{L}\p{N}]/u.test(stripped) ? stripped : t.replace(/[（）]/g, '');
+  t = t.replace(/[～~]/g, '').replace(/^[…\s.。，,]+/, '').replace(/！{2,}/g, '！').replace(/？{2,}/g, '？').replace(/[!?]{2,}/g, (m) => m[0]).trim();
+  return /[\p{L}\p{N}]/u.test(t) ? t : '';
+}
 
 /**
  * @param ctx    the global ctx
@@ -38,7 +52,10 @@ export function createDirector(ctx, shared, label) {
   const d = {
     ctx, round, label, V, THREE,
     cancelled: false,
-    cancel() { d.cancelled = true; },
+    cancel() {
+      d.cancelled = true;
+      for (const ch of [...walking]) d.cancelWalk(ch);
+    },
     check() { if (d.cancelled) throw CANCEL; },
 
     // ---------------------------------------------------------------- randomness (variants)
@@ -149,7 +166,9 @@ export function createDirector(ctx, shared, label) {
       const dist = ch.root.position.distanceTo(pos);
       walking.add(ch);
       const r = d.try('walkTo', () => ch.walkTo?.(pos.clone(), { speed }));
-      try { await d.settle(r, { cap: cap ?? dist / speed + 2, clock: 'game' }); } finally { walking.delete(ch); }
+      // A capped await does not stop the character's walkTo tween. Invalidate it before
+      // releasing ownership, so a later scene placement cannot be overwritten by that tween.
+      try { await d.settle(r, { cap: cap ?? dist / speed + 2, clock: 'game' }); } finally { d.cancelWalk(ch); }
       if (!isThenable(r)) ch.root.position.copy(pos);
     },
     /** Stop a walkTo that is still moving the root (walkTo to the current spot bumps the walk token). */
@@ -157,6 +176,8 @@ export function createDirector(ctx, shared, label) {
       if (!ch || !walking.has(ch)) return;
       walking.delete(ch);
       if (ch.posture !== 'sit') d.try('walkTo(cancel)', () => ch.walkTo?.(ch.root.position.clone(), { speed: 1 }));
+      d.stop(ch, 'walk');
+      d.stop(ch, 'run');
     },
     hold(ch, prop, hand = 'R') { if (ch) d.try('hold', () => ch.hold?.(prop ?? null, hand)); },
     posture(ch, p) { if (ch) d.try('setPosture', () => ch.setPosture?.(p)); },
@@ -214,10 +235,11 @@ export function createDirector(ctx, shared, label) {
     get cam() { return ctx.cam || {}; },
     async shot(o) {
       const dur = o.dur ?? 0;
+      shared.debug.shots = (shared.debug.shots || 0) + 1;
       const r = d.try('cam.shot', () => ctx.cam?.shot?.({ fov: 50, ...o, dur }));
       await d.settle(r, { cap: dur + 1, fallback: dur, clock: 'game' });
     },
-    cut(o) { d.try('cam.cut', () => (ctx.cam?.cut ? ctx.cam.cut({ fov: 50, ...o }) : ctx.cam?.shot?.({ fov: 50, ...o, dur: 0 }))); },
+    cut(o) { shared.debug.shots = (shared.debug.shots || 0) + 1; d.try('cam.cut', () => (ctx.cam?.cut ? ctx.cam.cut({ fov: 50, ...o }) : ctx.cam?.shot?.({ fov: 50, ...o, dur: 0 }))); },
     /** Camera at `dist` from target along a direction (yaw in radians around Y, 0 = looking toward -Z from +Z side). */
     frame(target, { yaw = 0, dist = 1.2, height = 0.1, fov = 40, dur = 0, lookOffset, ease } = {}) {
       const t = target?.isVector3 ? target.clone() : d.headPos(target);
@@ -231,6 +253,7 @@ export function createDirector(ctx, shared, label) {
       return dur > 0 ? d.shot({ pos: anchor.pos.clone(), look: look.clone(), fov, dur, ease }) : (d.cut({ pos: anchor.pos.clone(), look: look.clone(), fov }), d.settle(null));
     },
     async preset(name, args, dur = 0.6) {
+      if (CAM_MOVES.has(name)) shared.debug.shots = (shared.debug.shots || 0) + 1;
       const r = d.try(`cam.${name}`, () => ctx.cam?.[name]?.(...args));
       await d.settle(r, { cap: dur + 1.2, fallback: 0, clock: 'game' });
     },
@@ -257,6 +280,8 @@ export function createDirector(ctx, shared, label) {
       const speaker = ch ? d.name(ch) : String(who ?? '');
       if (ch && expr) d.expr(ch, expr);
       if (ch && emote) d.emote(ch, emote);
+      text = speakable(text);
+      if (!text) { await d.wait(0.8); return; } // a silent beat (e.g. a pure '……')
       const len = [...text].length;
       const r = d.try('ui.say', () => ctx.ui?.say?.(speaker, text, { charId: ch?.id ?? charId, voice: voice || ch?.spec?.voice, mood }));
       await d.settle(r, { cap: cap ?? 3 + len * 0.15, fallback: 1 + len * 0.08 });

@@ -42,6 +42,10 @@ const CLASS_CENTER = new THREE.Vector3(0, 1, -0.7);
 const PLAYER_V = new THREE.Vector3(PLAYER_EYE.x, PLAYER_EYE.y, PLAYER_EYE.z);
 const wrap = (a) => a - 2 * Math.PI * Math.floor((a + Math.PI) / (2 * Math.PI));
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
+/** minimum game seconds between two voiced teacher lines (warning tells are exempt) */
+export const VOICE_GAP = 4;
+/** Speakable = no stage directions in brackets and at least one CJK character or letter. */
+export const speakable = (text) => typeof text === 'string' && !/[（(【\[]/.test(text) && /[\u4e00-\u9fffA-Za-z]/.test(text);
 
 export function createTeacher(ctx, hooks) {
   const { bus, time } = ctx;
@@ -50,7 +54,7 @@ export function createTeacher(ctx, hooks) {
     timer: Infinity, stateTime: 0, opts: {}, sub: {},
     desiredYaw: Math.PI,
     nav: { path: [], speed: TUNE.walkSpeed, onDone: null, walking: false },
-    gazeT: 0, sayT: 0, sayBusyUntil: 0, lastLine: '',
+    gazeT: 0, sayT: 0, sayBusyUntil: 0, lastLine: '', voiceNextAt: 0, lastVoiced: false,
     lastEmitted: -1, caughtEmitted: false, seeingBall: false, lookingBall: false,
     rng: ctx.rng.fork('teacher'), rngG: ctx.rng.fork('teacherGaze'), rngL: ctx.rng.fork('teacherLines'),
     board: { lesson: null, queue: [], line: null, idx: 0, charT: 0, pause: 0, eggs: 0, usedEggs: new Set(), lessonOrder: [] },
@@ -80,15 +84,27 @@ export function createTeacher(ctx, hooks) {
   }
 
   // ───────────────────────── speech ─────────────────────────
+  /**
+   * Speech bubble. `voiced: true` asks the UI for a real voice, subject to the voice budget:
+   * only speakable text, at most one voiced line per VOICE_GAP s, and during the flight only turn tells
+   * (`tell: true`, e.g. the warning "嗯？"), which are also exempt from the gap. Anything else stays a silent bubble.
+   */
   function say(text, opts = {}) {
     if (!text) return Promise.resolve();
     const dur = opts.dur ?? clamp(1.2 + text.length * 0.12, 1.6, 3.2);
-    T.sayBusyUntil = time.now + dur;
+    T.sayBusyUntil = time.now + Math.max(dur, opts.hold ?? 0);
     const id = ch()?.id ?? 'teacher';
-    const p = call(() => ctx.ui?.bubble?.(id, text, { dur }));
+    let voiced = !!opts.voiced && speakable(text);
+    if (voiced) {
+      if (phase() === 'flight' && !opts.tell) voiced = false;
+      else if (!opts.tell && time.now < T.voiceNextAt) voiced = false;
+    }
+    if (voiced) T.voiceNextAt = time.now + VOICE_GAP;
+    T.lastVoiced = voiced;
+    const p = call(() => ctx.ui?.bubble?.(id, text, voiced ? { dur, voiced: true } : { dur }));
     return Promise.resolve(p).catch(() => {});
   }
-  const canSpeak = () => time.now >= T.sayBusyUntil;
+  const canSpeak = () => time.now >= T.sayBusyUntil && !(ctx.audio?.debug?.speech?.activeJobs > 0);
 
   // ───────────────────────── vision ─────────────────────────
   /** 0..1: how well the teacher can see `pos` right now (eyes × cone × distance × occlusion). */
@@ -311,7 +327,7 @@ export function createTeacher(ctx, hooks) {
       },
       update(dt) {
         if (!T.nav.walking) { T.desiredYaw = 0; boardTick(dt); }
-        if (T.stateTime > T.sub.mutterAt && canSpeak()) { T.sub.mutterAt = Infinity; say(pickLine(L.WRITING_MUTTER)); }
+        if (T.stateTime > T.sub.mutterAt && canSpeak()) { T.sub.mutterAt = Infinity; say(pickLine(L.WRITING_MUTTER), { voiced: T.timer > VOICE_GAP + 0.5 }); }   // voiced only if it cannot collide with the coming tell
       },
       next: () => (T.rng.chance(TUNE.pFakeout) ? 'fakeout' : 'warning'),
     },
@@ -331,8 +347,9 @@ export function createTeacher(ctx, hooks) {
         T.sub.variant = variant;
         if (variant === 'glasses') play('teacherAdjustGlasses');
         emote('?', Math.max(0.6, T.timer));
-        if (variant === 'heard') say(pickLine(L.HEARD_TELL), { dur: 1.2 });
-        else if (variant === 'hmm' || T.rng.chance(0.4)) say(pickLine(L.WARNING_TELL) || '嗯？', { dur: 1 });
+        if (variant === 'heard') say(pickLine(L.HEARD_TELL), { dur: 1.2, voiced: true, tell: true });
+        else if (o.sudden) say('嗯？', { dur: 1, voiced: true, tell: true });
+        else if (variant === 'hmm' || T.rng.chance(0.4)) say(pickLine(L.WARNING_TELL) || '嗯？', { dur: 1, voiced: true, tell: true });
       },
       update() { T.desiredYaw = T.sub.side * 0.3; },
       next() {
@@ -374,7 +391,7 @@ export function createTeacher(ctx, hooks) {
         T.desiredYaw = classYaw(T.sub.gaze);
         T.sayT -= dt;
         if (T.sayT <= 0 && canSpeak()) {
-          say(pickLine(T.sub.opening ? L.OPENING : L.LECTURE));
+          say(pickLine(T.sub.opening ? L.OPENING : L.LECTURE), { voiced: true });
           T.sub.opening = false;
           T.sayT = T.rngL.range(2.6, 4.2);
         }
@@ -405,7 +422,7 @@ export function createTeacher(ctx, hooks) {
         loop('idle');
         const p = ch().root.position;
         look(V(p.x + T.sub.side * 2, 1.4, p.z + 1.5), 0.8);
-        if (T.rng.chance(0.5)) say(pickLine(L.FAKEOUT_TELL) || '嗯……', { dur: 1 });
+        if (T.rng.chance(0.5)) say(pickLine(L.FAKEOUT_TELL) || '嗯？', { dur: 1, voiced: true });
       },
       update() {
         // hold the half turn, then go back to the board (a forced fakeout holds forever)
@@ -443,7 +460,7 @@ export function createTeacher(ctx, hooks) {
         T.sub.ax = ax;
         T.sub.leg = 'out';
         T.gazeT = 0.6;
-        if (T.rng.chance(0.6)) say(pickLine(L.PATROL_LINES));
+        if (T.rng.chance(0.6)) say(pickLine(L.PATROL_LINES), { voiced: true });
         const out = () => walk(route(V(ax, 0, zEnd)), { speed: TUNE.patrolSpeed, onDone: pause });
         const pause = () => {
           if (T.state !== 'patrol') return;
@@ -483,7 +500,7 @@ export function createTeacher(ctx, hooks) {
         look(PLAYER_V, 1);
         T.desiredYaw = yawTo(ch().root.position, PLAYER_V);
         if (o.snap) snapYaw(T.desiredYaw);
-        say(pickLine(L.SUSPICIOUS_LINES));
+        say(pickLine(L.SUSPICIOUS_LINES), { voiced: true });
         approach(V(TEACHER_SPOTS.patrolAisles[0], 0, MOUTH_Z + 0.25));
       },
       update() {
@@ -494,14 +511,14 @@ export function createTeacher(ctx, hooks) {
           T.sub.stage = 2;
           T.timer = Math.max(T.timer, 2);
           approach(V(TEACHER_SPOTS.patrolAisles[0], 0, -2.55));
-          if (canSpeak()) say(pickLine(L.SUSPICIOUS_LINES));
+          if (canSpeak()) say(pickLine(L.SUSPICIOUS_LINES), { voiced: true });
         }
         if (!T.forced && T.timer <= 0 && s >= TUNE.suspiciousAt) T.timer = 1;   // keep staring while still suspicious
       },
       exit() { expr('neutral'); },
       next() {
         if ((ctx.round?.suspicion ?? 0) >= TUNE.suspiciousAt) return 'watching';
-        if (canSpeak()) say(pickLine(L.SUSPICIOUS_CLEAR));
+        if (canSpeak()) say(pickLine(L.SUSPICIOUS_CLEAR), { voiced: true });
         return 'writing';
       },
     },
@@ -518,7 +535,7 @@ export function createTeacher(ctx, hooks) {
         look(tgt, 1);
         T.desiredYaw = yawTo(ch().root.position, o.ball && ball?.pos ? ball.pos : PLAYER_V);
         if (o.snap) snapYaw(T.desiredYaw);
-        say(pickLine(o.ball ? L.ALERT_BALL : L.ALERT_AIM), { dur: 2.4 });
+        say(pickLine(o.ball ? L.ALERT_BALL : L.ALERT_AIM), { dur: 2.4, voiced: true });
       },
       update() {
         const ball = T.opts.ball && ctx.gameplay?.ball;
@@ -670,6 +687,8 @@ export function createTeacher(ctx, hooks) {
     T.caughtEmitted = false;
     T.lastEmitted = -1;
     T.sayBusyUntil = 0;
+    T.voiceNextAt = 0;
+    T.lastVoiced = false;
     T.timeline = [];
     stopWalking();
     boardReset();
@@ -704,6 +723,7 @@ export function createTeacher(ctx, hooks) {
     get forced() { return T.forced ? { state: T.forced.state, remaining: Math.max(0, T.forced.until - time.now) } : null; },
     get timeLeft() { return T.timer; },
     get timeline() { return T.timeline; },
+    get lastVoiced() { return T.lastVoiced; },
     canSee(pos) { return visibility(pos) > 0.25; },
     visibility,
     playerVisibility,

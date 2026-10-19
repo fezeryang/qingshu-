@@ -102,8 +102,11 @@ export function createMixer(config) {
     },
     activeVoices(kind) { const now = M.now; return M.voices[kind].filter((v) => v.end > now).length; },
 
+    /** returns the duck entry; set entry.until = 0 to release it early */
     duck(amount, dur, uiNow) {
-      M.ducks.push({ amount: clamp(+amount || 0, 0, 1), until: uiNow + Math.max(0.05, +dur || 0) });
+      const d = { amount: clamp(+amount || 0, 0, 1), until: uiNow + Math.max(0.05, +dur || 0) };
+      M.ducks.push(d);
+      return d;
     },
 
     /** per-frame: clean voices, apply duck level */

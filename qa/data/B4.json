@@ -6,7 +6,7 @@
   "susp": 0.525,
   "phase": "aim",
   "ball": "held",
-  "pitch": 0.2437641106487904
+  "pitch": 0.11700677311141935
  },
  "s1": {
   "studying": true,
@@ -15,7 +15,7 @@
   "susp": 0,
   "phase": "aim",
   "ball": "held",
-  "pitch": -50.08635042229117
+  "pitch": -50.039002815363695
  },
  "s2": {
   "studying": true,
@@ -24,7 +24,7 @@
   "susp": 0,
   "phase": "aim",
   "ball": "held",
-  "pitch": -49.87763000772397
+  "pitch": -49.76586121950572
  },
  "s3": {
   "studying": true,
@@ -33,7 +33,7 @@
   "susp": 0,
   "phase": "aim",
   "ball": "held",
-  "pitch": -50.09705566159944
+  "pitch": -50.02352492973211
  },
  "s4": {
   "studying": false,
@@ -42,7 +42,7 @@
   "susp": 0,
   "phase": "aim",
   "ball": "held",
-  "pitch": -4.1121936323554635
+  "pitch": -4.164071175812975
  },
  "s5": {
   "studying": true,
@@ -51,7 +51,7 @@
   "susp": 0,
   "phase": "aim",
   "ball": "held",
-  "pitch": -24.20334565693205
+  "pitch": -24.28704878160569
  },
  "s6": {
   "studying": false,
@@ -60,7 +60,7 @@
   "susp": 0,
   "phase": "aim",
   "ball": "held",
-  "pitch": -20.264980384365053
+  "pitch": -20.394988795580403
  },
  "cancelEv": [
   "aim:study",

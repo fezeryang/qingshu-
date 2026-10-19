@@ -133,6 +133,10 @@ export function createCharacter(ctx, spec, env) {
   bothAnchor.name = 'gripBoth';
   root.add(bothAnchor);
   grips.both = bothAnchor;
+  // Parent-before-child paths needed by collision shapes. Hair, outlines, props, fingers and
+  // legs do not contribute to these colliders and need not be traversed again after posing.
+  const colliderNodes = [rig, bones.hips, bones.spine, bones.chest, bones.neck, bones.head, headGroup, headCenter];
+  for (const side of ['L', 'R']) colliderNodes.push(bones[`shoulder${side}`], bones[`upperArm${side}`], bones[`forearm${side}`], bones[`hand${side}`], grips[side]);
 
   // emote sprite
   let emoteSprite = null;
@@ -415,7 +419,8 @@ export function createCharacter(ctx, spec, env) {
     }
     // two-handed grip anchor between the hands
     if (held.both) {
-      grips.L.getWorldPosition(_v); grips.R.getWorldPosition(_v2);
+      // FK/IK above already refreshed these matrices; avoid rewalking both ancestor chains.
+      _v.setFromMatrixPosition(grips.L.matrixWorld); _v2.setFromMatrixPosition(grips.R.matrixWorld);
       _v.add(_v2).multiplyScalar(0.5);
       root.worldToLocal(_v);
       bothAnchor.position.copy(_v);
@@ -430,7 +435,7 @@ export function createCharacter(ctx, spec, env) {
     _q.setFromRotationMatrix(_m);
     _q2.copy(_q).invert();
     for (const sp of springs) {
-      sp.pivot.getWorldPosition(_v);
+      _v.setFromMatrixPosition(sp.pivot.matrixWorld);
       if (!sp.init || _v.distanceTo(sp.prevP) > 0.4) { sp.prevP.copy(_v); sp.prevV.set(0, 0, 0); sp.init = true; sp.vel.set(0, 0, 0); }
       _v2.subVectors(_v, sp.prevP).divideScalar(dt);
       _v3.subVectors(_v2, sp.prevV).divideScalar(dt).applyQuaternion(_q2).clampLength(0, 30);
@@ -491,7 +496,7 @@ export function createCharacter(ctx, spec, env) {
       case 'heart': sc *= 1 + 0.1 * Math.max(0, Math.sin(e.t * 9)); break;
       default: break;
     }
-    headCenter.getWorldPosition(_v);
+    _v.setFromMatrixPosition(headCenter.matrixWorld);
     _v.y += oy * s;
     root.worldToLocal(_v);
     _v.x += ox * s;
@@ -607,10 +612,11 @@ export function createCharacter(ctx, spec, env) {
     getColliders() {
       const frame = time.frame;
       if (collCache && collFrame === frame && collPos.equals(root.position) && collYaw === root.rotation.y) return collCache.slice();
-      root.updateMatrixWorld(true);
+      root.updateWorldMatrix(true, false);
+      for (const node of colliderNodes) node.updateWorldMatrix(false, false);
       const tag = teacher ? 'teacher' : null;
       const out = [];
-      headCenter.getWorldPosition(_v);
+      _v.setFromMatrixPosition(headCenter.matrixWorld);
       out.push({ kind: 'sphere', center: _v.clone(), radius: 0.215 * s * D.headScale, tag: tag || 'head', ownerId });
       // torso box in spine space → world AABB
       const W2 = D.torsoW * 1.08, dz = D.torsoW * D.torsoD * 1.15;
@@ -623,12 +629,12 @@ export function createCharacter(ctx, spec, env) {
       }
       out.push({ kind: 'box', min, max, tag: tag || 'body', ownerId });
       for (const side of ['L', 'R']) {
-        bones[`upperArm${side}`].getWorldPosition(_v2);
-        bones[`hand${side}`].getWorldPosition(_v3);
+        _v2.setFromMatrixPosition(bones[`upperArm${side}`].matrixWorld);
+        _v3.setFromMatrixPosition(bones[`hand${side}`].matrixWorld);
         if (_v3.y > _v2.y + 0.1 * s) {
-          bones[`forearm${side}`].getWorldPosition(_v);
+          _v.setFromMatrixPosition(bones[`forearm${side}`].matrixWorld);
           out.push({ kind: 'sphere', center: _v.clone().lerp(_v3, 0.5), radius: 0.06 * s, tag: tag || 'body', ownerId });
-          grips[side].getWorldPosition(_v);
+          _v.setFromMatrixPosition(grips[side].matrixWorld);
           out.push({ kind: 'sphere', center: _v.clone(), radius: 0.06 * s, tag: tag || 'body', ownerId });
         }
       }

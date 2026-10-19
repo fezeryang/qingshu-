@@ -5,6 +5,7 @@ import { Batch, GEO, mat4, toon, colBox, mergeColored, TAU } from './kit.js';
 import { PAL } from './palette.js';
 import { clockFaceTexture } from './textures.js';
 import { damp } from '../core/util.js';
+import { createCurtainMaterials } from './curtain.js';
 
 // ---------------------------------------------------------------------------------------------
 // Ceiling fans. Blade i points along (cos a, 0, sin a) with a = angle + i·2π/3; the rotating mesh uses
@@ -79,7 +80,7 @@ export function createFans(group, colliders, staticBatch, mat) {
 }
 
 // ---------------------------------------------------------------------------------------------
-// Curtains: two gathered panels per window, one merged dynamic mesh, CPU-deformed every frame.
+// Curtains: two gathered panels per window, one merged mesh, deformed on the GPU (including its shadow).
 export function createCurtains(group, windows, lowfx) {
   const SU = lowfx ? 6 : 9, SV = lowfx ? 10 : 16;
   const panels = [];
@@ -96,12 +97,19 @@ export function createCurtains(group, windows, lowfx) {
   const vpp = (SU + 1) * (SV + 1);
   const pos = new Float32Array(panels.length * vpp * 3);
   const colr = new Float32Array(panels.length * vpp * 3);
+  const cloth = new Float32Array(panels.length * vpp * 4);
+  const open = new Float32Array(panels.length * vpp);
   const idx = [];
   const cBase = new THREE.Color(PAL.curtain), cHem = new THREE.Color(PAL.curtainHem), cShade = new THREE.Color(PAL.curtain).multiplyScalar(0.86);
   panels.forEach((p, k) => {
     const o = k * vpp;
     for (let j = 0; j <= SV; j++) for (let i = 0; i <= SU; i++) {
       const v = j / SV, u = i / SU;
+      const vertex = o + j * (SU + 1) + i;
+      const span = p.inner - p.outer, height = p.top - p.bottom;
+      pos.set([p.wallX + 0.15, p.top - height * v, p.outer + span * u], vertex * 3);
+      cloth.set([u, v, span, height], vertex * 4);
+      open[vertex] = p.open ? 1 : 0;
       const c = v > 0.92 ? cHem : (i % 2 ? cShade : cBase);
       colr.set([c.r, c.g, c.b], (o + j * (SU + 1) + i) * 3);
     }
@@ -114,12 +122,17 @@ export function createCurtains(group, windows, lowfx) {
   geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   geo.setAttribute('color', new THREE.BufferAttribute(colr, 3));
   geo.setIndex(idx);
-  const mat = toon({ side: THREE.DoubleSide });
-  const mesh = new THREE.Mesh(geo, mat);
+  geo.setAttribute('aCurtain', new THREE.BufferAttribute(cloth, 4));
+  geo.setAttribute('aCurtainOpen', new THREE.BufferAttribute(open, 1));
+  geo.computeVertexNormals();
+  geo.computeBoundingSphere();
+  geo.boundingSphere.radius += 1.2; // conservative bound for gusts, pleats and hem lift
+  const clothMaterials = createCurtainMaterials();
+  const mesh = new THREE.Mesh(geo, clothMaterials.material);
+  mesh.customDepthMaterial = clothMaterials.depth;
   mesh.name = 'curtains';
   mesh.castShadow = true;
   mesh.receiveShadow = true;
-  mesh.frustumCulled = false;
   group.add(mesh);
 
   // rods
@@ -129,37 +142,12 @@ export function createCurtains(group, windows, lowfx) {
     rodParts.push([GEO.cyl8, mat4(wallX + 0.14, y, w.z, Math.PI / 2, 0, 0, 0.025, z1 - z0, 0.025), 0xb08a5a]);
     for (const z of [z0 + 0.04, z1 - 0.04]) rodParts.push([GEO.box, mat4(wallX + 0.07, y, z, 0, 0, 0, 0.14, 0.02, 0.02), 0x9a7a4e]);
   }
-  const rods = new THREE.Mesh(mergeColored(rodParts), mat);
+  const rods = new THREE.Mesh(mergeColored(rodParts), toon({ side: THREE.DoubleSide }));
   rods.castShadow = true;
   group.add(rods);
   const rodColliders = windows.map((w) => colBox(wallX + 0.125, w.sillY + w.h + 0.145, w.z - w.w / 2 - 0.35, wallX + 0.155, w.sillY + w.h + 0.175, w.z + w.w / 2 + 0.35, 'prop'));
 
-  let t = 0;
-  function update(dt, wind) {
-    t += dt;
-    const breeze = 0.07 + 0.045 * Math.sin(t * 0.73) + 0.03 * Math.sin(t * 1.91 + 1);
-    let n = 0;
-    for (const p of panels) {
-      const ws = p.open ? Math.min(1.2, wind + breeze) : breeze * 0.22;
-      const H = p.top - p.bottom;
-      for (let j = 0; j <= SV; j++) {
-        const v = j / SV;
-        for (let i = 0; i <= SU; i++) {
-          const u = i / SU;                                   // 0 = outer edge, 1 = inner edge (toward the opening)
-          const pleat = 0.032 * Math.sin(u * Math.PI * 7) * (1 - 0.4 * v * ws);
-          const billow = ws * 0.62 * Math.pow(v, 1.35) * (0.82 + 0.18 * Math.sin(t * 2.6 + u * 2.2)) * (0.55 + 0.45 * u);
-          const flutter = (0.012 + 0.05 * ws) * Math.sin(v * 7 - t * (4 + 4 * ws) + u * 3.3) * v;
-          const x = p.wallX + 0.15 + pleat + billow + flutter;
-          const zSpan = p.inner - p.outer;
-          const z = p.outer + zSpan * u * (1 + 0.35 * ws * v * v) + p.side * 0.0;
-          const y = p.top - H * v + ws * 0.12 * v * v;          // the hem lifts a little in strong wind
-          pos[n++] = x; pos[n++] = y; pos[n++] = z;
-        }
-      }
-    }
-    geo.attributes.position.needsUpdate = true;
-    geo.computeVertexNormals();
-  }
+  const update = clothMaterials.update;
   update(0, 0);
   return { mesh, update, rodColliders };
 }
@@ -177,7 +165,7 @@ export function createClock(ctx, group, mat) {
   ]), mat);
   rim.castShadow = true;
   root.add(rim);
-  const face = new THREE.Mesh(new THREE.CircleGeometry(R, 40), new THREE.MeshToonMaterial({ map: clockFaceTexture(), gradientMap: mat.gradientMap }));
+  const face = new THREE.Mesh(new THREE.CircleGeometry(R, 40), new THREE.MeshStandardMaterial({ map: clockFaceTexture(), roughness: 0.85 }));
   face.position.z = 0.0215;
   root.add(face);
   const glass = new THREE.Mesh(new THREE.CircleGeometry(R, 32), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.12, depthWrite: false }));

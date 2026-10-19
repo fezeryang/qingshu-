@@ -11,7 +11,7 @@ You sit in the back row by the window. While the math teacher turns to write on 
 
 - **Short rounds (60–120 s), endlessly replayable.** One throw per round; the landing decides the ending. Failing is funny too, so you want another go.
 - **Tension → release → laughter.** The teacher's back-turned "safe window" creates tension; the cinematic slow-motion flight builds anticipation; the ending cutscene pays off with a laugh or a heart-flutter.
-- **Ending collection.** 13 endings (several hidden), persisted in an ending gallery; locked endings show a vague hint to drive replays.
+- **Ending collection.** 15 endings (several hidden), persisted in an ending gallery; locked endings show a vague hint to drive replays.
 - **Style.** Japanese/Chinese youth-anime school vibe: 3 pm sunlight, warm palette, low-poly chibi characters (big heads, texture-drawn faces, outlines), exaggerated comic staging, big manga-style captions.
 
 ## 3. Round flow (phases)
@@ -44,9 +44,11 @@ You sit in the back row by the window. While the math teacher turns to write on 
 ## 6. Core mechanics
 
 ### 6.1 Throwing and physics
-- Ball radius 0.04 m, gravity 9.8, light air drag, low restitution (wood ~0.3, heads ~0.55), high friction; it bounces, rolls and stops.
-- Charge 0→1 over 1.1 s, then jitters between 0.85 and 1 (shaky hand). Speed maps to 2.2–10.5 m/s (10.5 is needed to reach the bin, the teacher's desk and the teacher from the back row). Launch direction = view direction + ~10° upward lob.
-- While charging, show a dotted preview of the first 0.35 s of the trajectory (not the whole arc — keep it skill-based).
+> **Playtest round 1 changes (lead):** the ball was too fast for the camera hand-off and desks were too hard to hit. The paper ball now uses **stylised floaty physics**: lower gravity (≈ 5–6 m/s²) and lower launch speeds, so a typical throw is airborne **1.3–2.5 s** with the same reachable targets. Desk tops **catch** the ball (low bounce, high friction), there is a **gentle aim assist** toward the desk nearest the predicted landing point, and the charge preview dots are a little longer. Exact numbers live in `src/gameplay/` and `docs/modules/gameplay.md`.
+
+- Ball radius 0.04 m, stylised gravity 5.5 m/s² (floaty paper ball), light air drag, low restitution (wood ~0.3, heads ~0.55), high friction; it bounces, rolls and stops.
+- Charge 0→1 over 1.1 s, then jitters between 0.85 and 1 (shaky hand). Speed maps to 1.4–8.5 m/s; typical desk lobs fly ~1.7 s. Hold-breath nudge ≈ 0.55 m/s² (≈ 0.8 m landing shift at full willpower). Launch direction = view direction + ~10° upward lob.
+- While charging, show a dotted preview of the first 0.5 s of the trajectory (not the whole arc — keep it skill-based).
 - Colliders: floor, walls, window frames/glass, desk tops, chairs, book stacks, platform, teacher's desk, trash bin (walls + inner trigger), fan blades (rotating OBBs), classmates' heads (spheres) and torsos (boxes), raised arms, the teacher (head + torso).
 
 ### 6.2 Teacher AI and suspicion
@@ -66,6 +68,16 @@ You sit in the back row by the window. While the math teacher turns to write on 
 
 ## 7. Ending table (`src/story/` is authoritative; priority top to bottom)
 
+**Recipient rule (playtest round 1).** A letter that doesn't land on a desk is not automatically lost. `resolve()` first decides who ends up with the letter (`round.recipientId`) and how (`round.delivery`):
+1. `desk` — it rests on a desk or chair: the seat's occupant.
+2. `bonk` — it hit a classmate's head/body during flight and then fell anywhere except another occupied desk/chair: the **first classmate it hit** rubs their head, picks it up and peeks.
+3. `pickup` — it rests on the floor/aisle within ~0.9 m of an occupied seat: the **nearest classmate** sneaks it up off the floor and peeks.
+4. none — otherwise (far from everyone): `lost`.
+The recipient then goes through the usual table (crush / same gender / opposite gender / snitch), and every ending script stages the delivery type (desk reaction vs. head-rub vs. sneaky pick-up). Two new endings sit above the recipient rows:
+- `love_bonk` (隐藏 · 砸出来的缘分): the ball **bonks the crush** and the teacher didn't see — the crush turns around, their eyes meet yours, a meet-cute.
+- `passed_around` (隐藏 · 全班传阅): the recipient is a `gossip` (not the crush) and the teacher didn't see — they peek, then the note is secretly passed around the whole class, row by row, until it reaches the crush.
+
+
 | id | Name (in-game) | Condition | Staging notes |
 |---|---|---|---|
 | `coward` | 怂 · 下课铃 | Timer ran out, never threw | Bell rings; the crush leaves chatting with someone else; the ball goes soggy in your sweaty palm |
@@ -80,7 +92,7 @@ You sit in the back row by the window. While the math teacher turns to write on 
 | `same_gender` | 误投 · 认真的回应 | Same-gender (as the player) non-crush, teacher didn't see | They read it, stand up solemnly: "……我愿意。" Warm, absurd rom-com montage; the crush cracks in the background |
 | `wrong_accept` | 误投 B · 将错就错 | Opposite-gender non-crush, unseen, not a snitch type | They shyly accept; a baffling "and somehow we're dating" montage |
 | `perfect` | 完美 · 天台之约 | Lands on the crush's desk and the teacher didn't see | They read it and blush, write a reply and throw it back (camera follows it in reverse): "放学后天台见"; heart iris transition to a sunset rooftop |
-| `lost` | 隐藏 · 石沉大海 | Floor / aisle (unseen) | Nobody notices; night, empty classroom; the janitor sweeps it into a dustpan (ball's POV) |
+| `lost` | 隐藏 · 石沉大海 | Floor / aisle far from everyone, nobody was hit (unseen) | Nobody notices; night, empty classroom; the janitor sweeps it into a dustpan (ball's POV) |
 
 > `same_gender` must be **warm absurdist comedy**: the joke is the mix-up and the other person's earnestness — never mocking same-sex romance.
 
@@ -100,7 +112,7 @@ You sit in the back row by the window. While the math teacher turns to write on 
 
 - Palette: 3–4 pm sun slanting in from the left windows, dust motes, cream walls, green blackboard, light-wood desks, blue-and-white tracksuit uniforms.
 - Characters: chibi proportions (~1:3.5 head-to-body), inverted-hull outlines, canvas-drawn faces (eyes, blush, sweat drops, heart eyes).
-- Music: fully procedural WebAudio. Lazy lo-fi classroom (clock ticks + adaptive tension layer), bouncy pizzicato for the flight, romantic piano, comedic bassoon, melodramatic violin, social-death awkwardness (crickets + tuba), hype sports track for the commentator, school PA broadcast. Dialogue uses Animal-Crossing-style syllable blips; reading the letter aloud may use speechSynthesis (falls back to blips).
+- Music: fully procedural WebAudio. Lazy lo-fi classroom (clock ticks + adaptive tension layer), bouncy pizzicato for the flight, romantic piano, comedic bassoon, melodramatic violin, social-death awkwardness (crickets + tuba), hype sports track for the commentator, school PA broadcast. Dialogue is **voiced with real Chinese speech** (speechSynthesis zh-CN, per-character pitch/rate) whenever the browser has a Chinese voice; soft syllable blips are only the fallback. A setting lets players choose voice / blips / off (playtest round 1).
 
 ## 10. Technology
 

@@ -1,6 +1,6 @@
 // perfect — 完美 · 天台之约. The crush reads your letter, blushes line by line, writes back and lobs
 // the reply to you; "放学后，天台见。" → heart iris → sunset rooftop, side by side.
-import { begin, settleClass, front, reactionCloseUp, pickUpAndRead, hitPrelude, expressionRamp, traitLine, PLAYER_DESK_TOP, EYE, finalHold } from './common.js';
+import { begin, settleClass, front, reactionCloseUp, receive, cutaway, teacherOblivious, hitPrelude, expressionRamp, traitLine, PLAYER_DESK_TOP, EYE, finalHold } from './common.js';
 import { V } from '../direct.js';
 
 const REPLY = {
@@ -37,7 +37,7 @@ export default async function perfect(d) {
   d.beat('react');
   await front(d, crush, { angle: 0.45, dist: 1.5, fov: 38 });
   hitPrelude(d, [crush]);
-  await pickUpAndRead(d, crush);
+  await receive(d, crush);
 
   // 2 — reading your words; the blush creeps in
   d.music('romance');
@@ -54,15 +54,18 @@ export default async function perfect(d) {
   d.sfx('heartbeat');
   d.emote(crush, 'heart', 1.4);
   d.bg(d.caption('心 动', 'impact', 1.4));
-  await d.wait(1.6);
+  await d.wait(1.2);
+  // somebody noticed…
+  const spy = d.byTrait('gossip', { exclude: [crush] })[0];
+  if (spy) await cutaway(d, spy, { line: d.pick(['哦——？', '有情况！']), emote: 'sparkle', expr: 'smug', look: crush, hold: 1.0 });
 
   // 4 — writes a reply while the teacher lectures to the board
   d.look(crush, null);
   d.anim(crush, 'write', { loop: true });
   d.sfx('pencil');
   await d.closeUp(crush, { side: 'right', dist: 1.2, fov: 34, dur: 0 });
-  d.bubble(t, d.pick(['所以这道题的答案是……', '同学们，这里是重点。', '看黑板，别走神。']), 1.8);
-  await d.wait(1.8);
+  await d.wait(0.9);
+  await teacherOblivious(d, d.pick(['这道题，答案显而易见。', '这里是重点。', '看黑板，别走神。']), 1.1);
 
   // 5 — the reply flies back (reverse parabola)
   d.beat('reply');

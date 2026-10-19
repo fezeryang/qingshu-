@@ -22,6 +22,11 @@ import { createPip } from './pip.js';
 const DANGER = new Set(['warning', 'watching', 'patrol', 'suspicious', 'alert', 'fakeout']);
 const FRAME_LIMIT = 0.6;      // follow cam keeps the ball within |ndc| <= 0.6 (F1 checks 0.7)
 const MIN_BALL_DIST = 0.3;    // follow cam never gets closer to the ball than this (during blends)
+// playtest-1 flight timing (floaty ball, 1.3–2.5 s of flight): automatic slow motion may add at most
+// SLOWMO_BUDGET real seconds per flight, so a whole flight stays within ~3.5 s of real time.
+const SLOWMO_BUDGET = 0.8;
+const REAL_FLIGHT_TARGET = 3.4; // real seconds from release to landing that automatic slow-mo may not push past
+const RELEASE_HOLD = 0.14, PULLOUT = 0.5;
 const FG_NEAR = 1.0;          // cinematic: classmates' heads nearer than this to the lens are hidden for the render
 
 export async function install(ctx) {
@@ -33,7 +38,7 @@ export async function install(ctx) {
     mode: 'fp',
     base: makePose(),                                       // final pose before additive motion
     roll: 0,                                                // roll channel (radians), all modes
-    blend: { active: false, t: 0, dur: 0.25, from: makePose(), ease: EASE.inOutSine },
+    blend: { active: false, t: 0, dur: 0.25, delay: 0, from: makePose(), ease: EASE.inOutSine },
   };
   const col = createCollision(ctx);
   const motion = createMotion();
@@ -65,7 +70,7 @@ export async function install(ctx) {
   // ------------------------------------------------------------------ mode plumbing
   function startBlend(dur, ease = EASE.inOutSine) {
     copyPose(D.blend.from, D.base);
-    D.blend.t = 0; D.blend.dur = Math.max(0.01, dur); D.blend.ease = ease; D.blend.active = true;
+    D.blend.t = 0; D.blend.dur = Math.max(0.01, dur); D.blend.ease = ease; D.blend.delay = 0; D.blend.active = true;
   }
   function setMode(m, blendDur = 0, extra) {
     if (blendDur > 0) startBlend(blendDur); else D.blend.active = false;
@@ -98,9 +103,9 @@ export async function install(ctx) {
       default: fpc.pose(dt, uiDt, pose);
     }
     if (D.roll) pose.quat.multiply(_qRoll.setFromAxisAngle(Z_AXIS, D.roll));
-    const blending = D.blend.active;
+    const blending = D.blend.active && !(D.blend.delay > 0);
     if (D.blend.active) {
-      D.blend.t += uiDt;
+      if (D.blend.delay > 0) D.blend.delay -= uiDt; else D.blend.t += uiDt;
       const raw = Math.min(1, D.blend.t / D.blend.dur);
       blendPose(D.blend.from, pose, D.blend.ease(raw), pose);
       if (raw >= 1) D.blend.active = false;
@@ -114,7 +119,7 @@ export async function install(ctx) {
         if (d < 1e-4) _off.set(0, 0, 1).applyQuaternion(pose.quat); else _off.divideScalar(d);
         pose.pos.copy(ball.pos).addScaledVector(_off, MIN_BALL_DIST);
       }
-      frameTarget(pose, ball.pos, camera.aspect || 1.7, FRAME_LIMIT);
+      frameTarget(pose, ball.pos, camera.aspect || 1.7, blending ? 0.45 : FRAME_LIMIT); // tighter while pulling out: the ball reads clearly
     }
     copyPose(D.base, pose);
     camera.position.copy(pose.pos);
@@ -228,21 +233,40 @@ export async function install(ctx) {
   let landingBeat = Promise.resolve();
   const metrics = { flights: [], current: null, get last() { return metrics.flights[metrics.flights.length - 1] || null; } };
 
+  /**
+   * Projected real end of the flight (now + remaining fall to desk height at 1x + ~0.35 s to settle), from
+   * the ball's height, vertical speed and the gravity measured in flight. True when it would exceed the target.
+   */
+  function projectedOver() {
+    const b = ctx.gameplay?.ball;
+    if (!b?.pos || flight.t0 == null) return false;
+    const g = Math.max(1, flight.g || 6), vy = b.vel?.y ?? 0, h = b.pos.y - 0.8;
+    const rem = h > 0 ? (vy + Math.sqrt(vy * vy + 2 * g * h)) / g : 0;
+    return time.uiNow - flight.t0 + rem + 0.35 > REAL_FLIGHT_TARGET;
+  }
+  /** Automatic slow motion is allowed while the flight's slow-mo budget lasts. */
+  const budgetLeft = () => SLOWMO_BUDGET - (flight.extra || 0);
+  function autoSlow(id, scale, dur, opts) {
+    if (budgetLeft() < 0.15 || projectedOver()) return;
+    slow.request(id, scale, dur, opts);
+  }
   function onApex() {
     if (!flight.active || flight.apexDone) return;
     flight.apexDone = true;
-    slow.request('apex', 0.4, 0.5);
+    autoSlow('apex', 0.45, 0.45);
   }
 
   bus.on('ball:launched', (p) => {
     if (phase === 'ending' || phase === 'card') return;
-    Object.assign(flight, { active: true, apexDone: false, approachDone: false, prevVy: p?.vel?.y ?? 0 });
+    Object.assign(flight, { active: true, apexDone: false, approachDone: false, prevVy: p?.vel?.y ?? 0, prevVyG: null, g: 0, t0: time.uiNow, extra: 0 });
     metrics.current = { style: lastStyle, frames: 0, inside: 0, occluded: 0, maxAbs: 0, ratio: null };
     if (D.mode === 'fp') kick(0.35);
-    slow.request('launch', 0.1, 0.15, { snap: true });
+    // release beat: the first-person view holds (eyes follow the ball) in near-freeze, then a smooth pull-out
+    slow.request('launch', 0.12, RELEASE_HOLD + 0.06, { snap: true });
     if (D.mode === 'cinematic') shots.cancelAll();
-    followBall(lastStyle, { blend: 0.25 });
-    D.blend.ease = EASE.outCubic;
+    followBall(lastStyle, { blend: PULLOUT });
+    D.blend.ease = EASE.inOutCubic;
+    D.blend.delay = D.blend.from && phase !== 'ending' ? RELEASE_HOLD : 0;
   });
   bus.on('ball:apex', () => onApex());
   bus.on('ball:nearMiss', (p) => {
@@ -251,7 +275,7 @@ export async function install(ctx) {
     let dir = 1;
     if (pos) { _off.subVectors(pos, camera.position); dir = _off.dot(new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion)) > 0 ? 1 : -1; }
     motion.impulse('whip', dir * (reduced() ? 0.2 : 0.55) * 9);
-    slow.request('nearMiss', 0.5, 0.25);
+    autoSlow('nearMiss', 0.55, 0.2);
   });
   bus.on('ball:willpower', (p) => {
     if (p?.on && flight.active) slow.request('willpower', 0.3, Infinity, { maxLife: 8 });
@@ -267,7 +291,7 @@ export async function install(ctx) {
     const ballFlying = ctx.gameplay?.ball?.state === 'flying';
     if (DANGER.has(s)) {
       if (flight.active && ballFlying && D.mode === 'follow') {
-        if (!pip.on) { pip.set(true, { auto: true }); slow.request('pip', 0.35, 0.55); syncRenderFn(); }
+        if (!pip.on) { pip.set(true, { auto: true }); autoSlow('pip', 0.5, 0.4); syncRenderFn(); }
       } else if (D.mode === 'fp' && phase === 'aim' && s === 'warning') {
         motion.impulse('flinch', (reduced() ? 0.2 : 0.55) * 9);
       }
@@ -282,7 +306,7 @@ export async function install(ctx) {
     if (slow.has('approach')) slow.extend('approach', 0.3);
     if (pip.on) { pip.set(false); syncRenderFn(); }
     const m = metrics.current;
-    if (m) { m.ratio = m.frames ? +(m.inside / m.frames).toFixed(4) : null; m.avgDist = m.frames ? +(m.distSum / m.frames).toFixed(3) : null; delete m.distSum; m.landing = L?.type ?? null; metrics.flights.push(m); if (metrics.flights.length > 40) metrics.flights.shift(); metrics.current = null; }
+    if (m) { m.ratio = m.frames ? +(m.inside / m.frames).toFixed(4) : null; m.avgDist = m.frames ? +(m.distSum / m.frames).toFixed(3) : null; delete m.distSum; m.landing = L?.type ?? null; m.slowExtra = +(flight.extra || 0).toFixed(3); m.realTime = +(time.uiNow - (flight.t0 ?? time.uiNow)).toFixed(3); metrics.flights.push(m); if (metrics.flights.length > 40) metrics.flights.shift(); metrics.current = null; }
     if (D.mode === 'follow') { try { landingBeat = landingShot(L); } catch (e) { warnOnce('landing', 'landing shot failed', e?.message); landingBeat = Promise.resolve(); } }
   });
 
@@ -329,16 +353,26 @@ export async function install(ctx) {
     return shots.lerpMove(p2, l1, fov - 3, { dur: 0.6, clock: 'ui', ease: EASE.outQuad, from: { pos: p1, look: l1, fov } });
   }
 
+  let uiDtNow = 0;
   function flightTick() {
     const b = ctx.gameplay?.ball;
     if (!flight.active || !b?.pos) return;
+    // slow-mo budget: real time lost to automatic slow motion (hold-breath is the player's choice and exempt)
+    if (!slow.has('willpower')) flight.extra = (flight.extra || 0) + Math.max(0, uiDtNow - (time.dt || 0));
+    if (b.state === 'flying' && time.dt > 1e-4 && b.vel) {
+      // measure gravity from free flight (ignores frames with contacts / big jumps)
+      const gi = -((b.vel.y - flight.prevVyG) / time.dt);
+      if (flight.prevVyG != null && gi > 1 && gi < 20) flight.g = flight.g ? flight.g + (gi - flight.g) * 0.2 : gi;
+      flight.prevVyG = b.vel.y;
+    }
+    if (budgetLeft() <= 0 || projectedOver()) slow.release('apex', 'approach', 'nearMiss', 'pip');
     if (b.state !== 'flying') return;
     const vy = b.vel?.y ?? 0;
     if (!flight.apexDone && flight.prevVy > 0 && vy <= 0) onApex();
     flight.prevVy = vy;
     if (!flight.approachDone && vy < -0.2 && (b.t ?? 1) > 0.1 && col.nearestLanding(b.pos) < 1.2) {
       flight.approachDone = true;
-      slow.request('approach', 0.25, Infinity, { maxLife: 2.2 });
+      autoSlow('approach', 0.35, Infinity, { maxLife: 1.6 });
     }
   }
 
@@ -356,13 +390,15 @@ export async function install(ctx) {
     if (oc.t < 0.97) { m.occluded++; const k = `${oc.hit?.tag}:${oc.hit?.ownerId ?? ''}`; (m.occBy ||= {})[k] = (m.occBy[k] || 0) + 1; m.occAt ||= { t: +(b.t ?? 0).toFixed(3), ball: b.pos.toArray().map((v) => +v.toFixed(2)), cam: camera.position.toArray().map((v) => +v.toFixed(2)), hitT: +oc.t.toFixed(2) }; }
   }
 
-  let speedK = 0;
+  let speedK = 0, whipBoost = 0, whipDecay = 4;
+  D.whipFx = (dur) => { if (!reduced()) { whipBoost = 1; whipDecay = 1 / Math.max(0.08, dur * 1.6); } };
   function overlayTick(uiDt) {
     const b = ctx.gameplay?.ball;
     let want = 0, cx = 0.5, cy = 0.5;
+    if (whipBoost > 0) { whipBoost = Math.max(0, whipBoost - whipDecay * uiDt); want = Math.max(want, whipBoost * 0.9); if (whipBoost > 0.6) speedK = Math.max(speedK, whipBoost * 0.9); }
     if (D.mode === 'follow' && flight.active && b?.state === 'flying' && !reduced()) {
       const sp = b.vel?.length?.() ?? 0;
-      want = smoothstep(2.5, 9.5, sp) * (0.55 + 0.45 * clamp(engine.timeScale, 0, 1));
+      want = smoothstep(1.5, 7, sp) * (0.55 + 0.45 * clamp(engine.timeScale, 0, 1));
       _sv.copy(b.pos).project(camera);
       cx = (_sv.x + 1) / 2; cy = (1 - _sv.y) / 2;
     }
@@ -385,7 +421,7 @@ export async function install(ctx) {
     fpc.reset();
     flight.active = false;
     metrics.current = null;
-    speedK = 0;
+    speedK = 0; whipBoost = 0;
     landingBeat = Promise.resolve();
     D.mode = 'fp';
     setMode('fp', 0, { reset: true });
@@ -419,6 +455,7 @@ export async function install(ctx) {
   engine.onUpdate((dt, t) => {
     const uiDt = t.uiDt;
     if (D.mode === 'follow' && input.enabled && input.pressed('KeyC')) cycleFollowStyle();
+    uiDtNow = uiDt;
     flightTick();
     slow.update(uiDt);
     motion.update(uiDt, reduced());
@@ -449,6 +486,7 @@ export async function install(ctx) {
     sequence: (list) => shots.sequence(list, cam),
     closeUp: shots.closeUp, twoShot: shots.twoShot, overShoulder: shots.overShoulder, wide: shots.wide,
     orbit: shots.orbit, crashZoom: shots.crashZoom, dutch: shots.dutch, track: shots.track, lookAt: shots.lookAt,
+    whipPan: shots.whipPan, reactionCutaway: shots.reactionCutaway, pushIn: shots.pushIn,
     shake, kick, slowMo,
     letterbox: wrapFx('letterbox', fx.letterbox),
     fade: wrapFx('fade', fx.fade),

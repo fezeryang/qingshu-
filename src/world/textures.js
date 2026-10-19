@@ -475,3 +475,21 @@ export function petalTexture() {
     g.fillStyle = 'rgba(255,255,255,0.5)'; g.beginPath(); g.ellipse(-5, 2, 4, 12, 0.2, 0, 7); g.fill();
   });
 }
+
+/** School terrazzo: four 50 cm tiles per two-metre repeat, with fine stone aggregate. */
+export function terrazzoTexture() {
+  return drawTexture(1024, 1024, (g, W, H) => {
+    const r = rngFor('classroom-terrazzo');
+    g.fillStyle = '#b8b9ad'; g.fillRect(0, 0, W, H);
+    for (let i = 0; i < 24000; i++) {
+      g.fillStyle = r.pick(['#a2a79f', '#c9c9bc', '#d5d2c4', '#919b95']);
+      const size = r.range(0.6, 3);
+      g.fillRect(r.range(0, W), r.range(0, H), size, size * r.range(0.5, 1.4));
+    }
+    g.strokeStyle = '#959c94'; g.lineWidth = 1.5;
+    for (let i = 0; i < 4; i++) {
+      g.beginPath(); g.moveTo(i * 256, 0); g.lineTo(i * 256, H); g.stroke();
+      g.beginPath(); g.moveTo(0, i * 256); g.lineTo(W, i * 256); g.stroke();
+    }
+  }, { repeat: true, anisotropy: 8 });
+}

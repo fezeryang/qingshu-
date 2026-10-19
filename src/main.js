@@ -23,8 +23,7 @@ import * as ui from './ui/index.js';
 
 async function boot() {
   const canvas = document.getElementById('game');
-  const engine = createEngine(canvas);
-  if (config.lowfx) { engine.renderer.shadowMap.enabled = false; engine.renderer.setPixelRatio(1); }
+  const engine = createEngine(canvas, { lowfx: config.lowfx });
 
   const bus = createBus();
   bus.clock = () => engine.time.now;

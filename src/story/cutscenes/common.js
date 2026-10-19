@@ -1,5 +1,5 @@
 // Shared beats for ending cutscenes (owner: narrative-director).
-import { PLAYER_EYE, PLAYER_SEAT, SEAT_BY_ID, DESK, TEACHER_DESK } from '../../core/layout.js';
+import { PLAYER_EYE, PLAYER_SEAT, SEAT_BY_ID, DESK, TEACHER_DESK, AISLES_X } from '../../core/layout.js';
 import { V } from '../direct.js';
 
 export const EYE = () => V(PLAYER_EYE.x, PLAYER_EYE.y, PLAYER_EYE.z);
@@ -97,13 +97,121 @@ export function behind(d, ch, { angle = 0.25, dist = 0.9, height = 0.25, fov = 4
   return dur > 0 ? d.shot({ pos, look: tgt, fov, dur }) : (d.cut({ pos, look: tgt, fov }), d.settle(null));
 }
 
-/** The classmate who got the letter (desk/chair occupant or catcher). */
+/** The classmate who got the letter (round.recipientId from resolve(); falls back to the landing / crush). */
 export function recipient(d) {
   const L = d.round.landing || {};
-  let id = L.ownerId;
+  let id = d.round.recipientId;
+  if (!id) id = L.ownerId;
   if (!id && L.seatId) id = d.ctx.cast?.occupant?.(L.seatId) || d.round.roster?.seatMap?.[L.seatId];
   const ch = id && id !== 'teacher' ? d.get(id) : null;
   return ch || d.crush || d.students()[0] || null;
+}
+
+/** 'desk' | 'bonk' | 'pickup' (default 'desk'). */
+export const deliveryOf = (d) => d.round.delivery || 'desk';
+
+/**
+ * Stage how the recipient got the letter (GDD §7 recipient rule), ending with them reading it.
+ *   desk   — notice it on the desk, pick it up, unfold
+ *   bonk   — clutch their head, glare around, spot the ball on the floor, pick it up and peek
+ *   pickup — glance at the teacher, slide down off the chair, sneak it up, read it under the desk
+ * Multi-shot: a reaction close-up, a low floor shot of the ball (bonk/pickup), a teacher cut-away (pickup).
+ */
+/** Knee-height shot from the nearest aisle: the ball on the floor in the foreground, `ch` behind it. */
+function floorShot(d, ball, ch) {
+  const ax = AISLES_X.reduce((a, b) => (Math.abs(b - ball.x) < Math.abs(a - ball.x) ? b : a));
+  const pos = d.V(ax, 0.55, ball.z + 0.7);
+  const look = ball.clone().lerp(d.headPos(ch), 0.4);
+  d.cut({ pos, look, fov: 50 });
+}
+
+export async function receive(d, ch, { prop = 'letterOpen' } = {}) {
+  if (!ch) return;
+  const kind = deliveryOf(d);
+  const t = d.teacher;
+  const ball = d.ballPos();
+  if (kind === 'bonk') {
+    d.expr(ch, 'dizzy');
+    d.emote(ch, 'anger', 1.4);
+    d.anim(ch, 'facepalm');
+    d.sfx('thudHead', { volume: 0.6 });
+    await front(d, ch, { angle: 0.4, dist: 1.4, fov: 44 });
+    await d.say(ch, d.pick(['哎哟！', '痛……', '谁啊？！']), { mood: 'angry' });
+    // glare around
+    d.expr(ch, 'angry');
+    d.look(ch, d.V(ch.root.position.x - 2, 1.2, ch.root.position.z + 1));
+    await d.wait(0.5);
+    d.look(ch, d.V(ch.root.position.x + 2, 1.2, ch.root.position.z + 1));
+    await d.wait(0.5);
+    // ...and spot the culprit on the floor
+    d.look(ch, ball);
+    d.emote(ch, '?', 1.0);
+    floorShot(d, ball, ch);
+    await d.wait(0.7);
+    d.expr(ch, 'suspicious');
+    await d.play(ch, 'pickUp', { cap: 1.2 });
+  } else if (kind === 'pickup') {
+    d.emote(ch, '!', 0.9);
+    d.look(ch, ball);
+    await front(d, ch, { angle: -0.35, dist: 1.4, fov: 44 });
+    await d.wait(0.5);
+    // is the teacher looking?
+    d.look(ch, t);
+    d.expr(ch, 'suspicious');
+    if (t) {
+      d.cut({ pos: d.headPos(ch).add(d.V(0.15, 0.1, 0.3)), look: d.headPos(t), fov: 34 });
+      d.anim(t, 'teacherWrite', { loop: true });
+      await d.wait(0.8);
+    }
+    // sneak it up off the floor
+    floorShot(d, ball, ch);
+    d.emote(ch, 'sweat', 1.4);
+    d.sfx('chairScrape', { volume: 0.3 });
+    await d.play(ch, 'pickUp', { cap: 1.3 });
+    d.bubble(ch, d.pick(['嘘……', '（偷偷捡起来）', '（这是什么……）']), 1.4);
+  } else {
+    d.emote(ch, '!', 1.0);
+    d.sfx('pop');
+    d.look(ch, ball);
+    await d.wait(0.5);
+    await d.play(ch, 'pickUp', { cap: 1.2 });
+  }
+  const L = d.round.landing || {};
+  if (L.type === 'intercept' && L.ownerId === ch.id) d.bubble(ch, d.pick(['接住了！……诶？', '好球！……这是？']), 1.4);
+  d.hideBall();
+  d.sfx('paperUnfold');
+  d.hold(ch, d.prop('letterBall', 'ballInHand'));
+  await d.play(ch, 'unfold', { cap: 1.3 });
+  d.hold(ch, d.prop(prop));
+  d.anim(ch, 'read', { loop: true });
+  d.look(ch, null);
+  if (kind === 'pickup') d.expr(ch, 'suspicious');
+}
+
+/** A quick reaction cut-away: close-up on someone, optional bubble / emote / clip / expression. */
+export async function cutaway(d, ch, { line, emote, expr, clip, hold = 1.1, angle = 0.35, look } = {}) {
+  if (!ch) return;
+  // never cut to a head-down pose (write/sleep loops show only hair): sit up, look at the action
+  if (ch !== d.teacher) d.anim(ch, 'sitIdle', { loop: true });
+  d.look(ch, look !== undefined ? look : d.ballPos());
+  if (expr) d.expr(ch, expr);
+  if (clip) d.anim(ch, clip);
+  if (emote) d.emote(ch, emote, hold + 0.3);
+  await front(d, ch, { angle, dist: 1.35, fov: 44 });
+  if (line) d.bubble(ch, line, hold + 0.5);
+  await d.wait(hold);
+}
+
+/** Cut-away to the teacher at the board, back turned and oblivious (comic contrast). */
+export async function teacherOblivious(d, line, hold = 1.2) {
+  const t = d.teacher;
+  if (!t) return;
+  d.anim(t, 'teacherWrite', { loop: true });
+  d.sfx('chalkScratch', { volume: 0.5 });
+  const h = d.headPos(t);
+  d.cut({ pos: h.clone().add(d.V(1.3, 0.1, 2.0)), look: h.clone().add(d.V(0, -0.2, 0)), fov: 40 });
+  if (line) d.bubble(t, line, hold + 0.4);
+  await d.wait(hold);
 }
 
 /** Whoever got bonked on the way reacts (variant by landing.hits). Non-blocking. */

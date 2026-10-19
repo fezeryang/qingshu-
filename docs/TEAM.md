@@ -12,7 +12,7 @@
 | `qs-camera-director` | Camera: first person, ball follow cam, bullet time, PiP, shot library, transitions | `src/camera/**` | `dev/camera/**` |
 | `qs-narrative-director` | Story & endings: class roster, letter presets, ending resolution, intro and 13 ending cutscenes | `src/story/**` | `dev/story/**` |
 | `qs-ui-designer` | UI: title, letter writing, crumpling, HUD, dialogue, bubbles, captions, ending card, gallery, pause/settings | `src/ui/**` (incl. `ui.css`), `assets/fonts/**` | `dev/ui/**` |
-| `qs-audio-composer` | Music & sound: procedural score, adaptive tension, all SFX, dialogue blips, read-aloud | `src/audio/**` | `dev/audio/**` |
+| `qs-audio-composer` | Music & sound: procedural score, adaptive tension, all SFX, voiced dialogue, read-aloud | `src/audio/**`, `tools/voices/**`, `assets/voices/**` | `dev/audio/**` |
 | `qs-qa-lead` | Acceptance & testing: automated tests, ending reachability, visual review, performance, bug reports, release gate | `tests/**` `qa/**` | `qa/shots/**` |
 
 Every agent may also write `docs/modules/<own module>.md` (implementation notes) and `docs/requests/<self>-to-<other>.md` (requests).
@@ -21,7 +21,7 @@ Every agent may also write `docs/modules/<own module>.md` (implementation notes)
 
 1. **Only touch your own directories.** Found a bug or missing capability in another module? File a request and list it in your delivery report; meanwhile keep your side working with optional chaining / fallbacks. Don't wait.
 2. **Don't change the contract.** Names and signatures in `docs/CONTRACTS.md` are changed only by the lead. Additions go in `docs/modules/<module>.md`.
-3. **No git commits, no edits to package.json, no new dependencies, no downloads of external resources** (exception: ui-designer may add open-source Chinese fonts under `assets/fonts/` with their license; ≤ 8 MB total). All art and audio are **procedural**.
+3. **No git commits, no edits to package.json, no new dependencies, no downloads of external resources** (exceptions: ui-designer may add open-source Chinese fonts under `assets/fonts/` with their license, ≤ 8 MB; audio-composer pre-renders dialogue with edge-tts into `assets/voices/`, ≤ 12 MB — see docs/PLAYTEST-1.md). All other art and audio are **procedural**.
 4. **Never launch your own browser.** Use only `node tools/shot.mjs`, `node tools/check.mjs --smoke`, or `tests/` (they share a machine-wide limit of 2 browsers; this box has 6 GB RAM). Before screenshots call `qs.manual(true)` and fast-forward with `qs.advance()`; SwiftShader rendering is slow, so keep each script to ≤ 10 shots.
 5. **Before every delivery** pass `node tools/check.mjs` (syntax + R1 timers + R2 cross-module imports + R3 randomness) and `node tools/check.mjs --smoke` (full round).
 6. **Look at your own work.** Take screenshots with a shot script (output to `dev/<module>/shots/`, git-ignored) and open the PNGs with the Read tool. Visual agents attach at least 3 key screenshot paths to their delivery.

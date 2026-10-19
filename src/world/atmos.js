@@ -201,9 +201,9 @@ export function createDust(windows, wallX, count) {
       void main(){ vec3 p = position; float t = time * 0.25 * seed.y + seed.x;
         p += vec3(sin(t * 1.3) * 0.12, sin(t * 0.7 + 1.0) * 0.18 + cos(t * 0.31) * 0.1, cos(t * 1.1) * 0.12);
         vec4 mv = modelViewMatrix * vec4(p,1.0); gl_Position = projectionMatrix * mv;
-        gl_PointSize = min(10.0, scale * 4.5 * seed.y * projectionMatrix[1][1] / max(0.2, -mv.z));
+        gl_PointSize = min(3.0, scale * 2.5 * seed.y * projectionMatrix[1][1] / max(0.2, -mv.z));
         vA = 0.35 + 0.65 * pow(0.5 + 0.5 * sin(time * 1.7 * seed.y + seed.x * 3.0), 2.0); }`,
-    fragmentShader: `uniform vec3 color; uniform float opacity; uniform sampler2D map; varying float vA; void main(){ gl_FragColor = vec4(color, texture2D(map, gl_PointCoord).r * opacity * vA); }`,
+    fragmentShader: `uniform vec3 color; uniform float opacity; uniform sampler2D map; varying float vA; void main(){ gl_FragColor = vec4(color, texture2D(map, gl_PointCoord).a * opacity * vA); }`,
   });
   const pts = new THREE.Points(g, mat);
   pts.frustumCulled = false;
@@ -254,16 +254,16 @@ export function createSunPatches(windows, wallX) {
 }
 
 // ---------------------------------------------------------------------------------------------
-/** Low-poly tree (merged parts for a Batch-like list): trunk + 3–5 canopy blobs. Returns parts for mergeColored. */
+/** Low-poly tree (merged parts for a Batch-like list): trunk + layered canopy clusters. Returns parts for mergeColored. */
 export function treeParts(r, x, y, z, s = 1, colors = [0x6aaa4c, 0x4c8f3e, 0x8cc463], trunk = 0x7a5636, blossom = false) {
   const parts = [];
   const h = r.range(3.2, 4.5) * s;
   parts.push([GEO.cyl8, mat4(x, y + h / 2, z, 0, 0, r.range(-0.06, 0.06), 0.28 * s, h, 0.28 * s), trunk]);
-  const n = r.int(3, 5);
+  const n = r.int(7, 10);
   for (let k = 0; k < n; k++) {
     const rs = r.range(1.5, 2.3) * s;
     const c = colors[k % colors.length];
-    parts.push([blossom ? GEO.ico : GEO.ico0, mat4(x + r.range(-1.1, 1.1) * s, y + h + r.range(-0.3, 1.3) * s, z + r.range(-1.1, 1.1) * s, r.range(0, 3), r.range(0, 3), 0, rs * 1.15, rs * 0.95, rs * 1.1),
+    parts.push([blossom ? GEO.ico : GEO.sphere, mat4(x + r.range(-1.1, 1.1) * s, y + h + r.range(-0.3, 1.3) * s, z + r.range(-1.1, 1.1) * s, r.range(0, 3), r.range(0, 3), 0, rs * 1.15, rs * 0.95, rs * 1.1),
       (nx, ny) => (ny > 0.35 ? c : new THREE.Color(c).multiplyScalar(0.82).getHex())]);
   }
   return parts;

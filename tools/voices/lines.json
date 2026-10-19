@@ -1,0 +1,3090 @@
+{
+ "generated": "2026-10-18T04:36:44.652Z",
+ "count": 368,
+ "speakers": {
+  "lin_xiaoyu": {
+   "name": "林晓雨",
+   "gender": "f",
+   "role": "student",
+   "trait": "monitor"
+  },
+  "gu_xiaosuan": {
+   "name": "顾小算",
+   "gender": "f",
+   "role": "student",
+   "trait": "nerd"
+  },
+  "bai_xiaomeng": {
+   "name": "白小梦",
+   "gender": "f",
+   "role": "student",
+   "trait": "sleeper"
+  },
+  "chen_keke": {
+   "name": "陈可可",
+   "gender": "f",
+   "role": "student",
+   "trait": "foodie"
+  },
+  "tang_tang": {
+   "name": "唐糖",
+   "gender": "f",
+   "role": "student",
+   "trait": "gossip"
+  },
+  "xia_mo": {
+   "name": "夏沫",
+   "gender": "f",
+   "role": "student",
+   "trait": "jock"
+  },
+  "ye_zhiqiu": {
+   "name": "叶知秋",
+   "gender": "f",
+   "role": "student",
+   "trait": "artsy"
+  },
+  "leng_yue": {
+   "name": "冷月",
+   "gender": "f",
+   "role": "student",
+   "trait": "chuuni"
+  },
+  "su_nian": {
+   "name": "苏念",
+   "gender": "f",
+   "role": "student",
+   "trait": "shy"
+  },
+  "le_duoduo": {
+   "name": "乐多多",
+   "gender": "f",
+   "role": "student",
+   "trait": "clown"
+  },
+  "you_xiaoyou": {
+   "name": "游小悠",
+   "gender": "f",
+   "role": "student",
+   "trait": "gamer"
+  },
+  "xu_ruoqing": {
+   "name": "许若晴",
+   "gender": "f",
+   "role": "student",
+   "trait": "normal"
+  },
+  "yan_zheng": {
+   "name": "严正",
+   "gender": "m",
+   "role": "student",
+   "trait": "disciplinarian"
+  },
+  "song_shuhang": {
+   "name": "宋书航",
+   "gender": "m",
+   "role": "student",
+   "trait": "nerd"
+  },
+  "zhao_xiaokun": {
+   "name": "赵小困",
+   "gender": "m",
+   "role": "student",
+   "trait": "sleeper"
+  },
+  "wang_dazhuang": {
+   "name": "王大壮",
+   "gender": "m",
+   "role": "student",
+   "trait": "foodie"
+  },
+  "hu_shuo": {
+   "name": "胡硕",
+   "gender": "m",
+   "role": "student",
+   "trait": "gossip"
+  },
+  "zhang_haoran": {
+   "name": "张浩然",
+   "gender": "m",
+   "role": "student",
+   "trait": "jock"
+  },
+  "jiang_bei": {
+   "name": "江北",
+   "gender": "m",
+   "role": "student",
+   "trait": "artsy"
+  },
+  "long_aotian": {
+   "name": "龙傲天",
+   "gender": "m",
+   "role": "student",
+   "trait": "chuuni"
+  },
+  "wen_yan": {
+   "name": "温言",
+   "gender": "m",
+   "role": "student",
+   "trait": "shy"
+  },
+  "sun_xiaokong": {
+   "name": "孙小空",
+   "gender": "m",
+   "role": "student",
+   "trait": "clown"
+  },
+  "li_yiming": {
+   "name": "李一鸣",
+   "gender": "m",
+   "role": "student",
+   "trait": "gamer"
+  }
+ },
+ "lines": [
+  {
+   "kind": "line",
+   "key": "bai_xiaomeng",
+   "text": "x 等于二或者三！",
+   "n": 1,
+   "src": "static",
+   "speech": "x 等于二或者三！"
+  },
+  {
+   "kind": "line",
+   "key": "bai_xiaomeng",
+   "text": "呃……x 等于……二？",
+   "n": 1,
+   "src": "static",
+   "speech": "呃…x 等于…二？"
+  },
+  {
+   "kind": "line",
+   "key": "bai_xiaomeng",
+   "text": "因为半径垂直于切线！",
+   "n": 1,
+   "src": "static",
+   "speech": "因为半径垂直于切线！"
+  },
+  {
+   "kind": "line",
+   "key": "bai_xiaomeng",
+   "text": "我……刚才没听清。",
+   "n": 1,
+   "src": "static",
+   "speech": "我…刚才没听清。"
+  },
+  {
+   "kind": "line",
+   "key": "bai_xiaomeng",
+   "text": "老师，这题超纲了吧？",
+   "n": 1,
+   "src": "static",
+   "speech": "老师，这题超纲了吧？"
+  },
+  {
+   "kind": "line",
+   "key": "bai_xiaomeng",
+   "text": "选……C？",
+   "n": 1,
+   "src": "static",
+   "speech": "选…C？"
+  },
+  {
+   "kind": "line",
+   "key": "bai_xiaomeng",
+   "text": "顶点是二，负一！",
+   "n": 1,
+   "src": "static",
+   "speech": "顶点是二，负一！"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:0",
+   "text": "作业写完没？",
+   "n": 1,
+   "src": "static",
+   "speech": "作业写完没？"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:0",
+   "text": "几点了？",
+   "n": 1,
+   "src": "static",
+   "speech": "几点了？"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:0",
+   "text": "哈哈哈。",
+   "n": 1,
+   "src": "static",
+   "speech": "哈哈哈。"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:0",
+   "text": "真的假的？",
+   "n": 1,
+   "src": "static",
+   "speech": "真的假的？"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:0",
+   "text": "等一下。",
+   "n": 1,
+   "src": "static",
+   "speech": "等一下。"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:0",
+   "text": "说好的啊。",
+   "n": 1,
+   "src": "static",
+   "speech": "说好的啊。"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:1",
+   "text": "别闹。",
+   "n": 1,
+   "src": "static",
+   "speech": "别闹。"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:1",
+   "text": "好困啊……",
+   "n": 1,
+   "src": "static",
+   "speech": "好困啊…"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:1",
+   "text": "快抄快抄。",
+   "n": 1,
+   "src": "static",
+   "speech": "快抄快抄。"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:1",
+   "text": "放学打球吗？",
+   "n": 1,
+   "src": "static",
+   "speech": "放学打球吗？"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:1",
+   "text": "明天考试？",
+   "n": 1,
+   "src": "static",
+   "speech": "明天考试？"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:1",
+   "text": "笑死我了。",
+   "n": 1,
+   "src": "static",
+   "speech": "笑死我了。"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:2",
+   "text": "下节什么课？",
+   "n": 1,
+   "src": "static",
+   "speech": "下节什么课？"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:2",
+   "text": "你抄完了没？",
+   "n": 1,
+   "src": "static",
+   "speech": "你抄完了没？"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:2",
+   "text": "你看那个！",
+   "n": 1,
+   "src": "static",
+   "speech": "你看那个！"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:2",
+   "text": "完了完了。",
+   "n": 1,
+   "src": "static",
+   "speech": "完了完了。"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:2",
+   "text": "给我看看。",
+   "n": 1,
+   "src": "static",
+   "speech": "给我看看。"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:2",
+   "text": "这题选C。",
+   "n": 1,
+   "src": "static",
+   "speech": "这题选C。"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:3",
+   "text": "啊？",
+   "n": 1,
+   "src": "static",
+   "speech": "啊？"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:3",
+   "text": "嘘——小声点。",
+   "n": 1,
+   "src": "static",
+   "speech": "嘘，小声点。"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:3",
+   "text": "嘻嘻。",
+   "n": 1,
+   "src": "static",
+   "speech": "嘻嘻。"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:3",
+   "text": "她刚才看你了。",
+   "n": 1,
+   "src": "static",
+   "speech": "她刚才看你了。"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:3",
+   "text": "我看看。",
+   "n": 1,
+   "src": "static",
+   "speech": "我看看。"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:3",
+   "text": "笔借我一下。",
+   "n": 1,
+   "src": "static",
+   "speech": "笔借我一下。"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:4",
+   "text": "借我橡皮。",
+   "n": 1,
+   "src": "static",
+   "speech": "借我橡皮。"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:4",
+   "text": "哎呀。",
+   "n": 1,
+   "src": "static",
+   "speech": "哎呀。"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:4",
+   "text": "嗯嗯。",
+   "n": 1,
+   "src": "static",
+   "speech": "嗯嗯。"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:4",
+   "text": "好好好。",
+   "n": 1,
+   "src": "static",
+   "speech": "好好好。"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:4",
+   "text": "就是那个嘛。",
+   "n": 1,
+   "src": "static",
+   "speech": "就是那个嘛。"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:4",
+   "text": "老师看过来了。",
+   "n": 1,
+   "src": "static",
+   "speech": "老师看过来了。"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:5",
+   "text": "什么呀。",
+   "n": 1,
+   "src": "static",
+   "speech": "什么呀。"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:5",
+   "text": "哇。",
+   "n": 1,
+   "src": "static",
+   "speech": "哇。"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:5",
+   "text": "对对对。",
+   "n": 1,
+   "src": "static",
+   "speech": "对对对。"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:5",
+   "text": "我也不会。",
+   "n": 1,
+   "src": "static",
+   "speech": "我也不会。"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:5",
+   "text": "我跟你说……",
+   "n": 1,
+   "src": "static",
+   "speech": "我跟你说…"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:5",
+   "text": "第几题啊？",
+   "n": 1,
+   "src": "static",
+   "speech": "第几题啊？"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:6",
+   "text": "不是吧。",
+   "n": 1,
+   "src": "static",
+   "speech": "不是吧。"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:6",
+   "text": "你昨天看那个了吗？",
+   "n": 1,
+   "src": "static",
+   "speech": "你昨天看那个了吗？"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:6",
+   "text": "好无聊啊。",
+   "n": 1,
+   "src": "static",
+   "speech": "好无聊啊。"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:6",
+   "text": "然后呢？",
+   "n": 1,
+   "src": "static",
+   "speech": "然后呢？"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:6",
+   "text": "等会儿去小卖部吗？",
+   "n": 1,
+   "src": "static",
+   "speech": "等会儿去小卖部吗？"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:6",
+   "text": "谁啊？",
+   "n": 1,
+   "src": "static",
+   "speech": "谁啊？"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:7",
+   "text": "他又睡着了。",
+   "n": 1,
+   "src": "static",
+   "speech": "他又睡着了。"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:7",
+   "text": "你猜。",
+   "n": 1,
+   "src": "static",
+   "speech": "你猜。"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:7",
+   "text": "好热啊。",
+   "n": 1,
+   "src": "static",
+   "speech": "好热啊。"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:7",
+   "text": "我就说嘛。",
+   "n": 1,
+   "src": "static",
+   "speech": "我就说嘛。"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:7",
+   "text": "超好笑的。",
+   "n": 1,
+   "src": "static",
+   "speech": "超好笑的。"
+  },
+  {
+   "kind": "line",
+   "key": "chatter:7",
+   "text": "饿死了。",
+   "n": 1,
+   "src": "static",
+   "speech": "饿死了。"
+  },
+  {
+   "kind": "line",
+   "key": "chen_keke",
+   "text": "x 等于二或者三！",
+   "n": 1,
+   "src": "static",
+   "speech": "x 等于二或者三！"
+  },
+  {
+   "kind": "line",
+   "key": "chen_keke",
+   "text": "呃……x 等于……二？",
+   "n": 1,
+   "src": "static",
+   "speech": "呃…x 等于…二？"
+  },
+  {
+   "kind": "line",
+   "key": "chen_keke",
+   "text": "因为半径垂直于切线！",
+   "n": 1,
+   "src": "static",
+   "speech": "因为半径垂直于切线！"
+  },
+  {
+   "kind": "line",
+   "key": "chen_keke",
+   "text": "我……刚才没听清。",
+   "n": 1,
+   "src": "static",
+   "speech": "我…刚才没听清。"
+  },
+  {
+   "kind": "line",
+   "key": "chen_keke",
+   "text": "老师，这题超纲了吧？",
+   "n": 1,
+   "src": "static",
+   "speech": "老师，这题超纲了吧？"
+  },
+  {
+   "kind": "line",
+   "key": "chen_keke",
+   "text": "选……C？",
+   "n": 1,
+   "src": "static",
+   "speech": "选…C？"
+  },
+  {
+   "kind": "line",
+   "key": "chen_keke",
+   "text": "顶点是二，负一！",
+   "n": 1,
+   "src": "static",
+   "speech": "顶点是二，负一！"
+  },
+  {
+   "kind": "line",
+   "key": "gu_xiaosuan",
+   "text": "x 等于二或者三！",
+   "n": 1,
+   "src": "static",
+   "speech": "x 等于二或者三！"
+  },
+  {
+   "kind": "line",
+   "key": "gu_xiaosuan",
+   "text": "呃……x 等于……二？",
+   "n": 1,
+   "src": "static",
+   "speech": "呃…x 等于…二？"
+  },
+  {
+   "kind": "line",
+   "key": "gu_xiaosuan",
+   "text": "因为半径垂直于切线！",
+   "n": 1,
+   "src": "static",
+   "speech": "因为半径垂直于切线！"
+  },
+  {
+   "kind": "line",
+   "key": "gu_xiaosuan",
+   "text": "我……刚才没听清。",
+   "n": 1,
+   "src": "static",
+   "speech": "我…刚才没听清。"
+  },
+  {
+   "kind": "line",
+   "key": "gu_xiaosuan",
+   "text": "老师，这题超纲了吧？",
+   "n": 1,
+   "src": "static",
+   "speech": "老师，这题超纲了吧？"
+  },
+  {
+   "kind": "line",
+   "key": "gu_xiaosuan",
+   "text": "选……C？",
+   "n": 1,
+   "src": "static",
+   "speech": "选…C？"
+  },
+  {
+   "kind": "line",
+   "key": "gu_xiaosuan",
+   "text": "顶点是二，负一！",
+   "n": 1,
+   "src": "static",
+   "speech": "顶点是二，负一！"
+  },
+  {
+   "kind": "line",
+   "key": "hu_shuo",
+   "text": "x 等于二或者三！",
+   "n": 1,
+   "src": "static",
+   "speech": "x 等于二或者三！"
+  },
+  {
+   "kind": "line",
+   "key": "hu_shuo",
+   "text": "呃……x 等于……二？",
+   "n": 1,
+   "src": "static",
+   "speech": "呃…x 等于…二？"
+  },
+  {
+   "kind": "line",
+   "key": "hu_shuo",
+   "text": "因为半径垂直于切线！",
+   "n": 1,
+   "src": "static",
+   "speech": "因为半径垂直于切线！"
+  },
+  {
+   "kind": "line",
+   "key": "hu_shuo",
+   "text": "我……刚才没听清。",
+   "n": 1,
+   "src": "static",
+   "speech": "我…刚才没听清。"
+  },
+  {
+   "kind": "line",
+   "key": "hu_shuo",
+   "text": "老师，这题超纲了吧？",
+   "n": 1,
+   "src": "static",
+   "speech": "老师，这题超纲了吧？"
+  },
+  {
+   "kind": "line",
+   "key": "hu_shuo",
+   "text": "选……C？",
+   "n": 1,
+   "src": "static",
+   "speech": "选…C？"
+  },
+  {
+   "kind": "line",
+   "key": "hu_shuo",
+   "text": "顶点是二，负一！",
+   "n": 1,
+   "src": "static",
+   "speech": "顶点是二，负一！"
+  },
+  {
+   "kind": "line",
+   "key": "jiang_bei",
+   "text": "x 等于二或者三！",
+   "n": 1,
+   "src": "static",
+   "speech": "x 等于二或者三！"
+  },
+  {
+   "kind": "line",
+   "key": "jiang_bei",
+   "text": "呃……x 等于……二？",
+   "n": 1,
+   "src": "static",
+   "speech": "呃…x 等于…二？"
+  },
+  {
+   "kind": "line",
+   "key": "jiang_bei",
+   "text": "因为半径垂直于切线！",
+   "n": 1,
+   "src": "static",
+   "speech": "因为半径垂直于切线！"
+  },
+  {
+   "kind": "line",
+   "key": "jiang_bei",
+   "text": "我……刚才没听清。",
+   "n": 1,
+   "src": "static",
+   "speech": "我…刚才没听清。"
+  },
+  {
+   "kind": "line",
+   "key": "jiang_bei",
+   "text": "老师，这题超纲了吧？",
+   "n": 1,
+   "src": "static",
+   "speech": "老师，这题超纲了吧？"
+  },
+  {
+   "kind": "line",
+   "key": "jiang_bei",
+   "text": "选……C？",
+   "n": 1,
+   "src": "static",
+   "speech": "选…C？"
+  },
+  {
+   "kind": "line",
+   "key": "jiang_bei",
+   "text": "顶点是二，负一！",
+   "n": 1,
+   "src": "static",
+   "speech": "顶点是二，负一！"
+  },
+  {
+   "kind": "line",
+   "key": "le_duoduo",
+   "text": "x 等于二或者三！",
+   "n": 1,
+   "src": "static",
+   "speech": "x 等于二或者三！"
+  },
+  {
+   "kind": "line",
+   "key": "le_duoduo",
+   "text": "呃……x 等于……二？",
+   "n": 1,
+   "src": "static",
+   "speech": "呃…x 等于…二？"
+  },
+  {
+   "kind": "line",
+   "key": "le_duoduo",
+   "text": "因为半径垂直于切线！",
+   "n": 1,
+   "src": "static",
+   "speech": "因为半径垂直于切线！"
+  },
+  {
+   "kind": "line",
+   "key": "le_duoduo",
+   "text": "我……刚才没听清。",
+   "n": 1,
+   "src": "static",
+   "speech": "我…刚才没听清。"
+  },
+  {
+   "kind": "line",
+   "key": "le_duoduo",
+   "text": "老师，这题超纲了吧？",
+   "n": 1,
+   "src": "static",
+   "speech": "老师，这题超纲了吧？"
+  },
+  {
+   "kind": "line",
+   "key": "le_duoduo",
+   "text": "选……C？",
+   "n": 1,
+   "src": "static",
+   "speech": "选…C？"
+  },
+  {
+   "kind": "line",
+   "key": "le_duoduo",
+   "text": "顶点是二，负一！",
+   "n": 1,
+   "src": "static",
+   "speech": "顶点是二，负一！"
+  },
+  {
+   "kind": "line",
+   "key": "leng_yue",
+   "text": "x 等于二或者三！",
+   "n": 1,
+   "src": "static",
+   "speech": "x 等于二或者三！"
+  },
+  {
+   "kind": "line",
+   "key": "leng_yue",
+   "text": "呃……x 等于……二？",
+   "n": 1,
+   "src": "static",
+   "speech": "呃…x 等于…二？"
+  },
+  {
+   "kind": "line",
+   "key": "leng_yue",
+   "text": "因为半径垂直于切线！",
+   "n": 1,
+   "src": "static",
+   "speech": "因为半径垂直于切线！"
+  },
+  {
+   "kind": "line",
+   "key": "leng_yue",
+   "text": "我……刚才没听清。",
+   "n": 1,
+   "src": "static",
+   "speech": "我…刚才没听清。"
+  },
+  {
+   "kind": "line",
+   "key": "leng_yue",
+   "text": "老师，这题超纲了吧？",
+   "n": 1,
+   "src": "static",
+   "speech": "老师，这题超纲了吧？"
+  },
+  {
+   "kind": "line",
+   "key": "leng_yue",
+   "text": "选……C？",
+   "n": 1,
+   "src": "static",
+   "speech": "选…C？"
+  },
+  {
+   "kind": "line",
+   "key": "leng_yue",
+   "text": "顶点是二，负一！",
+   "n": 1,
+   "src": "static",
+   "speech": "顶点是二，负一！"
+  },
+  {
+   "kind": "line",
+   "key": "li_yiming",
+   "text": "x 等于二或者三！",
+   "n": 1,
+   "src": "static",
+   "speech": "x 等于二或者三！"
+  },
+  {
+   "kind": "line",
+   "key": "li_yiming",
+   "text": "呃……x 等于……二？",
+   "n": 1,
+   "src": "static",
+   "speech": "呃…x 等于…二？"
+  },
+  {
+   "kind": "line",
+   "key": "li_yiming",
+   "text": "因为半径垂直于切线！",
+   "n": 1,
+   "src": "static",
+   "speech": "因为半径垂直于切线！"
+  },
+  {
+   "kind": "line",
+   "key": "li_yiming",
+   "text": "我……刚才没听清。",
+   "n": 1,
+   "src": "static",
+   "speech": "我…刚才没听清。"
+  },
+  {
+   "kind": "line",
+   "key": "li_yiming",
+   "text": "老师，这题超纲了吧？",
+   "n": 1,
+   "src": "static",
+   "speech": "老师，这题超纲了吧？"
+  },
+  {
+   "kind": "line",
+   "key": "li_yiming",
+   "text": "选……C？",
+   "n": 1,
+   "src": "static",
+   "speech": "选…C？"
+  },
+  {
+   "kind": "line",
+   "key": "li_yiming",
+   "text": "顶点是二，负一！",
+   "n": 1,
+   "src": "static",
+   "speech": "顶点是二，负一！"
+  },
+  {
+   "kind": "line",
+   "key": "lin_xiaoyu",
+   "text": "x 等于二或者三！",
+   "n": 1,
+   "src": "static",
+   "speech": "x 等于二或者三！"
+  },
+  {
+   "kind": "line",
+   "key": "lin_xiaoyu",
+   "text": "呃……x 等于……二？",
+   "n": 1,
+   "src": "static",
+   "speech": "呃…x 等于…二？"
+  },
+  {
+   "kind": "line",
+   "key": "lin_xiaoyu",
+   "text": "因为半径垂直于切线！",
+   "n": 1,
+   "src": "static",
+   "speech": "因为半径垂直于切线！"
+  },
+  {
+   "kind": "line",
+   "key": "lin_xiaoyu",
+   "text": "我……刚才没听清。",
+   "n": 1,
+   "src": "static",
+   "speech": "我…刚才没听清。"
+  },
+  {
+   "kind": "line",
+   "key": "lin_xiaoyu",
+   "text": "老师，这题超纲了吧？",
+   "n": 1,
+   "src": "static",
+   "speech": "老师，这题超纲了吧？"
+  },
+  {
+   "kind": "line",
+   "key": "lin_xiaoyu",
+   "text": "选……C？",
+   "n": 1,
+   "src": "static",
+   "speech": "选…C？"
+  },
+  {
+   "kind": "line",
+   "key": "lin_xiaoyu",
+   "text": "顶点是二，负一！",
+   "n": 1,
+   "src": "static",
+   "speech": "顶点是二，负一！"
+  },
+  {
+   "kind": "line",
+   "key": "long_aotian",
+   "text": "x 等于二或者三！",
+   "n": 1,
+   "src": "static",
+   "speech": "x 等于二或者三！"
+  },
+  {
+   "kind": "line",
+   "key": "long_aotian",
+   "text": "呃……x 等于……二？",
+   "n": 1,
+   "src": "static",
+   "speech": "呃…x 等于…二？"
+  },
+  {
+   "kind": "line",
+   "key": "long_aotian",
+   "text": "因为半径垂直于切线！",
+   "n": 1,
+   "src": "static",
+   "speech": "因为半径垂直于切线！"
+  },
+  {
+   "kind": "line",
+   "key": "long_aotian",
+   "text": "我……刚才没听清。",
+   "n": 1,
+   "src": "static",
+   "speech": "我…刚才没听清。"
+  },
+  {
+   "kind": "line",
+   "key": "long_aotian",
+   "text": "老师，这题超纲了吧？",
+   "n": 1,
+   "src": "static",
+   "speech": "老师，这题超纲了吧？"
+  },
+  {
+   "kind": "line",
+   "key": "long_aotian",
+   "text": "选……C？",
+   "n": 1,
+   "src": "static",
+   "speech": "选…C？"
+  },
+  {
+   "kind": "line",
+   "key": "long_aotian",
+   "text": "顶点是二，负一！",
+   "n": 1,
+   "src": "static",
+   "speech": "顶点是二，负一！"
+  },
+  {
+   "kind": "line",
+   "key": "ritual:chorus0",
+   "text": "老——师——好——",
+   "n": 1,
+   "src": "static",
+   "speech": "老，师，好，"
+  },
+  {
+   "kind": "line",
+   "key": "ritual:chorus1",
+   "text": "老——师——好——",
+   "n": 1,
+   "src": "static",
+   "speech": "老，师，好，"
+  },
+  {
+   "kind": "line",
+   "key": "ritual:chorus2",
+   "text": "老——师——好——",
+   "n": 1,
+   "src": "static",
+   "speech": "老，师，好，"
+  },
+  {
+   "kind": "line",
+   "key": "ritual:chorus3",
+   "text": "老——师——好——",
+   "n": 1,
+   "src": "static",
+   "speech": "老，师，好，"
+  },
+  {
+   "kind": "line",
+   "key": "ritual:chorus4",
+   "text": "老——师——好——",
+   "n": 1,
+   "src": "static",
+   "speech": "老，师，好，"
+  },
+  {
+   "kind": "line",
+   "key": "ritual:chorus5",
+   "text": "老——师——好——",
+   "n": 1,
+   "src": "static",
+   "speech": "老，师，好，"
+  },
+  {
+   "kind": "line",
+   "key": "ritual:chorus6",
+   "text": "老——师——好——",
+   "n": 1,
+   "src": "static",
+   "speech": "老，师，好，"
+  },
+  {
+   "kind": "line",
+   "key": "ritual:chorus7",
+   "text": "老——师——好——",
+   "n": 1,
+   "src": "static",
+   "speech": "老，师，好，"
+  },
+  {
+   "kind": "line",
+   "key": "ritual:monitor_f",
+   "text": "起立！",
+   "n": 1,
+   "src": "static",
+   "speech": "起立！"
+  },
+  {
+   "kind": "line",
+   "key": "ritual:monitor_m",
+   "text": "起立！",
+   "n": 1,
+   "src": "static",
+   "speech": "起立！"
+  },
+  {
+   "kind": "line",
+   "key": "role:boy",
+   "text": "你好，这是语音试听。",
+   "n": 1,
+   "src": "static",
+   "speech": "你好，这是语音试听。"
+  },
+  {
+   "kind": "line",
+   "key": "role:boy",
+   "text": "你好！",
+   "n": 1,
+   "src": "static",
+   "speech": "你好！"
+  },
+  {
+   "kind": "line",
+   "key": "role:girl",
+   "text": "你好，这是语音试听。",
+   "n": 1,
+   "src": "static",
+   "speech": "你好，这是语音试听。"
+  },
+  {
+   "kind": "line",
+   "key": "role:narrator",
+   "text": "你好，这是语音试听。",
+   "n": 1,
+   "src": "static",
+   "speech": "你好，这是语音试听。"
+  },
+  {
+   "kind": "line",
+   "key": "song_shuhang",
+   "text": "x 等于二或者三！",
+   "n": 1,
+   "src": "static",
+   "speech": "x 等于二或者三！"
+  },
+  {
+   "kind": "line",
+   "key": "song_shuhang",
+   "text": "呃……x 等于……二？",
+   "n": 1,
+   "src": "static",
+   "speech": "呃…x 等于…二？"
+  },
+  {
+   "kind": "line",
+   "key": "song_shuhang",
+   "text": "因为半径垂直于切线！",
+   "n": 1,
+   "src": "static",
+   "speech": "因为半径垂直于切线！"
+  },
+  {
+   "kind": "line",
+   "key": "song_shuhang",
+   "text": "我……刚才没听清。",
+   "n": 1,
+   "src": "static",
+   "speech": "我…刚才没听清。"
+  },
+  {
+   "kind": "line",
+   "key": "song_shuhang",
+   "text": "老师，这题超纲了吧？",
+   "n": 1,
+   "src": "static",
+   "speech": "老师，这题超纲了吧？"
+  },
+  {
+   "kind": "line",
+   "key": "song_shuhang",
+   "text": "选……C？",
+   "n": 1,
+   "src": "static",
+   "speech": "选…C？"
+  },
+  {
+   "kind": "line",
+   "key": "song_shuhang",
+   "text": "顶点是二，负一！",
+   "n": 1,
+   "src": "static",
+   "speech": "顶点是二，负一！"
+  },
+  {
+   "kind": "line",
+   "key": "su_nian",
+   "text": "x 等于二或者三！",
+   "n": 1,
+   "src": "static",
+   "speech": "x 等于二或者三！"
+  },
+  {
+   "kind": "line",
+   "key": "su_nian",
+   "text": "呃……x 等于……二？",
+   "n": 1,
+   "src": "static",
+   "speech": "呃…x 等于…二？"
+  },
+  {
+   "kind": "line",
+   "key": "su_nian",
+   "text": "因为半径垂直于切线！",
+   "n": 1,
+   "src": "static",
+   "speech": "因为半径垂直于切线！"
+  },
+  {
+   "kind": "line",
+   "key": "su_nian",
+   "text": "我……刚才没听清。",
+   "n": 1,
+   "src": "static",
+   "speech": "我…刚才没听清。"
+  },
+  {
+   "kind": "line",
+   "key": "su_nian",
+   "text": "老师，这题超纲了吧？",
+   "n": 1,
+   "src": "static",
+   "speech": "老师，这题超纲了吧？"
+  },
+  {
+   "kind": "line",
+   "key": "su_nian",
+   "text": "选……C？",
+   "n": 1,
+   "src": "static",
+   "speech": "选…C？"
+  },
+  {
+   "kind": "line",
+   "key": "su_nian",
+   "text": "顶点是二，负一！",
+   "n": 1,
+   "src": "static",
+   "speech": "顶点是二，负一！"
+  },
+  {
+   "kind": "line",
+   "key": "sun_xiaokong",
+   "text": "x 等于二或者三！",
+   "n": 1,
+   "src": "static",
+   "speech": "x 等于二或者三！"
+  },
+  {
+   "kind": "line",
+   "key": "sun_xiaokong",
+   "text": "呃……x 等于……二？",
+   "n": 1,
+   "src": "static",
+   "speech": "呃…x 等于…二？"
+  },
+  {
+   "kind": "line",
+   "key": "sun_xiaokong",
+   "text": "因为半径垂直于切线！",
+   "n": 1,
+   "src": "static",
+   "speech": "因为半径垂直于切线！"
+  },
+  {
+   "kind": "line",
+   "key": "sun_xiaokong",
+   "text": "我……刚才没听清。",
+   "n": 1,
+   "src": "static",
+   "speech": "我…刚才没听清。"
+  },
+  {
+   "kind": "line",
+   "key": "sun_xiaokong",
+   "text": "老师，这题超纲了吧？",
+   "n": 1,
+   "src": "static",
+   "speech": "老师，这题超纲了吧？"
+  },
+  {
+   "kind": "line",
+   "key": "sun_xiaokong",
+   "text": "选……C？",
+   "n": 1,
+   "src": "static",
+   "speech": "选…C？"
+  },
+  {
+   "kind": "line",
+   "key": "sun_xiaokong",
+   "text": "顶点是二，负一！",
+   "n": 1,
+   "src": "static",
+   "speech": "顶点是二，负一！"
+  },
+  {
+   "kind": "line",
+   "key": "tang_tang",
+   "text": "x 等于二或者三！",
+   "n": 1,
+   "src": "static",
+   "speech": "x 等于二或者三！"
+  },
+  {
+   "kind": "line",
+   "key": "tang_tang",
+   "text": "呃……x 等于……二？",
+   "n": 1,
+   "src": "static",
+   "speech": "呃…x 等于…二？"
+  },
+  {
+   "kind": "line",
+   "key": "tang_tang",
+   "text": "因为半径垂直于切线！",
+   "n": 1,
+   "src": "static",
+   "speech": "因为半径垂直于切线！"
+  },
+  {
+   "kind": "line",
+   "key": "tang_tang",
+   "text": "我……刚才没听清。",
+   "n": 1,
+   "src": "static",
+   "speech": "我…刚才没听清。"
+  },
+  {
+   "kind": "line",
+   "key": "tang_tang",
+   "text": "老师，这题超纲了吧？",
+   "n": 1,
+   "src": "static",
+   "speech": "老师，这题超纲了吧？"
+  },
+  {
+   "kind": "line",
+   "key": "tang_tang",
+   "text": "选……C？",
+   "n": 1,
+   "src": "static",
+   "speech": "选…C？"
+  },
+  {
+   "kind": "line",
+   "key": "tang_tang",
+   "text": "顶点是二，负一！",
+   "n": 1,
+   "src": "static",
+   "speech": "顶点是二，负一！"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "……好好听课。",
+   "n": 1,
+   "src": "static",
+   "speech": "好好听课。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "……站着听十分钟。算了，坐下。",
+   "n": 1,
+   "src": "static",
+   "speech": "站着听十分钟。算了，坐下。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "上课！",
+   "n": 1,
+   "src": "static",
+   "speech": "上课！"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "上课认真听！坐下。",
+   "n": 1,
+   "src": "static",
+   "speech": "上课认真听！坐下。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "下课来我办公室。坐下吧。",
+   "n": 1,
+   "src": "static",
+   "speech": "下课来我办公室。坐下吧。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "下课铃是给老师的，不是给你们的。",
+   "n": 1,
+   "src": "static",
+   "speech": "下课铃是给老师的，不是给你们的。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "不错，大家要向他学习。",
+   "n": 1,
+   "src": "static",
+   "speech": "不错，大家要向他学习。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "不错，大家要向她学习。",
+   "n": 1,
+   "src": "static",
+   "speech": "不错，大家要向她学习。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "严正，你来回答一下。",
+   "n": 1,
+   "src": "static",
+   "speech": "严正，你来回答一下。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "严正，你说说看。",
+   "n": 1,
+   "src": "static",
+   "speech": "严正，你说说看。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "严正，看黑板！",
+   "n": 1,
+   "src": "static",
+   "speech": "严正，看黑板！"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "严正，这道题你来说。",
+   "n": 1,
+   "src": "static",
+   "speech": "严正，这道题你来说。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "乐多多，你做什么鬼脸？",
+   "n": 1,
+   "src": "static",
+   "speech": "乐多多，你做什么鬼脸？"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "乐多多，你来回答一下。",
+   "n": 1,
+   "src": "static",
+   "speech": "乐多多，你来回答一下。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "乐多多，你说说看。",
+   "n": 1,
+   "src": "static",
+   "speech": "乐多多，你说说看。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "乐多多，这道题你来说。",
+   "n": 1,
+   "src": "static",
+   "speech": "乐多多，这道题你来说。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "什么声音？",
+   "n": 1,
+   "src": "static",
+   "speech": "什么声音？"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "你们是我带过最差的一届。",
+   "n": 1,
+   "src": "static",
+   "speech": "你们是我带过最差的一届。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "你手里拿的什么？",
+   "n": 1,
+   "src": "static",
+   "speech": "你手里拿的什么？"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "最后一排那个同学……",
+   "n": 1,
+   "src": "static",
+   "speech": "最后一排那个同学…"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "冷月，你来回答一下。",
+   "n": 1,
+   "src": "static",
+   "speech": "冷月，你来回答一下。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "冷月，你说说看。",
+   "n": 1,
+   "src": "static",
+   "speech": "冷月，你说说看。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "冷月，看黑板！",
+   "n": 1,
+   "src": "static",
+   "speech": "冷月，看黑板！"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "冷月，这道题你来说。",
+   "n": 1,
+   "src": "static",
+   "speech": "冷月，这道题你来说。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "别以为我没看见。",
+   "n": 1,
+   "src": "static",
+   "speech": "别以为我没看见。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "叶知秋，你来回答一下。",
+   "n": 1,
+   "src": "static",
+   "speech": "叶知秋，你来回答一下。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "叶知秋，你说说看。",
+   "n": 1,
+   "src": "static",
+   "speech": "叶知秋，你说说看。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "叶知秋，看黑板！",
+   "n": 1,
+   "src": "static",
+   "speech": "叶知秋，看黑板！"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "叶知秋，这道题你来说。",
+   "n": 1,
+   "src": "static",
+   "speech": "叶知秋，这道题你来说。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "同学们好，坐。",
+   "n": 1,
+   "src": "static",
+   "speech": "同学们好，坐。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "后排的同学，听懂了没有？",
+   "n": 1,
+   "src": "static",
+   "speech": "后排的同学，听懂了没有？"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "唐糖，你来回答一下。",
+   "n": 1,
+   "src": "static",
+   "speech": "唐糖，你来回答一下。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "唐糖，你说说看。",
+   "n": 1,
+   "src": "static",
+   "speech": "唐糖，你说说看。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "唐糖，就你话多！",
+   "n": 1,
+   "src": "static",
+   "speech": "唐糖，就你话多！"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "唐糖，这道题你来说。",
+   "n": 1,
+   "src": "static",
+   "speech": "唐糖，这道题你来说。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "啊……",
+   "n": 1,
+   "src": "static",
+   "speech": "啊…"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "嗯——？",
+   "n": 1,
+   "src": "static",
+   "speech": "嗯，？"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "嗯，继续。",
+   "n": 1,
+   "src": "static",
+   "speech": "嗯，继续。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "嗯？",
+   "n": 1,
+   "src": "static",
+   "speech": "嗯？"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "嗯？！",
+   "n": 1,
+   "src": "static",
+   "speech": "嗯？！"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "嗯……算了。",
+   "n": 1,
+   "src": "static",
+   "speech": "嗯…算了。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "夏沫，你来回答一下。",
+   "n": 1,
+   "src": "static",
+   "speech": "夏沫，你来回答一下。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "夏沫，你说说看。",
+   "n": 1,
+   "src": "static",
+   "speech": "夏沫，你说说看。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "夏沫，看黑板！",
+   "n": 1,
+   "src": "static",
+   "speech": "夏沫，看黑板！"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "夏沫，这道题你来说。",
+   "n": 1,
+   "src": "static",
+   "speech": "夏沫，这道题你来说。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "好，我们接着上节课讲。",
+   "n": 1,
+   "src": "static",
+   "speech": "好，我们接着上节课讲。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "好，我们继续。",
+   "n": 1,
+   "src": "static",
+   "speech": "好，我们继续。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "孙小空，你做什么鬼脸？",
+   "n": 1,
+   "src": "static",
+   "speech": "孙小空，你做什么鬼脸？"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "孙小空，你来回答一下。",
+   "n": 1,
+   "src": "static",
+   "speech": "孙小空，你来回答一下。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "孙小空，你说说看。",
+   "n": 1,
+   "src": "static",
+   "speech": "孙小空，你说说看。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "孙小空，这道题你来说。",
+   "n": 1,
+   "src": "static",
+   "speech": "孙小空，这道题你来说。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "安静，开始上课了。",
+   "n": 1,
+   "src": "static",
+   "speech": "安静，开始上课了。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "宋书航，你来回答一下。",
+   "n": 1,
+   "src": "static",
+   "speech": "宋书航，你来回答一下。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "宋书航，你说说看。",
+   "n": 1,
+   "src": "static",
+   "speech": "宋书航，你说说看。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "宋书航，看黑板！",
+   "n": 1,
+   "src": "static",
+   "speech": "宋书航，看黑板！"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "宋书航，这道题你来说。",
+   "n": 1,
+   "src": "static",
+   "speech": "宋书航，这道题你来说。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "张浩然，你来回答一下。",
+   "n": 1,
+   "src": "static",
+   "speech": "张浩然，你来回答一下。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "张浩然，你说说看。",
+   "n": 1,
+   "src": "static",
+   "speech": "张浩然，你说说看。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "张浩然，看黑板！",
+   "n": 1,
+   "src": "static",
+   "speech": "张浩然，看黑板！"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "张浩然，这道题你来说。",
+   "n": 1,
+   "src": "static",
+   "speech": "张浩然，这道题你来说。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "很好，坐下。",
+   "n": 1,
+   "src": "static",
+   "speech": "很好，坐下。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "我下来看看大家写得怎么样。",
+   "n": 1,
+   "src": "static",
+   "speech": "我下来看看大家写得怎么样。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "我再强调一遍啊——",
+   "n": 1,
+   "src": "static",
+   "speech": "我再强调一遍啊，"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "我写慢一点……",
+   "n": 1,
+   "src": "static",
+   "speech": "我写慢一点…"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "我在讲台上看得一清二楚。",
+   "n": 1,
+   "src": "static",
+   "speech": "我在讲台上看得一清二楚。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "我看看谁没在听。",
+   "n": 1,
+   "src": "static",
+   "speech": "我看看谁没在听。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "我看见了啊。",
+   "n": 1,
+   "src": "static",
+   "speech": "我看见了啊。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "把书翻到第四十二页。",
+   "n": 1,
+   "src": "static",
+   "speech": "把书翻到第四十二页。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "把手机收起来，别以为我看不见。",
+   "n": 1,
+   "src": "static",
+   "speech": "把手机收起来，别以为我看不见。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "有问题的同学现在就问。",
+   "n": 1,
+   "src": "static",
+   "speech": "有问题的同学现在就问。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "李一鸣，你来回答一下。",
+   "n": 1,
+   "src": "static",
+   "speech": "李一鸣，你来回答一下。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "李一鸣，你说说看。",
+   "n": 1,
+   "src": "static",
+   "speech": "李一鸣，你说说看。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "李一鸣，桌子底下是什么？",
+   "n": 1,
+   "src": "static",
+   "speech": "李一鸣，桌子底下是什么？"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "李一鸣，这道题你来说。",
+   "n": 1,
+   "src": "static",
+   "speech": "李一鸣，这道题你来说。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "林晓雨，你来回答一下。",
+   "n": 1,
+   "src": "static",
+   "speech": "林晓雨，你来回答一下。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "林晓雨，你说说看。",
+   "n": 1,
+   "src": "static",
+   "speech": "林晓雨，你说说看。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "林晓雨，看黑板！",
+   "n": 1,
+   "src": "static",
+   "speech": "林晓雨，看黑板！"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "林晓雨，这道题你来说。",
+   "n": 1,
+   "src": "static",
+   "speech": "林晓雨，这道题你来说。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "江北，你来回答一下。",
+   "n": 1,
+   "src": "static",
+   "speech": "江北，你来回答一下。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "江北，你说说看。",
+   "n": 1,
+   "src": "static",
+   "speech": "江北，你说说看。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "江北，看黑板！",
+   "n": 1,
+   "src": "static",
+   "speech": "江北，看黑板！"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "江北，这道题你来说。",
+   "n": 1,
+   "src": "static",
+   "speech": "江北，这道题你来说。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "温言，你来回答一下。",
+   "n": 1,
+   "src": "static",
+   "speech": "温言，你来回答一下。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "温言，你说说看。",
+   "n": 1,
+   "src": "static",
+   "speech": "温言，你说说看。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "温言，看黑板！",
+   "n": 1,
+   "src": "static",
+   "speech": "温言，看黑板！"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "温言，这道题你来说。",
+   "n": 1,
+   "src": "static",
+   "speech": "温言，这道题你来说。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "游小悠，你来回答一下。",
+   "n": 1,
+   "src": "static",
+   "speech": "游小悠，你来回答一下。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "游小悠，你说说看。",
+   "n": 1,
+   "src": "static",
+   "speech": "游小悠，你说说看。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "游小悠，桌子底下是什么？",
+   "n": 1,
+   "src": "static",
+   "speech": "游小悠，桌子底下是什么？"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "游小悠，这道题你来说。",
+   "n": 1,
+   "src": "static",
+   "speech": "游小悠，这道题你来说。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "王大壮，你来回答一下。",
+   "n": 1,
+   "src": "static",
+   "speech": "王大壮，你来回答一下。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "王大壮，你说说看。",
+   "n": 1,
+   "src": "static",
+   "speech": "王大壮，你说说看。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "王大壮，嘴里吃的什么？",
+   "n": 1,
+   "src": "static",
+   "speech": "王大壮，嘴里吃的什么？"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "王大壮，这道题你来说。",
+   "n": 1,
+   "src": "static",
+   "speech": "王大壮，这道题你来说。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "白小梦，你来回答一下。",
+   "n": 1,
+   "src": "static",
+   "speech": "白小梦，你来回答一下。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "白小梦，你说说看。",
+   "n": 1,
+   "src": "static",
+   "speech": "白小梦，你说说看。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "白小梦，昨晚偷牛去了？",
+   "n": 1,
+   "src": "static",
+   "speech": "白小梦，昨晚偷牛去了？"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "白小梦，这道题你来说。",
+   "n": 1,
+   "src": "static",
+   "speech": "白小梦，这道题你来说。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "白小梦！醒醒！",
+   "n": 1,
+   "src": "static",
+   "speech": "白小梦！醒醒！"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "站住——什么东西飞过去了？！",
+   "n": 1,
+   "src": "static",
+   "speech": "站住，什么东西飞过去了？！"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "算你认真。",
+   "n": 1,
+   "src": "static",
+   "speech": "算你认真。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "耽误大家一分钟，就是全班半小时。",
+   "n": 1,
+   "src": "static",
+   "speech": "耽误大家一分钟，就是全班半小时。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "胡硕，你来回答一下。",
+   "n": 1,
+   "src": "static",
+   "speech": "胡硕，你来回答一下。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "胡硕，你说说看。",
+   "n": 1,
+   "src": "static",
+   "speech": "胡硕，你说说看。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "胡硕，就你话多！",
+   "n": 1,
+   "src": "static",
+   "speech": "胡硕，就你话多！"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "胡硕，这道题你来说。",
+   "n": 1,
+   "src": "static",
+   "speech": "胡硕，这道题你来说。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "苏念，你来回答一下。",
+   "n": 1,
+   "src": "static",
+   "speech": "苏念，你来回答一下。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "苏念，你说说看。",
+   "n": 1,
+   "src": "static",
+   "speech": "苏念，你说说看。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "苏念，看黑板！",
+   "n": 1,
+   "src": "static",
+   "speech": "苏念，看黑板！"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "苏念，这道题你来说。",
+   "n": 1,
+   "src": "static",
+   "speech": "苏念，这道题你来说。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "许若晴，你来回答一下。",
+   "n": 1,
+   "src": "static",
+   "speech": "许若晴，你来回答一下。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "许若晴，你说说看。",
+   "n": 1,
+   "src": "static",
+   "speech": "许若晴，你说说看。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "许若晴，看黑板！",
+   "n": 1,
+   "src": "static",
+   "speech": "许若晴，看黑板！"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "许若晴，这道题你来说。",
+   "n": 1,
+   "src": "static",
+   "speech": "许若晴，这道题你来说。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "谁？",
+   "n": 1,
+   "src": "static",
+   "speech": "谁？"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "谁扔的？！",
+   "n": 1,
+   "src": "static",
+   "speech": "谁扔的？！"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "赵小困，你来回答一下。",
+   "n": 1,
+   "src": "static",
+   "speech": "赵小困，你来回答一下。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "赵小困，你说说看。",
+   "n": 1,
+   "src": "static",
+   "speech": "赵小困，你说说看。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "赵小困，昨晚偷牛去了？",
+   "n": 1,
+   "src": "static",
+   "speech": "赵小困，昨晚偷牛去了？"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "赵小困，这道题你来说。",
+   "n": 1,
+   "src": "static",
+   "speech": "赵小困，这道题你来说。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "赵小困！醒醒！",
+   "n": 1,
+   "src": "static",
+   "speech": "赵小困！醒醒！"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "这一步很关键。",
+   "n": 1,
+   "src": "static",
+   "speech": "这一步很关键。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "这个地方很重要，考试必考！",
+   "n": 1,
+   "src": "static",
+   "speech": "这个地方很重要，考试必考！"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "这个地方要注意……",
+   "n": 1,
+   "src": "static",
+   "speech": "这个地方要注意…"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "这个顶点，大家记住了没有？",
+   "n": 1,
+   "src": "static",
+   "speech": "这个顶点，大家记住了没有？"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "这道题上周是不是讲过？",
+   "n": 1,
+   "src": "static",
+   "speech": "这道题上周是不是讲过？"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "这题闭着眼睛都能做对。",
+   "n": 1,
+   "src": "static",
+   "speech": "这题闭着眼睛都能做对。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "那个同学！手里拿的什么！",
+   "n": 1,
+   "src": "static",
+   "speech": "那个同学！手里拿的什么！"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "都写完了吗？",
+   "n": 1,
+   "src": "static",
+   "speech": "都写完了吗？"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "都抄下来啊。",
+   "n": 1,
+   "src": "static",
+   "speech": "都抄下来啊。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "都看黑板，不要看窗外。",
+   "n": 1,
+   "src": "static",
+   "speech": "都看黑板，不要看窗外。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "陈可可，你来回答一下。",
+   "n": 1,
+   "src": "static",
+   "speech": "陈可可，你来回答一下。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "陈可可，你说说看。",
+   "n": 1,
+   "src": "static",
+   "speech": "陈可可，你说说看。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "陈可可，嘴里吃的什么？",
+   "n": 1,
+   "src": "static",
+   "speech": "陈可可，嘴里吃的什么？"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "陈可可，这道题你来说。",
+   "n": 1,
+   "src": "static",
+   "speech": "陈可可，这道题你来说。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "靠窗那个！站起来！",
+   "n": 1,
+   "src": "static",
+   "speech": "靠窗那个！站起来！"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "靠窗那个同学……",
+   "n": 1,
+   "src": "static",
+   "speech": "靠窗那个同学…"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "顾小算，你来回答一下。",
+   "n": 1,
+   "src": "static",
+   "speech": "顾小算，你来回答一下。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "顾小算，你说说看。",
+   "n": 1,
+   "src": "static",
+   "speech": "顾小算，你说说看。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "顾小算，看黑板！",
+   "n": 1,
+   "src": "static",
+   "speech": "顾小算，看黑板！"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "顾小算，这道题你来说。",
+   "n": 1,
+   "src": "static",
+   "speech": "顾小算，这道题你来说。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "龙傲天，你来回答一下。",
+   "n": 1,
+   "src": "static",
+   "speech": "龙傲天，你来回答一下。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "龙傲天，你说说看。",
+   "n": 1,
+   "src": "static",
+   "speech": "龙傲天，你说说看。"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "龙傲天，看黑板！",
+   "n": 1,
+   "src": "static",
+   "speech": "龙傲天，看黑板！"
+  },
+  {
+   "kind": "line",
+   "key": "teacher",
+   "text": "龙傲天，这道题你来说。",
+   "n": 1,
+   "src": "static",
+   "speech": "龙傲天，这道题你来说。"
+  },
+  {
+   "kind": "line",
+   "key": "wang_dazhuang",
+   "text": "x 等于二或者三！",
+   "n": 1,
+   "src": "static",
+   "speech": "x 等于二或者三！"
+  },
+  {
+   "kind": "line",
+   "key": "wang_dazhuang",
+   "text": "呃……x 等于……二？",
+   "n": 1,
+   "src": "static",
+   "speech": "呃…x 等于…二？"
+  },
+  {
+   "kind": "line",
+   "key": "wang_dazhuang",
+   "text": "因为半径垂直于切线！",
+   "n": 1,
+   "src": "static",
+   "speech": "因为半径垂直于切线！"
+  },
+  {
+   "kind": "line",
+   "key": "wang_dazhuang",
+   "text": "我……刚才没听清。",
+   "n": 1,
+   "src": "static",
+   "speech": "我…刚才没听清。"
+  },
+  {
+   "kind": "line",
+   "key": "wang_dazhuang",
+   "text": "老师，这题超纲了吧？",
+   "n": 1,
+   "src": "static",
+   "speech": "老师，这题超纲了吧？"
+  },
+  {
+   "kind": "line",
+   "key": "wang_dazhuang",
+   "text": "选……C？",
+   "n": 1,
+   "src": "static",
+   "speech": "选…C？"
+  },
+  {
+   "kind": "line",
+   "key": "wang_dazhuang",
+   "text": "顶点是二，负一！",
+   "n": 1,
+   "src": "static",
+   "speech": "顶点是二，负一！"
+  },
+  {
+   "kind": "line",
+   "key": "wen_yan",
+   "text": "x 等于二或者三！",
+   "n": 1,
+   "src": "static",
+   "speech": "x 等于二或者三！"
+  },
+  {
+   "kind": "line",
+   "key": "wen_yan",
+   "text": "呃……x 等于……二？",
+   "n": 1,
+   "src": "static",
+   "speech": "呃…x 等于…二？"
+  },
+  {
+   "kind": "line",
+   "key": "wen_yan",
+   "text": "因为半径垂直于切线！",
+   "n": 1,
+   "src": "static",
+   "speech": "因为半径垂直于切线！"
+  },
+  {
+   "kind": "line",
+   "key": "wen_yan",
+   "text": "我……刚才没听清。",
+   "n": 1,
+   "src": "static",
+   "speech": "我…刚才没听清。"
+  },
+  {
+   "kind": "line",
+   "key": "wen_yan",
+   "text": "老师，这题超纲了吧？",
+   "n": 1,
+   "src": "static",
+   "speech": "老师，这题超纲了吧？"
+  },
+  {
+   "kind": "line",
+   "key": "wen_yan",
+   "text": "选……C？",
+   "n": 1,
+   "src": "static",
+   "speech": "选…C？"
+  },
+  {
+   "kind": "line",
+   "key": "wen_yan",
+   "text": "顶点是二，负一！",
+   "n": 1,
+   "src": "static",
+   "speech": "顶点是二，负一！"
+  },
+  {
+   "kind": "line",
+   "key": "xia_mo",
+   "text": "x 等于二或者三！",
+   "n": 1,
+   "src": "static",
+   "speech": "x 等于二或者三！"
+  },
+  {
+   "kind": "line",
+   "key": "xia_mo",
+   "text": "呃……x 等于……二？",
+   "n": 1,
+   "src": "static",
+   "speech": "呃…x 等于…二？"
+  },
+  {
+   "kind": "line",
+   "key": "xia_mo",
+   "text": "因为半径垂直于切线！",
+   "n": 1,
+   "src": "static",
+   "speech": "因为半径垂直于切线！"
+  },
+  {
+   "kind": "line",
+   "key": "xia_mo",
+   "text": "我……刚才没听清。",
+   "n": 1,
+   "src": "static",
+   "speech": "我…刚才没听清。"
+  },
+  {
+   "kind": "line",
+   "key": "xia_mo",
+   "text": "老师，这题超纲了吧？",
+   "n": 1,
+   "src": "static",
+   "speech": "老师，这题超纲了吧？"
+  },
+  {
+   "kind": "line",
+   "key": "xia_mo",
+   "text": "选……C？",
+   "n": 1,
+   "src": "static",
+   "speech": "选…C？"
+  },
+  {
+   "kind": "line",
+   "key": "xia_mo",
+   "text": "顶点是二，负一！",
+   "n": 1,
+   "src": "static",
+   "speech": "顶点是二，负一！"
+  },
+  {
+   "kind": "line",
+   "key": "xu_ruoqing",
+   "text": "x 等于二或者三！",
+   "n": 1,
+   "src": "static",
+   "speech": "x 等于二或者三！"
+  },
+  {
+   "kind": "line",
+   "key": "xu_ruoqing",
+   "text": "呃……x 等于……二？",
+   "n": 1,
+   "src": "static",
+   "speech": "呃…x 等于…二？"
+  },
+  {
+   "kind": "line",
+   "key": "xu_ruoqing",
+   "text": "因为半径垂直于切线！",
+   "n": 1,
+   "src": "static",
+   "speech": "因为半径垂直于切线！"
+  },
+  {
+   "kind": "line",
+   "key": "xu_ruoqing",
+   "text": "我……刚才没听清。",
+   "n": 1,
+   "src": "static",
+   "speech": "我…刚才没听清。"
+  },
+  {
+   "kind": "line",
+   "key": "xu_ruoqing",
+   "text": "老师，这题超纲了吧？",
+   "n": 1,
+   "src": "static",
+   "speech": "老师，这题超纲了吧？"
+  },
+  {
+   "kind": "line",
+   "key": "xu_ruoqing",
+   "text": "选……C？",
+   "n": 1,
+   "src": "static",
+   "speech": "选…C？"
+  },
+  {
+   "kind": "line",
+   "key": "xu_ruoqing",
+   "text": "顶点是二，负一！",
+   "n": 1,
+   "src": "static",
+   "speech": "顶点是二，负一！"
+  },
+  {
+   "kind": "line",
+   "key": "yan_zheng",
+   "text": "x 等于二或者三！",
+   "n": 1,
+   "src": "static",
+   "speech": "x 等于二或者三！"
+  },
+  {
+   "kind": "line",
+   "key": "yan_zheng",
+   "text": "呃……x 等于……二？",
+   "n": 1,
+   "src": "static",
+   "speech": "呃…x 等于…二？"
+  },
+  {
+   "kind": "line",
+   "key": "yan_zheng",
+   "text": "因为半径垂直于切线！",
+   "n": 1,
+   "src": "static",
+   "speech": "因为半径垂直于切线！"
+  },
+  {
+   "kind": "line",
+   "key": "yan_zheng",
+   "text": "我……刚才没听清。",
+   "n": 1,
+   "src": "static",
+   "speech": "我…刚才没听清。"
+  },
+  {
+   "kind": "line",
+   "key": "yan_zheng",
+   "text": "老师，这题超纲了吧？",
+   "n": 1,
+   "src": "static",
+   "speech": "老师，这题超纲了吧？"
+  },
+  {
+   "kind": "line",
+   "key": "yan_zheng",
+   "text": "选……C？",
+   "n": 1,
+   "src": "static",
+   "speech": "选…C？"
+  },
+  {
+   "kind": "line",
+   "key": "yan_zheng",
+   "text": "顶点是二，负一！",
+   "n": 1,
+   "src": "static",
+   "speech": "顶点是二，负一！"
+  },
+  {
+   "kind": "line",
+   "key": "ye_zhiqiu",
+   "text": "x 等于二或者三！",
+   "n": 1,
+   "src": "static",
+   "speech": "x 等于二或者三！"
+  },
+  {
+   "kind": "line",
+   "key": "ye_zhiqiu",
+   "text": "呃……x 等于……二？",
+   "n": 1,
+   "src": "static",
+   "speech": "呃…x 等于…二？"
+  },
+  {
+   "kind": "line",
+   "key": "ye_zhiqiu",
+   "text": "因为半径垂直于切线！",
+   "n": 1,
+   "src": "static",
+   "speech": "因为半径垂直于切线！"
+  },
+  {
+   "kind": "line",
+   "key": "ye_zhiqiu",
+   "text": "我……刚才没听清。",
+   "n": 1,
+   "src": "static",
+   "speech": "我…刚才没听清。"
+  },
+  {
+   "kind": "line",
+   "key": "ye_zhiqiu",
+   "text": "老师，这题超纲了吧？",
+   "n": 1,
+   "src": "static",
+   "speech": "老师，这题超纲了吧？"
+  },
+  {
+   "kind": "line",
+   "key": "ye_zhiqiu",
+   "text": "选……C？",
+   "n": 1,
+   "src": "static",
+   "speech": "选…C？"
+  },
+  {
+   "kind": "line",
+   "key": "ye_zhiqiu",
+   "text": "顶点是二，负一！",
+   "n": 1,
+   "src": "static",
+   "speech": "顶点是二，负一！"
+  },
+  {
+   "kind": "line",
+   "key": "you_xiaoyou",
+   "text": "x 等于二或者三！",
+   "n": 1,
+   "src": "static",
+   "speech": "x 等于二或者三！"
+  },
+  {
+   "kind": "line",
+   "key": "you_xiaoyou",
+   "text": "呃……x 等于……二？",
+   "n": 1,
+   "src": "static",
+   "speech": "呃…x 等于…二？"
+  },
+  {
+   "kind": "line",
+   "key": "you_xiaoyou",
+   "text": "因为半径垂直于切线！",
+   "n": 1,
+   "src": "static",
+   "speech": "因为半径垂直于切线！"
+  },
+  {
+   "kind": "line",
+   "key": "you_xiaoyou",
+   "text": "我……刚才没听清。",
+   "n": 1,
+   "src": "static",
+   "speech": "我…刚才没听清。"
+  },
+  {
+   "kind": "line",
+   "key": "you_xiaoyou",
+   "text": "老师，这题超纲了吧？",
+   "n": 1,
+   "src": "static",
+   "speech": "老师，这题超纲了吧？"
+  },
+  {
+   "kind": "line",
+   "key": "you_xiaoyou",
+   "text": "选……C？",
+   "n": 1,
+   "src": "static",
+   "speech": "选…C？"
+  },
+  {
+   "kind": "line",
+   "key": "you_xiaoyou",
+   "text": "顶点是二，负一！",
+   "n": 1,
+   "src": "static",
+   "speech": "顶点是二，负一！"
+  },
+  {
+   "kind": "line",
+   "key": "zhang_haoran",
+   "text": "x 等于二或者三！",
+   "n": 1,
+   "src": "static",
+   "speech": "x 等于二或者三！"
+  },
+  {
+   "kind": "line",
+   "key": "zhang_haoran",
+   "text": "呃……x 等于……二？",
+   "n": 1,
+   "src": "static",
+   "speech": "呃…x 等于…二？"
+  },
+  {
+   "kind": "line",
+   "key": "zhang_haoran",
+   "text": "因为半径垂直于切线！",
+   "n": 1,
+   "src": "static",
+   "speech": "因为半径垂直于切线！"
+  },
+  {
+   "kind": "line",
+   "key": "zhang_haoran",
+   "text": "我……刚才没听清。",
+   "n": 1,
+   "src": "static",
+   "speech": "我…刚才没听清。"
+  },
+  {
+   "kind": "line",
+   "key": "zhang_haoran",
+   "text": "老师，这题超纲了吧？",
+   "n": 1,
+   "src": "static",
+   "speech": "老师，这题超纲了吧？"
+  },
+  {
+   "kind": "line",
+   "key": "zhang_haoran",
+   "text": "选……C？",
+   "n": 1,
+   "src": "static",
+   "speech": "选…C？"
+  },
+  {
+   "kind": "line",
+   "key": "zhang_haoran",
+   "text": "顶点是二，负一！",
+   "n": 1,
+   "src": "static",
+   "speech": "顶点是二，负一！"
+  },
+  {
+   "kind": "line",
+   "key": "zhao_xiaokun",
+   "text": "x 等于二或者三！",
+   "n": 1,
+   "src": "static",
+   "speech": "x 等于二或者三！"
+  },
+  {
+   "kind": "line",
+   "key": "zhao_xiaokun",
+   "text": "呃……x 等于……二？",
+   "n": 1,
+   "src": "static",
+   "speech": "呃…x 等于…二？"
+  },
+  {
+   "kind": "line",
+   "key": "zhao_xiaokun",
+   "text": "因为半径垂直于切线！",
+   "n": 1,
+   "src": "static",
+   "speech": "因为半径垂直于切线！"
+  },
+  {
+   "kind": "line",
+   "key": "zhao_xiaokun",
+   "text": "我……刚才没听清。",
+   "n": 1,
+   "src": "static",
+   "speech": "我…刚才没听清。"
+  },
+  {
+   "kind": "line",
+   "key": "zhao_xiaokun",
+   "text": "老师，这题超纲了吧？",
+   "n": 1,
+   "src": "static",
+   "speech": "老师，这题超纲了吧？"
+  },
+  {
+   "kind": "line",
+   "key": "zhao_xiaokun",
+   "text": "选……C？",
+   "n": 1,
+   "src": "static",
+   "speech": "选…C？"
+  },
+  {
+   "kind": "line",
+   "key": "zhao_xiaokun",
+   "text": "顶点是二，负一！",
+   "n": 1,
+   "src": "static",
+   "speech": "顶点是二，负一！"
+  }
+ ]
+}

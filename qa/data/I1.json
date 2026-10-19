@@ -2,81 +2,81 @@
  {
   "mode": "lowfx",
   "view": "centre",
-  "drawCalls": 103,
-  "triangles": 230468,
+  "drawCalls": 100,
+  "triangles": 215492,
   "mem": {
    "geometries": 71,
-   "textures": 66
+   "textures": 62
   }
  },
  {
   "mode": "lowfx",
   "view": "left",
   "drawCalls": 41,
-  "triangles": 70434,
+  "triangles": 68146,
   "mem": {
    "geometries": 72,
-   "textures": 66
+   "textures": 62
   }
  },
  {
   "mode": "lowfx",
   "view": "right",
-  "drawCalls": 125,
-  "triangles": 291106,
+  "drawCalls": 115,
+  "triangles": 290204,
   "mem": {
-   "geometries": 91,
-   "textures": 90
+   "geometries": 92,
+   "textures": 91
   }
  },
  {
   "mode": "lowfx",
   "view": "up",
-  "drawCalls": 66,
-  "triangles": 143738,
+  "drawCalls": 65,
+  "triangles": 141534,
   "mem": {
-   "geometries": 91,
-   "textures": 90
+   "geometries": 92,
+   "textures": 91
   }
  },
  {
   "mode": "normal",
   "view": "centre",
-  "drawCalls": 148,
-  "triangles": 431228,
+  "drawCalls": 141,
+  "triangles": 396920,
   "mem": {
-   "geometries": 86,
-   "textures": 88
+   "geometries": 87,
+   "textures": 89
   }
  },
  {
   "mode": "normal",
   "view": "left",
-  "drawCalls": 48,
-  "triangles": 112580,
+  "drawCalls": 47,
+  "triangles": 103648,
   "mem": {
-   "geometries": 90,
-   "textures": 88
+   "geometries": 91,
+   "textures": 89
   }
  },
  {
   "mode": "normal",
   "view": "right",
-  "drawCalls": 188,
-  "triangles": 552788,
+  "drawCalls": 177,
+  "triangles": 546902,
   "mem": {
-   "geometries": 92,
-   "textures": 90
+   "geometries": 93,
+   "textures": 91
   }
  },
  {
   "mode": "normal",
   "view": "up",
-  "drawCalls": 84,
-  "triangles": 258424,
+  "drawCalls": 80,
+  "triangles": 249180,
   "mem": {
-   "geometries": 92,
-   "textures": 90
+   "geometries": 93,
+   "textures": 91
   }
  }
 ]

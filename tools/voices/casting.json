@@ -1,0 +1,448 @@
+{
+ "_doc": "Speaker key → edge-tts voice + rate (%) and pitch (Hz) offsets (keep within ±10). Edit freely; build.mjs only adds missing keys. role:* keys are fallbacks for lines without a character id.",
+ "roles": {
+  "role:narrator": {
+   "voice": "zh-CN-XiaoxiaoNeural",
+   "rate": -4,
+   "pitch": 0
+  },
+  "role:teacher": {
+   "voice": "zh-CN-YunyangNeural",
+   "rate": -6,
+   "pitch": -4
+  },
+  "role:boy": {
+   "voice": "zh-CN-YunxiNeural",
+   "rate": 0,
+   "pitch": 0
+  },
+  "role:girl": {
+   "voice": "zh-CN-XiaoyiNeural",
+   "rate": 0,
+   "pitch": 0
+  },
+  "role:adultM": {
+   "voice": "zh-CN-YunjianNeural",
+   "rate": -4,
+   "pitch": -2
+  },
+  "role:adultF": {
+   "voice": "zh-CN-XiaoxiaoNeural",
+   "rate": 0,
+   "pitch": -3
+  },
+  "role:principal": {
+   "voice": "zh-CN-YunjianNeural",
+   "rate": -10,
+   "pitch": -6
+  },
+  "role:coach": {
+   "voice": "zh-CN-YunjianNeural",
+   "rate": 6,
+   "pitch": 2
+  },
+  "role:dad": {
+   "voice": "zh-CN-YunjianNeural",
+   "rate": -3,
+   "pitch": -2
+  },
+  "role:mom": {
+   "voice": "zh-CN-XiaoxiaoNeural",
+   "rate": 5,
+   "pitch": -4
+  },
+  "role:elderF": {
+   "voice": "zh-CN-XiaoxiaoNeural",
+   "rate": -9,
+   "pitch": -7
+  }
+ },
+ "chars": {
+  "teacher": {
+   "voice": "zh-CN-YunyangNeural",
+   "rate": -6,
+   "pitch": -4,
+   "note": "math teacher: mature, measured"
+  },
+  "npc_principal": {
+   "voice": "zh-CN-YunjianNeural",
+   "rate": -10,
+   "pitch": -6,
+   "note": "principal: older, slow, warm"
+  },
+  "npc_pe": {
+   "voice": "zh-CN-YunjianNeural",
+   "rate": 7,
+   "pitch": 3,
+   "note": "PE coach: loud, fast"
+  },
+  "npc_dad": {
+   "voice": "zh-CN-YunjianNeural",
+   "rate": -3,
+   "pitch": -2,
+   "note": "dad: adult, few words"
+  },
+  "npc_mom": {
+   "voice": "zh-CN-XiaoxiaoNeural",
+   "rate": 5,
+   "pitch": -4,
+   "note": "mom: adult, brisk"
+  },
+  "npc_janitor": {
+   "voice": "zh-TW-HsiaoChenNeural",
+   "rate": -8,
+   "pitch": -6,
+   "note": "janitor auntie"
+  },
+  "player_m": {
+   "voice": "zh-CN-YunxiNeural",
+   "rate": -2,
+   "pitch": 0,
+   "note": "you (boy)"
+  },
+  "player_f": {
+   "voice": "zh-CN-XiaoyiNeural",
+   "rate": -2,
+   "pitch": 0,
+   "note": "you (girl)"
+  },
+  "bai_xiaomeng": {
+   "voice": "zh-CN-XiaoyiNeural",
+   "rate": -8,
+   "pitch": 0,
+   "note": "白小梦 (sleeper)",
+   "pool": [
+    "f",
+    0
+   ]
+  },
+  "chen_keke": {
+   "voice": "zh-CN-XiaoxiaoNeural",
+   "rate": 0,
+   "pitch": 0,
+   "note": "陈可可 (foodie)",
+   "pool": [
+    "f",
+    1
+   ]
+  },
+  "gu_xiaosuan": {
+   "voice": "zh-TW-HsiaoChenNeural",
+   "rate": 4,
+   "pitch": 0,
+   "note": "顾小算 (nerd)",
+   "pool": [
+    "f",
+    2
+   ]
+  },
+  "hu_shuo": {
+   "voice": "zh-CN-YunxiNeural",
+   "rate": 6,
+   "pitch": 0,
+   "note": "胡硕 (gossip)",
+   "pool": [
+    "m",
+    0
+   ]
+  },
+  "jiang_bei": {
+   "voice": "zh-CN-YunxiaNeural",
+   "rate": 0,
+   "pitch": 0,
+   "note": "江北 (artsy)",
+   "pool": [
+    "m",
+    1
+   ]
+  },
+  "le_duoduo": {
+   "voice": "zh-TW-HsiaoYuNeural",
+   "rate": 6,
+   "pitch": 0,
+   "note": "乐多多 (clown)",
+   "pool": [
+    "f",
+    3
+   ]
+  },
+  "leng_yue": {
+   "voice": "zh-CN-XiaoyiNeural",
+   "rate": 7,
+   "pitch": 4,
+   "note": "冷月 (chuuni)",
+   "pool": [
+    "f",
+    4
+   ]
+  },
+  "li_yiming": {
+   "voice": "zh-TW-YunJheNeural",
+   "rate": 0,
+   "pitch": 0,
+   "note": "李一鸣 (gamer)",
+   "pool": [
+    "m",
+    2
+   ]
+  },
+  "lin_xiaoyu": {
+   "voice": "zh-CN-XiaoxiaoNeural",
+   "rate": -4,
+   "pitch": 4,
+   "note": "林晓雨 (monitor)",
+   "pool": [
+    "f",
+    5
+   ]
+  },
+  "long_aotian": {
+   "voice": "zh-CN-YunxiNeural",
+   "rate": 7,
+   "pitch": 3,
+   "note": "龙傲天 (chuuni)",
+   "pool": [
+    "m",
+    3
+   ]
+  },
+  "song_shuhang": {
+   "voice": "zh-CN-YunxiaNeural",
+   "rate": -2,
+   "pitch": -3,
+   "note": "宋书航 (nerd)",
+   "pool": [
+    "m",
+    4
+   ]
+  },
+  "su_nian": {
+   "voice": "zh-TW-HsiaoChenNeural",
+   "rate": 0,
+   "pitch": -3,
+   "note": "苏念 (shy)",
+   "pool": [
+    "f",
+    6
+   ]
+  },
+  "sun_xiaokong": {
+   "voice": "zh-TW-YunJheNeural",
+   "rate": 10,
+   "pitch": 3,
+   "note": "孙小空 (clown)",
+   "pool": [
+    "m",
+    5
+   ]
+  },
+  "tang_tang": {
+   "voice": "zh-TW-HsiaoYuNeural",
+   "rate": 0,
+   "pitch": 3,
+   "note": "唐糖 (gossip)",
+   "pool": [
+    "f",
+    7
+   ]
+  },
+  "wang_dazhuang": {
+   "voice": "zh-CN-YunxiNeural",
+   "rate": -7,
+   "pitch": -4,
+   "note": "王大壮 (foodie)",
+   "pool": [
+    "m",
+    6
+   ]
+  },
+  "wen_yan": {
+   "voice": "zh-CN-YunxiaNeural",
+   "rate": 2,
+   "pitch": 4,
+   "note": "温言 (shy)",
+   "pool": [
+    "m",
+    7
+   ]
+  },
+  "xia_mo": {
+   "voice": "zh-CN-XiaoyiNeural",
+   "rate": -3,
+   "pitch": -4,
+   "note": "夏沫 (jock)",
+   "pool": [
+    "f",
+    8
+   ]
+  },
+  "xu_ruoqing": {
+   "voice": "zh-CN-XiaoxiaoNeural",
+   "rate": 7,
+   "pitch": -3,
+   "note": "许若晴 (normal)",
+   "pool": [
+    "f",
+    9
+   ]
+  },
+  "yan_zheng": {
+   "voice": "zh-TW-YunJheNeural",
+   "rate": -8,
+   "pitch": -4,
+   "note": "严正 (disciplinarian)",
+   "pool": [
+    "m",
+    8
+   ]
+  },
+  "ye_zhiqiu": {
+   "voice": "zh-TW-HsiaoChenNeural",
+   "rate": -4,
+   "pitch": 5,
+   "note": "叶知秋 (artsy)",
+   "pool": [
+    "f",
+    10
+   ]
+  },
+  "you_xiaoyou": {
+   "voice": "zh-TW-HsiaoYuNeural",
+   "rate": 5,
+   "pitch": -4,
+   "note": "游小悠 (gamer)",
+   "pool": [
+    "f",
+    11
+   ]
+  },
+  "zhang_haoran": {
+   "voice": "zh-CN-YunjianNeural",
+   "rate": 8,
+   "pitch": 5,
+   "note": "张浩然 (jock)",
+   "pool": [
+    "m",
+    9
+   ]
+  },
+  "zhao_xiaokun": {
+   "voice": "zh-CN-YunxiaNeural",
+   "rate": -10,
+   "pitch": 6,
+   "note": "赵小困 (sleeper)",
+   "pool": [
+    "m",
+    10
+   ]
+  },
+  "chatter:0": {
+   "voice": "zh-CN-XiaoxiaoNeural",
+   "rate": 8,
+   "pitch": 2,
+   "note": "chatter fragment voice"
+  },
+  "chatter:1": {
+   "voice": "zh-CN-XiaoyiNeural",
+   "rate": 10,
+   "pitch": 0,
+   "note": "chatter fragment voice"
+  },
+  "chatter:2": {
+   "voice": "zh-TW-HsiaoChenNeural",
+   "rate": 8,
+   "pitch": 3,
+   "note": "chatter fragment voice"
+  },
+  "chatter:3": {
+   "voice": "zh-TW-HsiaoYuNeural",
+   "rate": 10,
+   "pitch": -2,
+   "note": "chatter fragment voice"
+  },
+  "chatter:4": {
+   "voice": "zh-CN-YunxiNeural",
+   "rate": 8,
+   "pitch": 0,
+   "note": "chatter fragment voice"
+  },
+  "chatter:5": {
+   "voice": "zh-CN-YunxiaNeural",
+   "rate": 10,
+   "pitch": -2,
+   "note": "chatter fragment voice"
+  },
+  "chatter:6": {
+   "voice": "zh-TW-YunJheNeural",
+   "rate": 8,
+   "pitch": 2,
+   "note": "chatter fragment voice"
+  },
+  "chatter:7": {
+   "voice": "zh-CN-YunjianNeural",
+   "rate": 6,
+   "pitch": 4,
+   "note": "chatter fragment voice"
+  },
+  "ritual:chorus0": {
+   "voice": "zh-CN-XiaoyiNeural",
+   "rate": -10,
+   "pitch": 2,
+   "note": "老师好 chorus"
+  },
+  "ritual:chorus1": {
+   "voice": "zh-CN-YunxiNeural",
+   "rate": -10,
+   "pitch": 0,
+   "note": "老师好 chorus"
+  },
+  "ritual:chorus2": {
+   "voice": "zh-TW-HsiaoChenNeural",
+   "rate": -10,
+   "pitch": 0,
+   "note": "老师好 chorus"
+  },
+  "ritual:chorus3": {
+   "voice": "zh-CN-YunxiaNeural",
+   "rate": -10,
+   "pitch": 3,
+   "note": "老师好 chorus"
+  },
+  "ritual:chorus4": {
+   "voice": "zh-CN-XiaoxiaoNeural",
+   "rate": -10,
+   "pitch": 4,
+   "note": "老师好 chorus"
+  },
+  "ritual:chorus5": {
+   "voice": "zh-TW-YunJheNeural",
+   "rate": -10,
+   "pitch": -2,
+   "note": "老师好 chorus"
+  },
+  "ritual:chorus6": {
+   "voice": "zh-TW-HsiaoYuNeural",
+   "rate": -10,
+   "pitch": -3,
+   "note": "老师好 chorus"
+  },
+  "ritual:chorus7": {
+   "voice": "zh-CN-YunjianNeural",
+   "rate": -10,
+   "pitch": 5,
+   "note": "老师好 chorus"
+  },
+  "ritual:monitor_f": {
+   "voice": "zh-CN-XiaoyiNeural",
+   "rate": 4,
+   "pitch": 2,
+   "note": "class monitor (girl): 起立！"
+  },
+  "ritual:monitor_m": {
+   "voice": "zh-CN-YunxiNeural",
+   "rate": 4,
+   "pitch": 2,
+   "note": "class monitor (boy): 起立！"
+  }
+ }
+}

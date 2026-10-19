@@ -17,22 +17,43 @@ export function seatAtPoint(x, y, z) {
   return null;
 }
 
-/** Nearest seat (by desk centre, XZ) — flavour info for floor landings. */
-export function nearestSeat(x, z) {
+/**
+ * Nearest seat to (x,z), measured to where its occupant sits (chair centre, XZ).
+ * With `occupant` given, only occupied seats count; the player's seat never counts.
+ * → {seatId, dist} (seatId null when nobody is seated anywhere).
+ */
+export function nearestSeat(x, z, occupant = null, playerSeat = PLAYER_SEAT) {
   let best = null, bd = Infinity;
   for (const s of SEATS) {
-    const d = Math.hypot(x - s.x, z - (s.deskZ + s.chairZ) / 2);
+    if (s.id === playerSeat) continue;
+    if (occupant && !occupant(s.id)) continue;
+    const d = Math.hypot(x - s.x, z - s.chairZ);
     if (d < bd) { bd = d; best = s.id; }
   }
-  return best;
+  return { seatId: best, dist: best ? bd : Infinity };
 }
 
 /**
  * @param {object} res  physics result: {reason, triggerTag, support:{tag,ownerId}, pos, t, hits, bounces, nearMisses, fanOwner}
  * @param {object} q    lookups: {occupant(seatId) → charId|null, seatOf(charId) → seatId|null, playerSeat?}
- * @returns Landing {type, seatId, ownerId, pos, hits, flightTime, bounces, nearMisses, support, reason, ...}
+ * @returns Landing {type, seatId, ownerId, pos, hits, flightTime, bounces, nearMisses, support, reason,
+ *   nearSeatId, nearSeatDist, nearOwnerId, ...}
  */
 export function classifyLanding(res, q = {}) {
+  const L = classifyCore(res, q);
+  const occupant = q.occupant || (() => null);
+  const playerSeat = q.playerSeat || PLAYER_SEAT;
+  const pos = res.pos;
+  // GDD §7 recipient rule (story): nearest occupied classmate seat + distance, on every landing
+  L.nearSeatId = null; L.nearSeatDist = null; L.nearOwnerId = null;
+  if (pos) {
+    const n = nearestSeat(pos.x, pos.z, q.occupant ? occupant : null, playerSeat);
+    if (n.seatId) { L.nearSeatId = n.seatId; L.nearSeatDist = +n.dist.toFixed(3); L.nearOwnerId = occupant(n.seatId) ?? null; }
+  }
+  return L;
+}
+
+function classifyCore(res, q) {
   const occupant = q.occupant || (() => null);
   const seatOf = q.seatOf || (() => null);
   const playerSeat = q.playerSeat || PLAYER_SEAT;
@@ -78,6 +99,5 @@ export function classifyLanding(res, q = {}) {
     const at = pos && seatAtPoint(pos.x, pos.y, pos.z);
     if (at) toSeat(at.seatId, at.part); else L.type = 'floor';
   }
-  if (L.type === 'floor' && pos) L.nearSeatId = nearestSeat(pos.x, pos.z);
   return L;
 }

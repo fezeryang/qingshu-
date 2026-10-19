@@ -175,13 +175,13 @@ export function createShots(ctx, D, col) {
     const fit = (r * 1.45) / Math.tan((fov * DEG) / 2);
     const dist = clamp(Number.isFinite(+o.dist) && o.dist !== null ? +o.dist : Math.max(0.7, fit), 0.2, 6);
     const facing = ch ? facingOf(ch, new THREE.Vector3()) : _f.subVectors(D.base.pos, head).setY(0).normalize().clone();
-    const sideA = o.side === 'left' ? 65 * DEG : o.side === 'right' ? -65 * DEG : 0;
+    const sideA = (o.side === 'left' ? 65 * DEG : o.side === 'right' ? -65 * DEG : 0) + numOr(o.angle, 0) * DEG;
     const h = numOr(o.height, 0.03);
     const list = col.all(true);
     const ex = ch ? others([ch.id]) : null;
     let pos = null;
-    for (const da of [0, 22, -22, 42, -42, 65, -65]) {
-      for (const dh of [0, 0.15, -0.08]) {
+    for (const da of [0, 22, -22, 42, -42, 65, -65, 90, -90]) {
+      for (const dh of [0, 0.15, -0.08, 0.4, 0.65]) {
         const dir = rotY(facing, sideA + da * DEG, new THREE.Vector3());
         const p = head.clone().addScaledVector(dir, dist); p.y += h + dh;
         if (clearPos(p, [head], ex, list, fov)) { pos = p; break; }
@@ -189,8 +189,10 @@ export function createShots(ctx, D, col) {
       if (pos) break;
     }
     if (!pos) {
-      pos = head.clone().addScaledVector(rotY(facing, sideA, new THREE.Vector3()), Math.min(dist, 0.5)); pos.y += h;
-      col.clampRoom(pos, 0.1);
+      // nothing fully clear: keep the distance, go higher (looking down past neighbours), stay out of geometry
+      pos = head.clone().addScaledVector(rotY(facing, sideA, new THREE.Vector3()), dist); pos.y += h + 0.55;
+      col.pushOut(pos, 0.12, list, { charPad: 0.1, skip: ex });
+      col.clampRoom(pos, 0.12);
     }
     const look = composeLook(pos, head, r, fov, ch ? facing : null);
     D.rollTo(numOr(o.roll, 0) * DEG, dur, o.ease);
@@ -391,6 +393,68 @@ export function createShots(ctx, D, col) {
     return m.promise;
   }
 
+  // ---------------------------------------------------------------- playtest-1 presets (comic cut-aways)
+  /**
+   * whipPan(to, {dur=0.24, fov, settle=true}): a very fast pan (keeps the position) to a target, with a
+   * speed-line streak and a tiny overshoot-and-settle — the classic anime "snap look".
+   */
+  function whipPan(to, o = {}) {
+    const t = headOf(ctx, to, new THREE.Vector3());
+    if (!t) { warnOnce('whip-target', 'whipPan: unknown target'); return Promise.resolve(); }
+    const ch = asChar(ctx, to);
+    const fov = clamp(numOr(o.fov, D.base.fov), 8, 100);
+    const look = ch ? composeLook(D.base.pos, t, visualHeadRadius(ch), fov, null) : t.clone();
+    const dur = clamp(numOr(o.dur, 0.24), 0.05, 2);
+    D.whipFx?.(dur);
+    D.rollTo(numOr(o.roll, 0) * DEG, dur);
+    const back = o.settle === false ? null : EASE.outBack;
+    return lerpMove(D.base.pos.clone(), look, fov, { dur, ease: back || EASE.outCubic });
+  }
+
+  /**
+   * reactionCutaway(char, {hold=0.9, fov=30, side, dutch=7, punch=true, dur=0}): a quick comic reaction shot —
+   * hard cut to a clear angle on a classmate's face (same clearance search as closeUp, slightly low, small
+   * dutch), then a subtle push-in while it holds. Resolves after `hold` (game seconds).
+   */
+  function reactionCutaway(target, o = {}) {
+    const ch = asChar(ctx, target);
+    if (!ch && !headOf(ctx, target, _a)) { warnOnce('react-target', 'reactionCutaway: unknown target'); return Promise.resolve(); }
+    const fov = clamp(numOr(o.fov, 30), 10, 70);
+    const tilt = (Math.random() < 0.5 ? -1 : 1) * numOr(o.dutch, 7); // cosmetic
+    // front-biased (a reaction needs the face): small random yaw offset unless a side is requested
+    const angle = o.side ? 0 : (Math.random() < 0.5 ? -1 : 1) * (10 + Math.random() * 15); // cosmetic
+    const p = closeUp(target, { side: o.side, angle, fov, dur: numOr(o.dur, 0), height: numOr(o.height, -0.1), roll: tilt });
+    const hold = Math.max(0, numOr(o.hold, 0.9));
+    const after = () => {
+      if (!(hold > 0)) return undefined;
+      if (o.punch !== false && cur?.end) {
+        const e = cur.end;
+        const p1 = e.pos.clone().lerp(e.look, 0.12);
+        lerpMove(p1, e.look, e.fov - 2, { dur: hold, ease: EASE.outQuad });
+      }
+      return time.wait(hold);
+    };
+    return Promise.resolve(p).then(after);
+  }
+
+  /**
+   * pushIn(target, {dur=1.2, amount=0.35, fov, ease}): slow dramatic dolly toward a face (or point) from the
+   * current camera; FOV tightens a little; keeps headroom/thirds framing on characters.
+   */
+  function pushIn(target, o = {}) {
+    const ch = asChar(ctx, target);
+    const t = headOf(ctx, target, new THREE.Vector3());
+    if (!t) { warnOnce('push-target', 'pushIn: unknown target'); return Promise.resolve(); }
+    const amount = clamp(numOr(o.amount, 0.35), 0, 0.9);
+    const p0 = D.base.pos.clone();
+    const minD = ch ? visualHeadRadius(ch) * 2.2 : 0.3;
+    const p1 = p0.clone().lerp(t, amount);
+    if (p1.distanceTo(t) < minD) p1.copy(t).add(_a.subVectors(p0, t).setLength(minD));
+    const fov = clamp(numOr(o.fov, D.base.fov - 4), 8, 100);
+    const look = ch ? composeLook(p1, t, visualHeadRadius(ch), fov, facingOf(ch, new THREE.Vector3()), 0.1) : t;
+    return lerpMove(p1, look, fov, { dur: numOr(o.dur, 1.2), ease: o.ease || EASE.inOutSine });
+  }
+
   /** Extra: pan/zoom to look at a target from where the camera is. */
   function lookAt(target, o = {}) {
     const t = headOf(ctx, target, new THREE.Vector3());
@@ -406,6 +470,7 @@ export function createShots(ctx, D, col) {
     closeUp: safe('closeUp', closeUp), twoShot: safe('twoShot', twoShot), overShoulder: safe('overShoulder', overShoulder),
     wide: safe('wide', wide), orbit: safe('orbit', orbit), crashZoom: safe('crashZoom', crashZoom), dutch: safe('dutch', dutch),
     track: safe('track', track), lookAt: safe('lookAt', lookAt),
+    whipPan: safe('whipPan', whipPan), reactionCutaway: safe('reactionCutaway', reactionCutaway), pushIn: safe('pushIn', pushIn),
     CLASSROOM, copyPose,
   };
 }

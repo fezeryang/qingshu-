@@ -1,5 +1,5 @@
 // self_love — 隐藏 · 爱自己. It bounces back onto your own desk; you read it and are deeply moved.
-import { begin, settleClass, front, reactionCloseUp, pickUpAndRead, expressionRamp, neighbour, EYE, finalHold } from './common.js';
+import { begin, settleClass, front, reactionCloseUp, pickUpAndRead, expressionRamp, neighbour, EYE, finalHold, cutaway, teacherOblivious } from './common.js';
 import { V } from '../direct.js';
 
 export default async function selfLove(d) {
@@ -34,7 +34,11 @@ export default async function selfLove(d) {
   d.emote(me, 'hearts', 2.5);
   d.sfx('sparkle');
   const mate = neighbour(d, me);
-  if (mate) { d.look(mate, me); d.emote(mate, 'dots', 1.8); d.bubble(mate, d.pick(['……？', '你还好吗？']), 1.6); }
+  if (mate) await cutaway(d, mate, { line: d.pick(['……你还好吗？', '……你在跟纸团谈恋爱？']), emote: 'dots', expr: 'suspicious', look: me, hold: 1.1 });
+  const crush = d.crush;
+  if (crush) await cutaway(d, crush, { line: '哈啊——', clip: 'yawn', expr: 'sleepy', hold: 0.9 });
+  await teacherOblivious(d, '这道题，自己的答案最可靠。', 1.0);
+  await front(d, me, { angle: 0.35, dist: 1.4, fov: 44 });
   // the camera pulls slowly back and up: one small figure in a big classroom
   d.bg(d.caption(d.pick(['爱别人之前，先学会爱自己。', '最好的收件人，是你自己。', '兜兜转转，你终于读懂了自己。']), 'chapter', 3.2));
   // straight dolly back along one sightline (from the aisle, front-left of you), so the framing never swings

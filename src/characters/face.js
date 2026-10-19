@@ -58,7 +58,11 @@ export class Face {
   }
   /** st: {expr, blink, talk, gx, gy, glint, tear} */
   render(st) {
-    const key = `${st.expr}|${st.blink ? 1 : 0}|${st.talk ? 1 : 0}|${st.gx}|${st.gy}|${st.glint ? 1 : 0}|${st.tear}`;
+    const expr = EXPR[st.expr] || EXPR.neutral;
+    // Invisible animation channels must not repaint/upload every character's face.
+    const blink = st.blink && BLINKABLE.has(expr.eyes);
+    const talk = st.talk && !!TALK_MOUTH[expr.mouth];
+    const key = `${st.expr}|${blink ? 1 : 0}|${talk ? 1 : 0}|${st.gx}|${st.gy}|${st.glint && this.look.glasses ? 1 : 0}|${expr.tears ? st.tear : 0}`;
     if (key === this.key) return false;
     this.key = key;
     draw(this.g, this.look, st);

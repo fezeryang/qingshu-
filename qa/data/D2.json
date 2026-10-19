@@ -1,29 +1,11 @@
 [
  {
   "seenAt": 0.016666666666666663,
-  "caughtAt": 1.9671333333333334,
+  "caughtAt": 1.9668999999999999,
   "charging": false,
   "suspicion": 1,
   "caughtDuring": "aim",
   "phase": "ending",
   "seed": 16
- },
- {
-  "seenAt": 0.016666666666666663,
-  "caughtAt": 1.9663666666666673,
-  "charging": false,
-  "suspicion": 1,
-  "caughtDuring": "aim",
-  "phase": "ending",
-  "seed": 17
- },
- {
-  "seenAt": 0.016666666666666663,
-  "caughtAt": 1.9669333333333332,
-  "charging": false,
-  "suspicion": 1,
-  "caughtDuring": "aim",
-  "phase": "ending",
-  "seed": 18
  }
 ]

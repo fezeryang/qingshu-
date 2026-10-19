@@ -216,3 +216,15 @@ Without an `id`:
 - `say(text, {dur})` takes an optional duration.
 - `ctx.ai.students`: `ambient` (getter: is ambient active right now), `callOn(id?)`, `passNote()`, `list()` (`[{id, trait, seat, mode, act, busy}]`).
 - `ctx.ai`: `STATES`, `INCIDENT_KINDS`, `TUNE` (all tuning numbers), and `debug.timeline` / `debug.teacher()` / `debug.students()`.
+
+## Classroom speech completion
+
+Teacher lectures, patrol remarks, scolding and warnings opt into voiced bubbles. Ordinary voiced teacher lines have a four-game-second gap; urgent warning tells may interrupt. Flight suppresses ordinary lectures and student answers, preserving short warning tells. Bracketed stage directions stay silent.
+
+`teacher.say(text, {voiced, tell, hold})` supports an optional speech reservation (`hold`, game seconds) for call-on exchanges. A call-on waits for the question and answer bubbles before the teacher replies; bubble completion includes the audio duration with a finite timeout. Ordinary lectures also wait while an audio job is active. Reset clears voice-budget state.
+
+The murmur loop is released on scene exit, round reset, and ambient disable, and recreated when ambient behaviour resumes. Chatter volume still follows the fraction of misbehaving students.
+
+Verification scripts: `dev/ai/voice.js` (speech budget and flight tells), `dev/ai/teacher.js` (six state screenshots), and `dev/audio/classroom.js` (integrated speech lifecycle). Acceptance categories D and H cover teacher detection/accidents and audio output.
+
+Explicit `witness` events remain visible when ambient activity is disabled for deterministic QA. An explicit in-flight `catch` starts the reach animation immediately; successful interception still requires the existing distance check. D5 verifies all six reaction poses.

@@ -1,13 +1,13 @@
 {
  "seen": {
   "target": "r0c2",
-  "inView": 1.64,
+  "inView": 1.99,
   "saw": true,
   "caught": [
    "ball"
   ],
   "landing": "desk",
-  "endingId": "caught_read"
+  "endingId": "wrong_caught"
  },
  "ctrl": {
   "target": "r0c2",
@@ -15,6 +15,6 @@
   "saw": false,
   "caught": [],
   "landing": "desk",
-  "endingId": "lost"
+  "endingId": "wrong_accept"
  }
 }

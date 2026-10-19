@@ -1,5 +1,5 @@
 // graded — 隐藏 · 59 分. The letter lands on the teacher's desk; he grades it in red chalk on the board.
-import { begin, settleClass, front, wrap, finalHold } from './common.js';
+import { begin, settleClass, front, wrap, finalHold, cutaway } from './common.js';
 import { V } from '../direct.js';
 import { BLACKBOARD } from '../../core/layout.js';
 
@@ -35,6 +35,10 @@ export default async function graded(d) {
   await d.closeUp(t, { side: 'front', dist: 1.1, fov: 32, dur: 0.5 });
   await d.say(t, '嗯……', { expr: 'neutral' });
 
+  const spy = d.byTrait('gossip')[0];
+  if (spy) await cutaway(d, spy, { line: '是情书！', emote: '!', expr: 'happy', look: t, hold: 0.9 });
+  const crush = d.crush;
+  if (crush) await cutaway(d, crush, { line: '……谁写的？', emote: '?', expr: 'shock', look: t, hold: 0.9 });
   // you, sweating
   await front(d, me, { angle: -0.3, dist: 1.45, fov: 38 });
   d.expr(me, 'shock');
@@ -72,7 +76,9 @@ export default async function graded(d) {
   d.bg(d.caption('59 分', 'impact', 2));
   d.sfx('laughCrowd');
   d.crowd((ch) => { d.anim(ch, d.pick(['laugh', 'clap'])); d.expr(ch, 'happy'); }, { stagger: 0.4 });
-  await d.wait(0.6);
+  const clown = d.byTrait('clown')[0];
+  if (clown) await cutaway(d, clown, { line: '五十九！哈哈哈！', clip: 'laugh', expr: 'happy', emote: 'music', hold: 0.9 });
+  else await d.wait(0.6);
   await d.say(t, d.pick(['差一分及格。下课来办公室，我教你怎么写。', '感情真挚，论证不足。回去重写，明天交。', '扣的那一分，是因为没写名字。']));
 
   // final: the board + your facepalm

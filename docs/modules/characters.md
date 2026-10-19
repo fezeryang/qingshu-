@@ -119,3 +119,16 @@ Each prop has `userData.grip` (hand offset) used by `hold()`.
 
 `dev/characters/lineup.js`, `hair.js`, `faces.js`, `clips.js`, `classroom.js`, `arms.js` →
 `node tools/shot.mjs --script dev/characters/<x>.js --out dev/characters/shots`.
+
+## Face and matrix update performance
+
+The face cache key includes only visible animation channels: tear frames invalidate `cry`, blink
+frames invalidate blinkable eyes, and talk frames invalidate mouths that actually change shape.
+Expression and gaze changes still update immediately. Internal spring, emote and collider reads
+reuse world matrices already refreshed by the pose/collider update. Public `headWorld()` and
+`handWorld()` still refresh their ancestor chains, including after a cutscene teleport.
+
+Collision refreshes now walk only the parent-ordered paths for the head, spine and arms. They skip
+render-only hair/outline/prop nodes and leg bones while still updating root transforms after a
+teleport. `dev/perf/colliders.js` compares these matrices against a full hierarchy update across
+96 character/clip cases, including 72 raised-arm cases.

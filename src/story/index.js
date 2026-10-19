@@ -25,10 +25,12 @@ import sameGender from './cutscenes/same_gender.js';
 import wrongAccept from './cutscenes/wrong_accept.js';
 import lost from './cutscenes/lost.js';
 import coward from './cutscenes/coward.js';
+import loveBonk from './cutscenes/love_bonk.js';
+import passedAround from './cutscenes/passed_around.js';
 
 const SCRIPTS = {
   perfect, caught_read: caughtRead, chalk_counter: chalkCounter, graded, three_pointer: threePointer, out_window: outWindow,
-  confetti, self_love: selfLove, wrong_caught: wrongCaught, same_gender: sameGender, wrong_accept: wrongAccept, lost, coward,
+  confetti, self_love: selfLove, love_bonk: loveBonk, passed_around: passedAround, wrong_caught: wrongCaught, same_gender: sameGender, wrong_accept: wrongAccept, lost, coward,
 };
 const GALLERY_KEY = 'qingshu.endings';
 const INTRO_MAX = 6.5;   // ui seconds
@@ -75,7 +77,7 @@ export async function install(ctx) {
   async function playEnding(id) {
     const fn = SCRIPTS[id] || SCRIPTS.lost;
     const d = createDirector(ctx, shared, id);
-    Object.assign(shared.debug, { beat: 'start', beats: [], endingId: id, running: id });
+    Object.assign(shared.debug, { beat: 'start', beats: [], endingId: id, running: id, shots: 0 });
     const t0 = time.now, u0 = time.uiNow;
     if (ctx.round) ctx.round.flags = { ...(ctx.round.flags || {}), ending: id };
     const res = await runScript(d, fn, ENDING_MAX, 'game');
@@ -91,6 +93,7 @@ export async function install(ctx) {
       }, 12, 'game');
     }
     shared.debug.durations[id] = { game: +(time.now - t0).toFixed(2), ui: +(time.uiNow - u0).toFixed(2), result: res };
+    (shared.debug.cuts ||= {})[id] = shared.debug.shots; // camera moves/cuts issued by the script
     shared.debug.running = null;
   }
 

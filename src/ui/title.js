@@ -73,6 +73,24 @@ export function createTitle(U, cards) {
       });
       return h('label.qs-set-row', {}, h('span.qs-set-label', {}, label), input, out);
     };
+    // 语音: real speech / blips / off → ctx.settings.voiceMode (applied by ctx.audio.applySettings)
+    const MODES = [['speech', '真人朗读'], ['blips', '哔哔声'], ['off', '关闭']];
+    if (!MODES.some(([k]) => k === s.voiceMode)) s.voiceMode = 'speech';
+    const seg = h('div.qs-seg', { role: 'group', 'aria-label': '语音' });
+    const segBtns = MODES.map(([k, label]) => {
+      const b = U.button(label, 'qs-seg-btn', () => {
+        s.voiceMode = k;
+        for (const x of segBtns) x.setAttribute('aria-pressed', String(x === b));
+        U.saveSettings();
+        if (k !== 'off') { try { ctx.audio?.voiceLine?.(k === 'speech' ? '你好，这是语音试听。' : '你好！', { pitch: 1 }, { charId: null }); } catch { /* preview only */ } }
+      });
+      b.setAttribute('aria-pressed', String(s.voiceMode === k));
+      seg.appendChild(b);
+      return b;
+    });
+    const q = ctx.audio?.voiceQuality;
+    const voiceNote = q === 'legacy' || q === 'none' ? h('div.qs-set-note', {}, '推荐使用 Edge 浏览器以获得最自然的语音') : null;
+    const voiceRow = h('div.qs-set-row.qs-set-voice', {}, h('span.qs-set-label', {}, '语音'), seg);
     const calm = h('input.qs-check.qs-i', { type: 'checkbox', 'aria-label': '减少晃动' });
     calm.checked = !!s.reducedMotion;
     calm.addEventListener('change', () => { s.reducedMotion = calm.checked; U.saveSettings(); });
@@ -82,6 +100,8 @@ export function createTitle(U, cards) {
       slider('主音量', 'masterVolume', 0, 100, 1),
       slider('音乐', 'musicVolume', 0, 100, 1),
       slider('音效', 'sfxVolume', 0, 100, 1),
+      voiceRow,
+      voiceNote,
       slider('视角灵敏度', 'sensitivity', 50, 200, 5),
       h('label.qs-set-row.qs-set-check', {}, h('span.qs-set-label', {}, '减少晃动'), calm, h('i.qs-check-box')),
       h('div.qs-panel-foot', {}, U.button('完成', '', () => entry.close())));

@@ -51,50 +51,6 @@
   {
    "t": 29.733,
    "s": "watching"
-  },
-  {
-   "t": 33,
-   "s": "writing"
-  },
-  {
-   "t": 36.533,
-   "s": "fakeout"
-  },
-  {
-   "t": 37.8,
-   "s": "writing"
-  },
-  {
-   "t": 39.683,
-   "s": "warning"
-  },
-  {
-   "t": 40.4,
-   "s": "watching"
-  },
-  {
-   "t": 43.1,
-   "s": "writing"
-  },
-  {
-   "t": 46.683,
-   "s": "warning"
-  },
-  {
-   "t": 47.55,
-   "s": "watching"
-  },
-  {
-   "t": 52.7,
-   "s": "writing"
-  },
-  {
-   "t": 58.567,
-   "s": "warning"
-  },
-  {
-   "t": 59.133,
-   "s": "drinking"
   }
  ],
  "warnings": [
@@ -131,6 +87,7 @@
     "play(teacherLecture)"
    ],
    "audible": [
+    "{\"t\":14.883,\"kind\":\"voice\",\"name\":\"嗯——？\",\"mode\":\"blips\",\"key\":\"teacher\"}",
     "{\"t\":14.9,\"kind\":\"sfx\",\"name\":\"stingDanger\",\"auto\":true}",
     "{\"t\":14.9,\"kind\":\"sfx\",\"name\":\"hmm\",\"auto\":true}"
    ]
@@ -149,6 +106,7 @@
     "setExpression(neutral)"
    ],
    "audible": [
+    "{\"t\":22.133,\"kind\":\"voice\",\"name\":\"嗯？\",\"mode\":\"blips\",\"key\":\"teacher\"}",
     "{\"t\":22.15,\"kind\":\"sfx\",\"name\":\"stingDanger\",\"auto\":true}",
     "{\"t\":22.15,\"kind\":\"sfx\",\"name\":\"hmm\",\"auto\":true}"
    ]
@@ -169,61 +127,6 @@
    "audible": [
     "{\"t\":29,\"kind\":\"sfx\",\"name\":\"stingDanger\",\"auto\":true}",
     "{\"t\":29,\"kind\":\"sfx\",\"name\":\"hmm\",\"auto\":true}"
-   ]
-  },
-  {
-   "t0": 39.68,
-   "dur": 0.717,
-   "next": "watching",
-   "headAng": 78,
-   "visible": [
-    "play(idle)",
-    "lookAt(vec)",
-    "emote(?)",
-    "play(teacherTurn)",
-    "play(teacherLecture)",
-    "setExpression(neutral)"
-   ],
-   "audible": [
-    "{\"t\":39.7,\"kind\":\"sfx\",\"name\":\"stingDanger\",\"auto\":true}",
-    "{\"t\":39.7,\"kind\":\"sfx\",\"name\":\"hmm\",\"auto\":true}"
-   ]
-  },
-  {
-   "t0": 46.68,
-   "dur": 0.867,
-   "next": "watching",
-   "headAng": 13.1,
-   "visible": [
-    "play(idle)",
-    "lookAt(vec)",
-    "emote(?)",
-    "play(teacherTurn)",
-    "play(teacherLecture)",
-    "setExpression(neutral)"
-   ],
-   "audible": [
-    "{\"t\":46.7,\"kind\":\"sfx\",\"name\":\"stingDanger\",\"auto\":true}",
-    "{\"t\":46.7,\"kind\":\"sfx\",\"name\":\"hmm\",\"auto\":true}"
-   ]
-  },
-  {
-   "t0": 58.57,
-   "dur": 0.567,
-   "next": "drinking",
-   "headAng": 59.7,
-   "visible": [
-    "play(idle)",
-    "lookAt(vec)",
-    "emote(?)",
-    "play(teacherDrink)",
-    "setExpression(happy)",
-    "lookAt(null)"
-   ],
-   "audible": [
-    "{\"t\":58.583,\"kind\":\"sfx\",\"name\":\"stingDanger\",\"auto\":true}",
-    "{\"t\":58.583,\"kind\":\"sfx\",\"name\":\"hmm\",\"auto\":true}",
-    "{\"t\":59.15,\"kind\":\"sfx\",\"name\":\"sip\",\"auto\":true}"
    ]
   }
  ],
@@ -331,83 +234,6 @@
    "prev": "warning",
    "forced": false,
    "dur": 3.26
-  },
-  {
-   "t": 33,
-   "state": "writing",
-   "prev": "watching",
-   "forced": false,
-   "dur": 3.52
-  },
-  {
-   "t": 36.533,
-   "state": "fakeout",
-   "prev": "writing",
-   "forced": false,
-   "dur": 1.27
-  },
-  {
-   "t": 37.8,
-   "state": "writing",
-   "prev": "fakeout",
-   "forced": false,
-   "dur": 1.88
-  },
-  {
-   "t": 39.683,
-   "state": "warning",
-   "prev": "writing",
-   "forced": false,
-   "dur": 0.7
-  },
-  {
-   "t": 40.4,
-   "state": "watching",
-   "prev": "warning",
-   "forced": false,
-   "dur": 2.7
-  },
-  {
-   "t": 43.1,
-   "state": "writing",
-   "prev": "watching",
-   "forced": false,
-   "dur": 3.57
-  },
-  {
-   "t": 46.683,
-   "state": "warning",
-   "prev": "writing",
-   "forced": false,
-   "dur": 0.86
-  },
-  {
-   "t": 47.55,
-   "state": "watching",
-   "prev": "warning",
-   "forced": false,
-   "dur": 5.14
-  },
-  {
-   "t": 52.7,
-   "state": "writing",
-   "prev": "watching",
-   "forced": false,
-   "dur": 5.86
-  },
-  {
-   "t": 58.567,
-   "state": "warning",
-   "prev": "writing",
-   "forced": false,
-   "dur": 0.57
-  },
-  {
-   "t": 59.133,
-   "state": "drinking",
-   "prev": "warning",
-   "forced": false,
-   "dur": 2.39
   }
  ]
 }

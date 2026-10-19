@@ -88,21 +88,27 @@ export function renderVoice(out, at, o) {
   const n = Math.floor(dur * sr);
   const saw = blepSaw(sr, o.phase ?? 0);
   const R = o.rand || Math.random;
-  const fs = [0, 1, 2].map(() => biquad('bandpass', 500, 6, sr));
-  const hp = biquad('highpass', 80, 0.7, sr);
-  const breath = o.breath ?? 0.15;
-  const scale = o.scale ?? 1;
-  let vow = null, jitter = 0;
+  const fs = [0, 1, 2].map(() => biquad('bandpass', 500, 4, sr));
+  const hp = biquad('highpass', 90, 0.7, sr);
+  const srcLP = onePole(1500, sr);     // soften the glottal buzz (natural spectral tilt)
+  const brLP = onePole(4500, sr);      // breath noise band-limit
+  const ampS = onePole(40, sr);        // smooth amplitude (no clicks)
+  const breath = o.breath ?? 0.15, voiced = o.voiced ?? 0.7, scale = o.scale ?? 1;
+  const vibF = 4.5 + R() * 1.5, vibP = R() * 6.28, vibD = o.vib ?? 0.012;
+  let vow = null, drift = 0, driftT = 0;
   for (let i = 0; i < n && at + i < out.length; i++) {
     const t = i / sr;
     if ((i & 63) === 0) {
       vow = o.vowel(t);
-      for (let k = 0; k < 3; k++) fs[k].set(vow[k][0] * scale, 5 + k * 2);
-      jitter = (R() - 0.5) * 0.02;
+      for (let k = 0; k < 3; k++) fs[k].set(vow[k][0] * scale, 3.5 + k * 1.5);
+      driftT += (R() - 0.5) * 0.004; driftT *= 0.98; drift = driftT;
+      srcLP.set(clamp(o.pitch(t) * 7, 500, 2400));
     }
-    const a = o.amp(t);
-    if (a <= 0.0005) { saw(o.pitch(t)); continue; }
-    const src = saw(o.pitch(t) * (1 + jitter)) * 0.7 + (R() * 2 - 1) * breath;
+    const a = ampS.run(o.amp(t));
+    const f = o.pitch(t) * (1 + vibD * Math.sin(6.283 * vibF * t + vibP) + drift);
+    const sv = srcLP.run(saw(f)) * voiced;
+    if (a <= 0.0003) continue;
+    const src = sv * 1.6 + brLP.run(R() * 2 - 1) * breath;
     let y = 0;
     for (let k = 0; k < 3; k++) y += fs[k].run(src) * vow[k][1];
     out[at + i] += hp.run(y) * a;

@@ -1,4 +1,4 @@
-// Intro: the bell, "上课！", 起立 / 老师好, sit, slow push onto the crush (≤ 6 s, click/Space skips).
+// Intro: the bell, "上课！", 起立 / 老师好, sit, slow push onto the crush (≤ 6.5 s, click/Space skips).
 import { PLAYER_EYE } from '../core/layout.js';
 import { V } from './direct.js';
 import { front } from './cutscenes/common.js';
@@ -31,14 +31,14 @@ export async function intro(d) {
   d.crowd((ch) => d.standUp(ch), { stagger: 0.25 });
   await d.waitUI(0.8);
 
-  d.bubble(V(0, 1.75, -0.4), '老——师——好——', 1.2);
+  d.bubble(V(0, 1.75, -0.4), '老——师——好——', 1.9);
   d.sfx('murmur', { volume: 0.6 });
   d.crowd((ch) => d.anim(ch, 'bow'), { stagger: 0.15 });
-  await d.waitUI(0.85);
+  await d.waitUI(1.9); // let the full class finish greeting before the teacher answers
 
-  d.bubble(t, '同学们好，坐。', 0.9);
+  d.bubble(t, '同学们好，坐。', 1.1);
   d.crowd((ch) => d.sitDown(ch), { stagger: 0.2 });
-  await d.waitUI(0.55);
+  await d.waitUI(1.1);
 
   // The crush: your gaze zooms in through the class, then a soft 3/4 close-up.
   d.beat('crush');
@@ -52,7 +52,7 @@ export async function intro(d) {
   d.bg(d.shot({ pos: head.clone().addScaledVector(dir, -1.25).add(V(0, 0.05, 0)), look: head, fov: 24, dur: 0.6 }));
   d.look(crush, V(-5, 1.6, crush ? crush.root.position.z - 0.6 : 0)); // gazing out of the window
   d.anim(crush, 'sitIdle', { loop: true, speed: 0.4 });
-  await d.waitUI(1.05);
+  await d.waitUI(0.7);
 
   d.bg(front(d, crush, { angle: 0.55, dist: 1.5, fov: 42, dur: 0 }));
   d.expr(crush, 'smile');
@@ -60,7 +60,7 @@ export async function intro(d) {
   d.sfx('heartbeat');
   d.sfx('sparkle', { volume: 0.6 });
   d.bg(d.caption(d.name(crush), 'chapter', 1.3));
-  await d.waitUI(1.3);
+  await d.waitUI(0.65);
   d.beat('done');
 }
 

@@ -1,6 +1,6 @@
 // wrong_accept — 误投 B · 将错就错. The wrong (opposite-gender) classmate blushes and says yes before you
 // can explain. A baffling "and somehow we're dating" montage: day 1, day 30, day 100.
-import { begin, settleClass, front, reactionCloseUp, pickUpAndRead, recipient, expressionRamp, traitLine, finalHold } from './common.js';
+import { begin, settleClass, front, reactionCloseUp, receive, cutaway, recipient, expressionRamp, traitLine, finalHold } from './common.js';
 import { V } from '../direct.js';
 
 const YES = {
@@ -28,7 +28,7 @@ export default async function wrongAccept(d) {
   // 1 — the wrong person reads it, and melts
   d.beat('react');
   await front(d, rec, { angle: 0.4, dist: 1.5, fov: 38 });
-  await pickUpAndRead(d, rec);
+  await receive(d, rec);
   expressionRamp(d, rec, [[0, 'shock'], [1.4, 'embarrassed'], [2.6, 'blush', 'heart']]);
   await d.reveal(letter, { mode: 'read' });
   await reactionCloseUp(d, rec, { expr: 'blush', emote: 'heart', hold: 1.0, beat: 'reaction' });
@@ -50,7 +50,9 @@ export default async function wrongAccept(d) {
   d.expr(rec, 'love');
   d.emote(rec, 'hearts', 2);
   await d.say(rec, d.pick(['嗯！', '嗯，我知道的。', '不用说了，我都懂。']), { mood: 'love' });
-  if (crush) { d.look(crush, rec); d.emote(crush, '?', 1.6); }
+  const spy = d.byTrait('gossip', { exclude: [rec] })[0];
+  if (spy) await cutaway(d, spy, { line: d.pick(['哇哦——！', '大新闻！']), emote: 'sparkle', expr: 'happy', look: rec, hold: 0.9 });
+  if (crush && crush !== rec) await cutaway(d, crush, { line: '……？', emote: '?', expr: 'shock', look: rec, hold: 0.9 });
   d.music('comedy');
   d.bg(d.caption('将 错 就 错', 'impact', 2));
   d.sfx('ooh');

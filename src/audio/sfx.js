@@ -194,19 +194,24 @@ export const SFX = {
     g.gain.setValueAtTime(0.5, 0); g.gain.setValueAtTime(0.5, 0.4); g.gain.linearRampToValueAtTime(0, 0.43);
     s.connect(g); s.start(0); s.stop(0.45);
   } },
-  gasp: { dur: 0.6, variants: 2, level: 0.7, make(X) {
+  gasp: { dur: 0.6, variants: 2, level: 0.6, make(X) {
+    // mostly breath: a quick, sharp inhale of 3 people (barely voiced)
+    const lp = X.filter('lowpass', 3800, 0.5);
     X.js((d, sr, R) => crowd(d, sr, R, 3, (k) => ({
-      at: k * 0.02 + R() * 0.03, dur: 0.38, pitch: (t) => 180 + 60 * k + t * 300, scale: 1 + k * 0.1, breath: 4,
-      vowel: () => VOWELS.a, amp: (t) => 0.06 * Math.min(1, t / 0.25) * (t > 0.34 ? Math.max(0, 1 - (t - 0.34) / 0.04) : 1),
-    })));
+      at: k * 0.025 + R() * 0.03, dur: 0.36, pitch: (t) => 200 + 70 * k + t * 200, scale: 1 + k * 0.1, breath: 1.2, voiced: 0.12,
+      vowel: () => vowelLerp('a', 'e', 0.3), amp: (t) => 0.12 * Math.min(1, t / 0.22) ** 1.5 * (t > 0.31 ? Math.max(0, 1 - (t - 0.31) / 0.05) : 1),
+    })), { dest: lp });
   } },
-  laughCrowd: { dur: 2.8, variants: 2, level: 0.75, make(X) {
-    const rv = X.reverb(1, 0.25, 0.25);
-    X.js((d, sr, R) => crowd(d, sr, R, 11, (k) => {
-      const rate = 4.5 + R() * 2.5, f0 = (k % 2 ? 230 : 130) * (0.85 + R() * 0.4), len = 1.2 + R() * 1.3, v = R() < 0.5 ? 'a' : 'e';
-      return { at: R() * 0.35, dur: len, scale: k % 2 ? 1.15 : 1, breath: 0.5, pitch: (t) => f0 * (1.25 - 0.35 * t / len) * (1 + 0.08 * Math.sin(t * rate * 6.28)),
-        vowel: () => VOWELS[v], amp: (t) => { const ph = (t * rate) % 1; return 0.05 * (ph < 0.55 ? Math.sin(Math.PI * ph / 0.55) : 0) * Math.min(1, t / 0.05) * Math.max(0, 1 - t / len); } };
-    }), { dest: rv });
+  laughCrowd: { dur: 2.8, variants: 2, level: 0.7, make(X) {
+    // a room of classmates laughing: many soft "ha/he" voices blurred together, warm low-pass + room
+    const rv = X.reverb(1.2, 0.3, 0.35);
+    const lp = X.filter('lowpass', 3200, 0.5, rv);
+    X.js((d, sr, R) => crowd(d, sr, R, 16, (k) => {
+      const rate = 4.2 + R() * 2.2, f0 = (k % 2 ? 250 : 140) * (0.85 + R() * 0.35), len = 1.1 + R() * 1.4, v = R() < 0.6 ? 'a' : 'e';
+      return { at: R() * 0.4, dur: len, scale: k % 2 ? 1.15 : 1, breath: 0.7, voiced: 0.6, vib: 0.03,
+        pitch: (t) => f0 * (1.2 - 0.3 * t / len) * (1 + 0.06 * Math.sin(t * rate * 6.28)),
+        vowel: () => VOWELS[v], amp: (t) => { const ph = (t * rate) % 1; return 0.03 * Math.sin(Math.PI * Math.min(1, ph / 0.6)) ** 1.5 * Math.min(1, t / 0.08) * Math.max(0, 1 - t / len); } };
+    }), { dest: lp });
   } },
   clapCrowd: { dur: 2.8, variants: 2, level: 0.7, make(X) {
     X.js((d, sr, R) => {
@@ -216,28 +221,31 @@ export const SFX = {
       }
     });
   } },
-  ooh: { dur: 1.8, variants: 2, level: 0.7, make(X) {
-    const rv = X.reverb(1, 0.25, 0.25);
-    X.js((d, sr, R) => crowd(d, sr, R, 10, (k) => {
+  ooh: { dur: 1.8, variants: 2, level: 0.65, make(X) {
+    // teasing "喔~": rise-and-fall rounded vowel from the whole class
+    const rv = X.reverb(1.2, 0.3, 0.35);
+    const lp = X.filter('lowpass', 2400, 0.5, rv);
+    X.js((d, sr, R) => crowd(d, sr, R, 14, (k) => {
       const f0 = (k % 2 ? 260 : 150) * (0.9 + R() * 0.25), len = 1.3 + R() * 0.3;
-      return { at: R() * 0.12, dur: len, scale: k % 2 ? 1.15 : 1, breath: 0.2,
+      return { at: R() * 0.12, dur: len, scale: k % 2 ? 1.12 : 1, breath: 0.25, voiced: 0.7, vib: 0.02,
         pitch: (t) => { const u = t / len; return f0 * 2 ** ((u < 0.45 ? u / 0.45 * 5 : 5 - (u - 0.45) / 0.55 * 9) / 12); },
-        vowel: (t) => vowelLerp('u', 'o', Math.min(1, t / len * 1.5)), amp: (t) => 0.06 * Math.min(1, t / 0.15) * Math.max(0, 1 - Math.max(0, t - len + 0.4) / 0.4) };
-    }), { dest: rv });
+        vowel: (t) => vowelLerp('u', 'o', Math.min(1, t / len * 1.5)), amp: (t) => 0.04 * Math.min(1, t / 0.2) * Math.max(0, 1 - Math.max(0, t - len + 0.45) / 0.45) };
+    }), { dest: lp });
   } },
   murmur: { dur: 6, variants: 1, loop: 'xf', xf: 0.5, level: 0.55, make(X) {
-    const lp = X.filter('lowpass', 2600, 0.5);
+    // distant classroom chatter: many quiet babbling voices, heavily low-passed so no words stand out
+    const lp = X.filter('lowpass', 1700, 0.5);
     X.js((d, sr, R) => {
       const vs = ['a', 'e', 'i', 'o', 'u'];
-      for (let k = 0; k < 8; k++) {
+      for (let k = 0; k < 11; k++) {
         let t = R() * 0.6;
         while (t < 6.4) {
-          const syl = 4 + Math.floor(R() * 9), sl = 0.11 + R() * 0.08, f0 = (k % 2 ? 210 : 125) * (0.85 + R() * 0.35);
+          const syl = 4 + Math.floor(R() * 9), sl = 0.12 + R() * 0.08, f0 = (k % 2 ? 210 : 125) * (0.85 + R() * 0.35);
           const seq = Array.from({ length: syl }, () => vs[Math.floor(R() * 5)]);
-          renderVoice(d, Math.floor(t * sr), { sr, rand: R, dur: syl * sl, scale: k % 2 ? 1.15 : 1, breath: 0.3,
-            pitch: (tt) => f0 * (1 + 0.12 * Math.sin(tt * 3 + k)) * (1 - 0.1 * tt / (syl * sl)),
+          renderVoice(d, Math.floor(t * sr), { sr, rand: R, dur: syl * sl, scale: k % 2 ? 1.15 : 1, breath: 0.35, voiced: 0.6,
+            pitch: (tt) => f0 * (1 + 0.1 * Math.sin(tt * 3 + k)) * (1 - 0.1 * tt / (syl * sl)),
             vowel: (tt) => VOWELS[seq[Math.min(syl - 1, Math.floor(tt / sl))]],
-            amp: (tt) => 0.03 * Math.sin(Math.PI * ((tt / sl) % 1)) ** 0.7 });
+            amp: (tt) => 0.022 * Math.sin(Math.PI * ((tt / sl) % 1)) ** 0.8 });
           t += syl * sl + 0.3 + R() * 1.2;
         }
       }
@@ -259,14 +267,15 @@ export const SFX = {
     s.connect(b1); s.connect(b2); s.start(0); s.stop(len + 0.01);
     X.nz(0, { f: 1500, q: 0.8, a: 0.03, hold: len - 0.1, tau: 0.03, peak: 0.12 });
   } },
-  sneeze: { dur: 1.2, variants: 2, level: 0.75, make(X) {
+  sneeze: { dur: 1.2, variants: 2, level: 0.65, make(X) {
+    const lp = X.filter('lowpass', 4500, 0.5);
     X.js((d, sr, R) => {
-      const f0 = 150 + R() * 90;
-      for (const [at, len, rise] of [[0, 0.24, 1.2], [0.36, 0.26, 1.35]]) renderVoice(d, Math.floor(at * sr), { sr, rand: R, dur: len, breath: 1.5,
-        pitch: (t) => f0 * (1 + (rise - 1) * t / len), vowel: () => VOWELS.a, amp: (t) => 0.1 * Math.min(1, t / len * 1.3) * (t > len - 0.03 ? (len - t) / 0.03 : 1) });
-      renderVoice(d, Math.floor(0.72 * sr), { sr, rand: R, dur: 0.3, breath: 6, pitch: (t) => f0 * 1.6 * (1 - t), vowel: (t) => vowelLerp('i', 'u', Math.min(1, t * 8)),
-        amp: (t) => 0.22 * Math.min(1, t / 0.006) * Math.exp(-t / 0.08) });
-    });
+      const f0 = 160 + R() * 80;
+      for (const [at, len, rise] of [[0, 0.24, 1.2], [0.36, 0.26, 1.35]]) renderVoice(d, Math.floor(at * sr), { sr, rand: R, dur: len, breath: 0.9, voiced: 0.3,
+        pitch: (t) => f0 * (1 + (rise - 1) * t / len), vowel: () => VOWELS.a, amp: (t) => 0.12 * Math.min(1, t / len * 1.3) * (t > len - 0.04 ? (len - t) / 0.04 : 1) });
+      renderVoice(d, Math.floor(0.72 * sr), { sr, rand: R, dur: 0.32, breath: 1.6, voiced: 0.25, pitch: (t) => f0 * 1.5 * (1 - t), vowel: (t) => vowelLerp('i', 'u', Math.min(1, t * 8)),
+        amp: (t) => 0.3 * Math.min(1, t / 0.01) * Math.exp(-t / 0.09) });
+    }, { dest: lp });
   } },
   fanHum: { dur: 3.94, variants: 1, loop: 'xf', xf: 0.3, level: 0.45, make(X) {
     for (const [f, a] of [[100, 0.25], [200, 0.1], [300, 0.05]]) { const s = X.ac.createOscillator(); s.frequency.value = f; s.connect(X.gain(a * 0.6)); s.start(0); s.stop(4.3); }
@@ -372,19 +381,22 @@ export const SFX = {
       }
     }, { dur: 2.6 });
   } },
-  cough: { dur: 0.7, variants: 3, level: 0.7, make(X) {
+  cough: { dur: 0.7, variants: 3, level: 0.6, make(X) {
+    const lp = X.filter('lowpass', 3200, 0.5);
     X.js((d, sr, R) => {
       const f0 = 120 + R() * 80;
-      for (const at of [0, 0.2 + R() * 0.06]) renderVoice(d, Math.floor(at * sr), { sr, rand: R, dur: 0.16, breath: 5, pitch: (t) => f0 * (1 - t), vowel: () => vowelLerp('a', 'e', 0.5),
-        amp: (t) => 0.2 * Math.min(1, t / 0.005) * Math.exp(-t / 0.05) });
-    });
+      for (const at of [0, 0.2 + R() * 0.06]) renderVoice(d, Math.floor(at * sr), { sr, rand: R, dur: 0.17, breath: 1.4, voiced: 0.35, pitch: (t) => f0 * (1 - t), vowel: () => vowelLerp('a', 'e', 0.5),
+        amp: (t) => 0.3 * Math.min(1, t / 0.008) * Math.exp(-t / 0.055) });
+    }, { dest: lp });
   } },
-  hmm: { dur: 0.8, variants: 2, level: 0.6, make(X) {
+  hmm: { dur: 0.8, variants: 2, level: 0.55, make(X) {
+    // the teacher's closed-mouth "嗯？": a warm hum, rising at the end
+    const lp = X.filter('lowpass', 900, 0.5);
     X.js((d, sr, R) => {
       const f0 = 105 + R() * 15, len = 0.6;
-      renderVoice(d, 0, { sr, rand: R, dur: len, breath: 0.05, pitch: (t) => f0 * (t < 0.25 ? 1 : 1 + 0.6 * ((t - 0.25) / 0.35) ** 1.5),
-        vowel: () => VOWELS.m, amp: (t) => 0.35 * Math.min(1, t / 0.04) * (t > len - 0.08 ? (len - t) / 0.08 : 1) });
-    });
+      renderVoice(d, 0, { sr, rand: R, dur: len, breath: 0.03, voiced: 0.8, vib: 0.006, pitch: (t) => f0 * (t < 0.25 ? 1 : 1 + 0.55 * ((t - 0.25) / 0.35) ** 1.5),
+        vowel: () => VOWELS.m, amp: (t) => 0.4 * Math.min(1, t / 0.06) * (t > len - 0.1 ? (len - t) / 0.1 : 1) });
+    }, { dest: lp });
   } },
   crickets: { dur: 5, variants: 1, loop: 'xf', xf: 0.3, level: 0.45, make(X) {
     X.js((d, sr, R) => {
@@ -398,16 +410,22 @@ export const SFX = {
       }
     }, { dur: 5.3 });
   } },
-  cheer: { dur: 2.8, variants: 2, level: 0.75, make(X) {
-    const rv = X.reverb(1.2, 0.3, 0.3);
+  cheer: { dur: 2.8, variants: 2, level: 0.7, make(X) {
+    // crowd roar (swelling band-passed noise) with a layer of soft "耶" voices and two whistles
+    const rv = X.reverb(1.4, 0.35, 0.35);
+    const lp = X.filter('lowpass', 3500, 0.5, rv);
+    for (const [f, q, pk] of [[550, 0.9, 0.5], [1100, 1.1, 0.35], [2200, 1.4, 0.15]]) {
+      const n = X.nz(0, { f, q, a: 0.35, hold: 1.2, tau: 0.45, peak: pk, dest: lp });
+      n.b.frequency.linearRampToValueAtTime(f * 1.15, 0.5); n.b.frequency.linearRampToValueAtTime(f * 0.95, 2.4);
+    }
     X.js((d, sr, R) => {
-      crowd(d, sr, R, 12, (k) => {
-        const f0 = (k % 2 ? 300 : 170) * (0.85 + R() * 0.3), len = 1.4 + R() * 1.0;
-        return { at: R() * 0.25, dur: len, scale: k % 2 ? 1.15 : 1, breath: 0.9, pitch: (t) => f0 * (1 + 0.3 * Math.min(1, t / 0.3)) * (1 - 0.1 * t / len),
-          vowel: (t) => vowelLerp('e', 'a', Math.min(1, t / 0.4)), amp: (t) => 0.05 * Math.min(1, t / 0.1) * Math.max(0, 1 - Math.max(0, t - len + 0.5) / 0.5) };
+      crowd(d, sr, R, 14, (k) => {
+        const f0 = (k % 2 ? 300 : 170) * (0.85 + R() * 0.3), len = 1.3 + R() * 1.0;
+        return { at: R() * 0.3, dur: len, scale: k % 2 ? 1.12 : 1, breath: 0.6, voiced: 0.6, vib: 0.025, pitch: (t) => f0 * (1 + 0.25 * Math.min(1, t / 0.3)) * (1 - 0.1 * t / len),
+          vowel: (t) => vowelLerp('e', 'a', Math.min(1, t / 0.4)), amp: (t) => 0.025 * Math.min(1, t / 0.12) * Math.max(0, 1 - Math.max(0, t - len + 0.5) / 0.5) };
       });
-      for (let w = 0; w < 2; w++) { const at = Math.floor((0.2 + R() * 0.8) * sr), f = 2200 + R() * 600; let ph = 0; for (let j = 0; j < 0.5 * sr; j++) { const t = j / sr; ph += 2 * Math.PI * f * (1 + 0.3 * Math.sin(Math.PI * t / 0.5)) / sr; d[at + j] += Math.sin(ph) * 0.06 * Math.sin(Math.PI * t / 0.5); } }
-    }, { dest: rv });
+      for (let w = 0; w < 2; w++) { const at = Math.floor((0.2 + R() * 0.8) * sr), f = 2200 + R() * 600; let ph = 0; for (let j = 0; j < 0.5 * sr; j++) { const t = j / sr; ph += 2 * Math.PI * f * (1 + 0.3 * Math.sin(Math.PI * t / 0.5)) / sr; d[at + j] += Math.sin(ph) * 0.04 * Math.sin(Math.PI * t / 0.5); } }
+    }, { dest: lp });
   } },
   kiss: { dur: 0.35, variants: 2, level: 0.7, make(X) {
     X.tone('sine', 220, 0, { a: 0.02, hold: 0.04, tau: 0.01, peak: 0.15 });

@@ -8,7 +8,7 @@ Owner: qs-env-artist. Contract: `docs/CONTRACTS.md` §4.1. Preview scripts: `dev
 |---|---|
 | `index.js` | `install(ctx)`: builds the classroom, set cache, collider debug overlay, `round:setup` reset |
 | `classroom.js` | Classroom geometry + colliders (all numbers from `src/core/layout.js`), outside view, lights, moods, wind |
-| `fixtures.js` | Ceiling fans (+ dynamic OBB colliders), curtains (CPU cloth), wall clock |
+| `fixtures.js` | Ceiling fans (+ dynamic OBB colliders), curtains (GPU cloth via `curtain.js`), wall clock |
 | `blackboard.js` | Chalk board on two 1024×560 canvas textures, per-glyph chalk rendering, typewriter `append` |
 | `atmos.js` | Sky dome shader, stars, clouds, rain, petals, light shafts, dust motes, lowfx sun patches, low-poly trees |
 | `sets.js` | The six ending sets plus a fallback set; anchors |
@@ -78,11 +78,11 @@ Verified with the real gameplay solver (`dev/world/throws.js`, `dev/world/seats.
 
 ## Lighting and look
 
-- Materials: `MeshToonMaterial` with a shared 3-step ramp (`[0, 0.7, 1]`: back faces get no sun, which avoids shadow acne), mostly vertex coloured and merged per material.
+- Architecture and furniture use rough `MeshStandardMaterial` surfaces, vertex coloured and merged per material. Character/fixture toon shading is retained. The classroom floor uses seeded terrazzo aggregate with 50 cm joints; desk varnish has lower roughness. Static soft contact shade grounds desks/chairs in lowfx.
 - Sun: a warm directional light through the left windows (3 pm, about 35° elevation, slightly from the front). Its shadows (2048², normal mode only) make the window-pane patches on desks and floor. In **lowfx**, shadows are off and additive window-shaped "sun patches" are projected onto the floor instead.
 - Light shafts: additive prisms extruded from each window along the sun direction, with dust motes (320 normal / 90 lowfx) drifting inside them.
 - Ceiling: a slight emissive lift per mood (fluorescent bounce).
-- Draw calls (classroom only, shadow pass included): about 62; about 60k triangles. Sets: 6–20 draw calls each.
+- Verify rendering costs with `dev/world/hq.js`; `dev/world/realism.js` captures the seated view, campus and all six ending sets.
 
 ## Palette (sRGB), for the character artist
 
@@ -91,7 +91,7 @@ Verified with the real gameplay solver (`dev/world/throws.js`, `dev/world/seats.
 | Cream wall | `#f4ead3` |
 | Mint wainscot / trim | `#8fbf9f` / `#5f9476` |
 | Ceiling | `#f8f4ea` |
-| Floor wood | `#c08a52`–`#d6a46c` |
+| Terrazzo floor | `#b8b9ad` with grey stone aggregate |
 | Desk top wood | `#e8c592` |
 | Blue-grey steel | `#8ea3b2` (dark `#6c8091`) |
 | Chair wood | `#dca66a` |
@@ -107,6 +107,14 @@ Characters will look most at home with warm skin tones, the blue-and-white track
 
 ## Known limitations
 
-- The outside view is a static backdrop: trees float (their trunks start below the visible sill line). It is not meant to be seen from outside the window.
+- The outside campus is decorative: trees root at the third-floor ground datum (-7.6 m), with layered canopies, path kerbs, track lines and facade floor bands. It has no navigable outdoor collision mesh.
 - Curtains are not colliders (soft cloth). The open window's casement sashes swing outward and are visual only; the `outside` trigger fires before the ball could reach them.
 - The thermos on the teacher's desk is static. If a cutscene gives the teacher a thermos prop, both may be visible.
+
+## Curtain performance
+
+`curtain.js` evaluates the cloth deformation in the vertex shader, with analytic normals and the
+same deformation in `customDepthMaterial`. `createCurtains().update(dt, wind)` only updates shared
+uniforms; it no longer uploads positions or recomputes normals each tick. Geometry includes panel
+coordinates and a conservative gust bound, so frustum culling is safe. Curtain rods use a separate
+static material. Keep the visible and shadow shader displacement identical when changing the wind.

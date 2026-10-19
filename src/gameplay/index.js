@@ -7,10 +7,10 @@
 //   fx.js       ball view (tumble/squash/wobble), trajectory dots, paper bits
 //   debugdraw.js  ?debug=1 collider wireframes + predicted path
 import * as THREE from 'three';
-import { FANS, PLAYER_SEAT } from '../core/layout.js';
+import { FANS, PLAYER_SEAT, SEATS, DESK, BALL_RADIUS } from '../core/layout.js';
 import { clamp } from '../core/util.js';
 import * as P from './physics.js';
-import { classifyLanding } from './landing.js';
+import { classifyLanding, nearestSeat } from './landing.js';
 import { solveLaunch as solve, fanZones } from './solver.js';
 import { BallView, TrajectoryDots, PaperBits } from './fx.js';
 import { DebugDraw } from './debugdraw.js';
@@ -18,7 +18,10 @@ import { DebugDraw } from './debugdraw.js';
 const LOB = (P.PHYS.LOB_DEG * Math.PI) / 180;
 const CHARGE_TIME = 1.1;
 const WILLPOWER_TIME = 1.5;
-const PREVIEW_TIME = 0.35;
+const PREVIEW_TIME = 0.5;       // playtest 1: slightly longer than the GDD's original 0.35 s
+const PREVIEW_INTERVAL = 1 / 30; // visual hint only; launch/flight physics still run at full precision
+const ASSIST_REACH = 0.3;       // aim assist: predicted landing within this distance of a desk top
+const ASSIST_PULL = 0.6;        // fraction of the way toward the desk centre
 
 export async function install(ctx) {
   const { bus, engine, input } = ctx;
@@ -86,7 +89,7 @@ export async function install(ctx) {
   if (!prop) prop = new THREE.Mesh(new THREE.IcosahedronGeometry(P.PHYS.R, 1), new THREE.MeshStandardMaterial({ color: 0xfff6ee, flatShading: true }));
   const view = new BallView(prop);
   engine.scene.add(view.mesh);
-  const dots = new TrajectoryDots(14);
+  const dots = new TrajectoryDots(18);
   engine.scene.add(dots.points);
   const bits = new PaperBits(ctx.config?.lowfx ? 24 : 48);
   engine.scene.add(bits.mesh);
@@ -104,12 +107,13 @@ export async function install(ctx) {
   let rng = ctx.rng?.fork?.('gameplay');
   let jit = { f1: 2.7, f2: 6.2 };
   let chargeT = 0, wasCharging = false;
+  let previewAt = -Infinity;
   let arms = null, armsState = null, throwTimer = 0;
   let nudgeApi = 0, holdApi = false;
   let follow = null;
   let flight = { wind: false };
   let goneT = 0;
-  let lastSolve = null;
+  let lastSolve = null, lastAssist = null;
   let debugFrame = 0;
 
   // ---------------------------------------------------------------- launch
@@ -153,6 +157,7 @@ export async function install(ctx) {
     Object.assign(ball, { state: 'flying', t: 0, hits: [], bounces: 0, nearMisses: [], power, landing: null, support: null });
     ball.pos.copy(origin); ball.vel.copy(vel); prevPos.copy(origin);
     aim.charging = false; aim.power = 0; wasCharging = false;
+    previewAt = -Infinity;
     willpower.value = 1; willpower.active = false; holdApi = false; nudgeApi = 0;
     follow = null; flight = { wind: false }; goneT = 0;
     throwTimer = 0.35;
@@ -281,21 +286,83 @@ export async function install(ctx) {
       }
       if (input.pressed('Mouse0') && !aim.studying && !aim.charging) {
         aim.charging = true; aim.power = 0; chargeT = 0; wasCharging = true;
+        previewAt = -Infinity;
         bus.emit('aim:charge', { power: 0 });
       }
     }
     if (aim.charging) {
-      if (!wasCharging) { chargeT = 0; wasCharging = true; } // charging set from outside (tests)
+      if (!wasCharging) { chargeT = 0; wasCharging = true; previewAt = -Infinity; } // charging set from outside (tests)
       chargeT += dt;
       aim.power = chargeCurve(chargeT);
       try { arms?.setCharge?.(aim.power); } catch (e) { warnOnce('arms.setCharge', e); }
       const v = currentView();
       const spec = { yaw: v.yaw, pitch: v.pitch + LOB, power: aim.power };
-      if (input.enabled && input.released('Mouse0')) { launch(spec); return; }
-      const pts = predictPoints(spec, PREVIEW_TIME + 0.05, 0.025).filter((p) => p.t > 0.05);
-      dots.set(pts, engine.renderer);
-      if (debug && (debugFrame++ % 4 === 0)) debug.setPath(predictPath(spec, 3));
+      if (input.enabled && input.released('Mouse0')) { launch(assistAim(spec)); return; }
+      if (ctx.time.uiNow - previewAt >= PREVIEW_INTERVAL - 1e-6) {
+        previewAt = ctx.time.uiNow;
+        const pts = predictPoints(spec, PREVIEW_TIME + 0.05, 0.025).filter((p) => p.t > 0.05);
+        dots.set(pts, engine.renderer);
+        if (debug && (debugFrame++ % 4 === 0)) debug.setPath(predictPath(spec, 3));
+      }
     } else { wasCharging = false; dots.hide(); }
+  }
+
+  // ---------------------------------------------------------------- aim assist (player release only)
+  /** First-contact point of a throw (where the ball first touches anything), from the real simulator. */
+  function firstContact(spec, scene) {
+    const r = P.simulate(scene, launchOrigin(), P.launchVelocity(spec, V()), { env: { openings: openings() }, stopAt: 4 });
+    const h = r.hits[0];
+    return { x: h ? h.x : r.pos.x, z: h ? h.z : r.pos.z, res: r };
+  }
+  /** Nearest desk top (not the player's) within ASSIST_REACH of (x,z): {seat, dist}. */
+  function deskNear(x, z) {
+    let best = null, bd = Infinity;
+    for (const s of SEATS) {
+      if (s.id === PLAYER_SEAT) continue;
+      const dx = Math.max(0, Math.abs(x - s.x) - DESK.w / 2), dz = Math.max(0, Math.abs(z - s.deskZ) - DESK.d / 2);
+      const d = Math.hypot(dx, dz);
+      if (d < bd) { bd = d; best = s; }
+    }
+    return best && bd <= ASSIST_REACH ? { seat: best, dist: bd } : null;
+  }
+  /**
+   * Gentle aim assist: if the throw would first touch down within ~0.3 m of a desk top, bend yaw/power
+   * so the touch-down moves 60 % of the way toward that desk's centre. Only used when it really ends
+   * on that desk; otherwise the throw is left exactly as aimed. Never applied to launch() calls.
+   */
+  function assistAim(spec) {
+    lastAssist = null;
+    try {
+      const scene = snapshot();
+      const o = launchOrigin();
+      const p0 = firstContact(spec, scene);
+      const near = deskNear(p0.x, p0.z);
+      if (!near) return spec;
+      const cx = near.seat.x, cz = near.seat.deskZ;
+      const wantX = p0.x + (cx - p0.x) * ASSIST_PULL, wantZ = p0.z + (cz - p0.z) * ASSIST_PULL;
+      const bearing = (x, z) => Math.atan2(-(x - o.x), -(z - o.z));
+      const dist = (x, z) => Math.hypot(x - o.x, z - o.z);
+      let yaw = spec.yaw, power = spec.power, cur = p0;
+      for (let it = 0; it < 2; it++) {
+        let dy = bearing(wantX, wantZ) - bearing(cur.x, cur.z);
+        dy = Math.atan2(Math.sin(dy), Math.cos(dy));
+        yaw += clamp(dy, -0.05, 0.05);
+        const dp = power < 0.97 ? 0.02 : -0.02;
+        const a = firstContact({ ...spec, yaw, power }, scene), b = firstContact({ ...spec, yaw, power: power + dp }, scene);
+        const slope = (dist(b.x, b.z) - dist(a.x, a.z)) / dp;
+        if (Math.abs(slope) > 0.2) power = clamp(power + clamp((dist(wantX, wantZ) - dist(a.x, a.z)) / slope, -0.06, 0.06), 0, 1);
+        cur = firstContact({ ...spec, yaw, power }, scene);
+      }
+      const out = { ...spec, yaw, power };
+      const L = classifyLanding(cur.res.reason === 'stopped' ? P.simulate(scene, o, P.launchVelocity(out, V()), { env: { openings: openings() } }) : cur.res, lookups);
+      const Lraw = classifyLanding(p0.res, lookups);
+      if (L.seatId !== near.seat.id || Lraw.seatId === near.seat.id && Math.hypot(cur.x - cx, cur.z - cz) > Math.hypot(p0.x - cx, p0.z - cz)) {
+        lastAssist = { seatId: near.seat.id, applied: false };
+        return spec;
+      }
+      lastAssist = { seatId: near.seat.id, applied: true, dYawDeg: +((yaw - spec.yaw) * 57.3).toFixed(2), dPower: +(power - spec.power).toFixed(3), shift: +Math.hypot(cur.x - p0.x, cur.z - p0.z).toFixed(3) };
+      return out;
+    } catch (e) { warnOnce('assistAim', e); return spec; }
   }
 
   // ---------------------------------------------------------------- willpower (hold breath)
@@ -385,6 +452,7 @@ export async function install(ctx) {
     Object.assign(aim, { charging: false, power: 0, studying: false });
     willpower.value = 1; willpower.active = false; holdApi = false; nudgeApi = 0;
     follow = null; throwTimer = 0; wasCharging = false;
+    previewAt = -Infinity;
     prevCenters.clear();
     bits.clear(); dots.hide(); resetBallView();
     syncStatic(true);
@@ -473,7 +541,10 @@ export async function install(ctx) {
       type: 'intercept', seatId: ctx.cast?.seatOf?.(charId) ?? null, ownerId: charId, pos: ball.pos.clone(),
       hits: ball.hits.map((h) => ({ ...h })), flightTime: +sim.t.toFixed(3), bounces: sim.bounces,
       nearMisses: ball.nearMisses.map((n) => ({ ...n })), support: null, reason: 'intercept',
+      nearSeatId: null, nearSeatDist: null, nearOwnerId: null,
     };
+    const ns = nearestSeat(ball.pos.x, ball.pos.z, lookups.occupant, PLAYER_SEAT);
+    if (ns.seatId) { landing.nearSeatId = ns.seatId; landing.nearSeatDist = +ns.dist.toFixed(3); landing.nearOwnerId = lookups.occupant(ns.seatId); }
     ball.landing = landing;
     bus.emit('ball:landed', landing);
     return true;
@@ -492,6 +563,8 @@ export async function install(ctx) {
     holdBreath(on = true) { holdApi = !!on; },
     release() { follow = null; },
     get lastSolve() { return lastSolve; },
+    get lastAssist() { return lastAssist; },
+    assistAim,
     PHYS: P.PHYS,
     debug: { sim, live, staticGrid, fans, predictPoints },
   };

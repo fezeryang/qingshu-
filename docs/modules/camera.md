@@ -35,7 +35,7 @@ camera immediately, so a screenshot taken right after a cut (without a tick) is 
 - **fp** (phase `aim`; `intro` blends into it): cursor `nx/ny` → yaw ±75°, pitch −35°…+45° (lead decision;
   gameplay adds a +10° lob), × `settings.sensitivity`, mild acceleration near the screen edges, exponential
   smoothing. Breathing sway (tiny). `gameplay.aim.studying` → pitch −50° (looks at the book). Charging:
-  FOV 70→60, small lean forward/down, tremble above 85 % power. Teacher `warning` during aim → a small
+  FOV 60→55, small lean forward/down, tremble above 85 % power. Teacher `warning` during aim → a small
   involuntary flinch. Input disabled → the view holds, and external writes to `fp.yaw/pitch` stick.
   `fp.getAimRay()` uses the smoothed yaw/pitch (no breathing/shake noise).
 - **follow** (on `ball:launched`): 0.25 s pull-out blend from the eye (UI clock), plus a 0.15 s 0.1x
@@ -100,7 +100,7 @@ resolve. The heart iris is a 2D canvas (Path2D heart + `destination-out`). An SV
 the UI's SVG rendering in Chromium, so don't reintroduce one.
 
 `round:setup` hard-resets everything (fade, flash, letterbox, iris, speed lines, vignette, PiP, slow-mo,
-roll, shake, FOV 70, mode `fp`). Phases `title` and `aim` fade out leftovers (0.3–0.4 s).
+roll, shake, FOV 60, mode `fp`). Phases `title` and `aim` fade out leftovers (0.3–0.4 s).
 
 ## API details and units
 
@@ -111,7 +111,7 @@ roll, shake, FOV 70, mode `fp`). Phases `title` and `aim` fade out leftovers (0.
 - `cut({pos, look, fov=50, roll})`: same as `shot` with `dur: 0`.
 - `sequence(items)`: each item is a shot object, `{wait}`, `{preset:'closeUp', args:[…]}` or
   `async (cam) => …`. `hold` (s) waits after a step. Bad items are skipped.
-- `closeUp(char, {side:'front'|'left'|'right', dist, fov=35, dur=0.6, height=0.03, roll})`: without an explicit
+- `closeUp(char, {side:'front'|'left'|'right', angle (extra yaw, degrees), dist, fov=35, dur=0.6, height=0.03, roll})`: without an explicit
   `dist` the camera sits at max(0.7 m, distance that fits the *visual* head — bounding box of `parts.head`
   incl. hair — with headroom); an explicit `dist` is respected (extreme close-ups). Eyes on the
   upper third with headroom from the head-collider radius, and lead room toward where they face.
@@ -184,3 +184,33 @@ fpStay / landing), `dev/camera/reset.js` (junk arguments, KeyC, hold-breath, res
   This covers the story's own `shot`/`cut` framings as well as the presets. `overShoulder`'s `from` is
   always kept. `debug().fgHidden` lists who is hidden in the current frame.
 - The FP eye height now comes from `PLAYER_EYE` (1.24 m) automatically.
+
+## Playtest 1 (floaty ball, 1.3–2.5 s flights)
+
+- **Hand-off.** `ball:launched` → a *release beat*: the first-person view holds for 0.14 s at 0.12x while the
+  eyes follow the ball (framing constraint). Then a 0.5 s `inOutCubic` pull-out (UI clock) lands behind the
+  ball, with the ball held within ±0.45 of centre during the pull-out. There is no jump; the
+  minimum-distance guard applies only once the pull-out starts.
+- **Bullet-time budget.** Automatic slow motion (apex 0.45x for 0.45 s; approach 0.35x, capped at 1.6 s;
+  near miss 0.55x for 0.2 s; PiP 0.5x for 0.4 s) shares a per-flight budget of 0.8 s of extra real time.
+  It also stops as soon as the projected real landing time (from the ball's height, vertical speed and the
+  gravity measured in flight) would pass 3.4 s. Hold-breath (`ball:willpower`) is the player's choice and
+  is exempt.
+  - Measured on 12 targets: average flight 1.95 s of game time → 2.9 s of real time, worst case ~3.5 s;
+    100 % in-frame, 0 occluded.
+  - `metrics.last.slowExtra` / `realTime` report it per flight.
+- Speed lines are re-scaled for the slower ball (full intensity at ~7 m/s).
+
+### New presets (additions; all resolve, bad arguments only warn)
+
+- `whipPan(to, {dur=0.24, fov, roll=0, settle=true})`: very fast pan (position kept) to a character's face
+  or a point, with a speed-line streak and an `outBack` overshoot-and-settle. Use it to snap from the
+  speaker to whoever reacts.
+- `reactionCutaway(char, {hold=0.9, fov=30, side, dutch=7, punch=true, dur=0})`: hard cut to a quick comic
+  reaction shot of a classmate's face. It uses the same clearance search as `closeUp` (clear of geometry
+  and third-person heads), a front-biased angle with a random 10–25° offset and a small dutch tilt, then a subtle push-in while it holds.
+  Resolves after `hold` seconds of game time.
+- `pushIn(target, {dur=1.2, amount=0.35, fov=current-4, ease})`: slow dramatic dolly from the current
+  camera toward a face (or point), keeping headroom/thirds. It never gets closer than ~2.2 head radii.
+
+The seated view uses a 60-degree base lens, a 2.5 cm charge lean and subtle breathing. Reduced motion removes breathing and charge tremble. Aim rays retain the layout-defined eye position.

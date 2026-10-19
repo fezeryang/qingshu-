@@ -1,0 +1,23 @@
+// Playtest-1 presets: whipPan (mid-streak), reactionCutaway, pushIn; plus junk-argument resolution.
+qs.manual(true);
+await qs.start({ seed: 5, playerGender: 'm', skipIntro: true });
+qs.forceTeacher('writing', 999);
+await qs.advance(0.3);
+const cam = qs.ctx.cam, cast = qs.ctx.cast, out = {};
+const crush = cast.get(qs.ctx.round.crushId);
+const other = cast.students().find((c) => c !== crush && c.root.visible && c.root.position.distanceTo(crush.root.position) > 2);
+cam.wide('classroom');
+await qs.advance(0.1);
+cam.whipPan(crush);
+await qs.advance(0.1); await shot('w1-whip-mid');
+await qs.advance(0.4); await shot('w2-whip-end');
+let done = false; cam.reactionCutaway(other, { hold: 0.8 }).then(() => { done = true; });
+await qs.advance(0.05); await shot('w3-reaction');
+await qs.advance(1.0); out.reactionResolved = done;
+cam.wide('classroom.camBack');
+cam.pushIn(crush, { dur: 1.2, amount: 0.5 });
+await qs.advance(1.3); await shot('w4-pushin');
+const junk = [cam.whipPan(null), cam.reactionCutaway('nobody'), cam.pushIn(undefined), cam.reactionCutaway(crush, { hold: 0 })];
+let n = 0; junk.forEach((p) => p.then(() => n++)); await qs.advance(0.2); out.junkResolved = n;
+out.errors = qs.errors.slice(0, 3);
+return out;

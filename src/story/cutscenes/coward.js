@@ -1,8 +1,8 @@
 // coward — 怂 · 下课铃. The bell rings; the crush leaves laughing with someone else; the ball has gone
 // soggy in your sweaty palm.
-import { begin, settleClass, front, neighbour, EYE, finalHold } from './common.js';
+import { begin, settleClass, front, neighbour, EYE, finalHold, cutaway } from './common.js';
 import { V } from '../direct.js';
-import { DOORS } from '../../core/layout.js';
+import { DOORS, WALL_CLOCK } from '../../core/layout.js';
 
 export default async function coward(d) {
   const me = d.seatPlayer();
@@ -22,6 +22,10 @@ export default async function coward(d) {
   d.crowd((ch) => d.standUp(ch), { stagger: 0.6 });
   await d.wait(0.6);
 
+  // the clock that beat you
+  d.cut({ pos: V(0.3, 2.3, -4.3), look: V(WALL_CLOCK.x, WALL_CLOCK.y, WALL_CLOCK.z), fov: 30 });
+  d.sfx('clockTick');
+  await d.wait(0.9);
   // 2 — the crush leaves with someone else, laughing
   const exit = V(DOORS[1].x - 0.7, 0, DOORS[1].z);
   if (crush && friend) {
@@ -31,7 +35,9 @@ export default async function coward(d) {
     await d.wait(0.6);
     d.anim(crush, 'laugh');
     d.expr(crush, 'happy');
-    d.bubble(crush, d.pick(['好呀！', '走吧走吧！', '哈哈，好！']), 1.4);
+    await cutaway(d, crush, { line: d.pick(['好呀！', '走吧走吧！', '哈哈，好！']), clip: 'laugh', expr: 'happy', emote: 'music', hold: 1.0 });
+    me.root.visible = false;
+    d.cut({ pos: EYE(), look: d.headPos(crush), fov: 45 });
   }
   d.bg(d.shot({ pos: EYE(), look: exit.clone().setY(1.2), fov: 45, dur: 3.4 }));
   d.bg(d.walk(friend, exit.clone().add(V(0, 0, -0.5)), { speed: 1.4 }));

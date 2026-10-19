@@ -69,9 +69,42 @@ export function createTalk(U) {
   let line = null;      // active line
   let hideAt = -1;
 
+  // Voice: ctx.audio.voiceLine(text, voice, {charId}) → Promise (contract §4.8). Falls back to per-char blips
+  // when the audio module has no voiceLine. A voiced line resolves only when both the text and the voice are done.
+  const hasVoiceLine = () => typeof ctx.audio?.voiceLine === 'function';
+  const voiceMode = () => ctx.settings?.voiceMode || 'speech';
+  /** rough spoken length of a line (zh speech ≈ 4.6 syllables/s) */
+  function estimateVoice(text) {
+    const cs = [...String(text ?? '')];
+    const n = cs.filter((c) => !isPunct(c)).length;
+    return 0.35 + n / 4.6 + cs.filter((c) => /[，。！？!?…,]/.test(c)).length * 0.15;
+  }
+  function startVoice(text, voice, opts) {
+    const v = { done: true, p: null };
+    if (!hasVoiceLine() || voiceMode() === 'off') return v;
+    try {
+      const p = ctx.audio.voiceLine(text, voice, { charId: opts.charId ?? null, mood: opts.mood });
+      if (p && typeof p.then === 'function') {
+        v.done = false; v.p = p;
+        p.then(() => { v.done = true; }, () => { v.done = true; });
+      }
+    } catch (e) { console.warn('[ui] voiceLine failed', e); }
+    return v;
+  }
+  function cancelVoice(v) {
+    if (!v || v.done) return;
+    v.done = true;
+    try {
+      if (typeof v.p?.cancel === 'function') v.p.cancel();
+      else if (typeof ctx.audio?.stopVoice === 'function') ctx.audio.stopVoice();
+      else if (typeof ctx.audio?.cancelVoice === 'function') ctx.audio.cancelVoice();
+    } catch (e) { console.warn('[ui] cancel voice failed', e); }
+  }
+
   function endLine(l) {
     if (!l || l.ended) return;
     l.ended = true;
+    cancelVoice(l.voice);
     if (line === l) { line = null; hideAt = U.now + 0.12; box.classList.remove('is-done'); }
     l.resolve();
   }
@@ -89,11 +122,21 @@ export function createTalk(U) {
       boxName.textContent = narr ? '' : String(speaker);
       boxName.hidden = narr;
       box.style.setProperty('--c', colorFor(speaker, opts.charId));
-      const tw = typewriter(boxText, text, { voice, speed: opts.mood === 'whisper' ? TYPE_SEC * 1.3 : TYPE_SEC });
       const len = [...String(text ?? '')].length;
+      const voiced = hasVoiceLine();
+      // Ending dialogue is text-only; reserving spoken-line time here can exhaust
+      // the cutscene cap before its later locations are shown.
+      const classroomVoice = !['ending', 'card'].includes(ctx.flow?.phase);
+      const est = voiced && classroomVoice && voiceMode() !== 'off' ? estimateVoice(text) : 0;
+      // pace the typewriter to the spoken line (never slower than 0.11 s/char)
+      let speed = opts.mood === 'whisper' ? TYPE_SEC * 1.3 : TYPE_SEC;
+      if (est > 0 && len > 0) speed = Math.min(0.11, Math.max(speed, (est * 0.85) / len));
+      const tw = typewriter(boxText, text, { voice: voiced ? null : voice, speed });
+      const vo = startVoice(text, voice, opts);
       const start = U.now;
       const autoAt = opts.dur != null ? start + opts.dur : start + Math.max(0.9 + 0.06 * len, tw.duration + 0.6);
-      line = { speaker, text, start, autoAt, tw, resolve, ended: false, born: U.frameNo };
+      const voiceCap = start + Math.max(6, est * 2 + 3); // never wait on a stuck voice forever
+      line = { speaker, text, start, autoAt, voiceCap, tw, voice: vo, resolve, ended: false, born: U.frameNo };
       hideAt = -1;
       try { ctx.bus.emit('say', { speaker, text, voice, charId: opts.charId ?? null }); } catch { /* bus handlers */ }
     });
@@ -104,9 +147,11 @@ export function createTalk(U) {
       const l = line;
       const clicked = U.now - l.start > 0.08 && U.takeClick();
       if (!l.tw.done) {
-        if (clicked) l.tw.finish(); else l.tw.step(dt);
+        if (clicked) { l.tw.finish(); cancelVoice(l.voice); } else l.tw.step(dt);
         if (l.tw.done) box.classList.add('is-done');
-      } else if (clicked || U.now >= l.autoAt) {
+      } else if (clicked) {
+        endLine(l);
+      } else if (U.now >= l.autoAt && (l.voice.done || U.now >= l.voiceCap)) {
         endLine(l);
       }
     } else if (hideAt > 0 && U.now >= hideAt) {
@@ -145,14 +190,19 @@ export function createTalk(U) {
       U.L.world.appendChild(el);
       const len = [...String(text ?? '')].length;
       const ch = typeof target === 'string' ? charOf(target) : null;
-      const voice = opts.voice || ch?.spec?.voice || null;
-      const tw = typewriter(txt, text, { speed: 0.03, voice: opts.silent ? null : voice, blipEvery: 2 });
+      // Bubbles are silent by default (lecture bubbles must not talk over dialogue). Opt in with
+      // {voiced: true} or an explicit voice object; uses voiceLine when available, else soft blips.
+      const wantVoice = !opts.silent && opts.voice !== false && (opts.voiced === true || (opts.voice && typeof opts.voice === 'object'));
+      const voice = (opts.voice && typeof opts.voice === 'object' ? opts.voice : null) || ch?.spec?.voice || { pitch: 1 };
+      let bvo = null;
+      if (wantVoice && hasVoiceLine()) bvo = startVoice(text, voice, { charId: typeof target === 'string' ? target : null });
+      const tw = typewriter(txt, text, { speed: 0.03, voice: wantVoice && !bvo ? voice : null, blipEvery: 2 });
       const dur = opts.dur ?? Math.max(1.4, 1.2 + 0.09 * len + tw.duration * 0.5);
       const b = {
-        key, el, born: U.frameNo, until: U.now + dur, anchor: anchorOf(target), w: 0, hgt: 0,
+        key, el, born: U.frameNo, until: U.now + dur, voice: bvo, voiceCap: U.now + Math.max(6, estimateVoice(text) * 2 + 3), anchor: anchorOf(target), w: 0, hgt: 0,
         end() {
           if (b.ended) return;
-          b.ended = true; bubbles.delete(b); el.classList.add('is-out');
+          b.ended = true; cancelVoice(bvo); bubbles.delete(b); el.classList.add('is-out');
           U.wait(0.18).then(() => el.remove());
           resolve();
         },
@@ -186,7 +236,7 @@ export function createTalk(U) {
   U.frame((dt) => {
     for (const b of [...bubbles]) {
       if (!b.tw.done) { b.tw.step(dt); if (b.tw.done) b.w = 0; } // re-measure once fully typed
-      if (U.now >= b.until) { b.end(); continue; }
+      if (U.now >= b.until && (!b.voice || b.voice.done || U.now >= b.voiceCap)) { b.end(); continue; }
       placeBubble(b);
     }
   });

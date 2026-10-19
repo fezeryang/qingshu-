@@ -1,6 +1,6 @@
 // confetti — 隐藏 · 心碎成雪. The fan shreds the letter into heart-shaped scraps that fall like snow;
 // the crush catches one.
-import { begin, settleClass, front, finalHold } from './common.js';
+import { begin, settleClass, front, finalHold, cutaway } from './common.js';
 import { V } from '../direct.js';
 import { FANS } from '../../core/layout.js';
 
@@ -49,6 +49,9 @@ export default async function confetti(d) {
   d.bg(d.caption('下 雪 了', 'whisper', 2));
   await d.wait(0.8);
 
+  await cutaway(d, t, { line: '……？', emote: '?', expr: 'shock', look: V(fan.x, fan.bladeY, fan.z), hold: 0.8 });
+  const foodie = d.byTrait('foodie')[0];
+  if (foodie) await cutaway(d, foodie, { line: '……能吃吗？', clip: 'eat', expr: 'happy', emote: 'music', hold: 1.0 });
   // 3 — the crush catches a piece
   d.beat('climax');
   const scrap = d.prop('confetti', 'confettiPalm');

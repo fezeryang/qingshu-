@@ -20,12 +20,17 @@ const seatMap = {
   r1c1: 'yan_zheng',     // m, disciplinarian (same gender as player m)
   r2c2: 'wang_dazhuang', // m, foodie → same_gender
   r2c3: null,            // empty seat
+  r3c0: 'tang_tang',     // f, gossip  → passed_around
+  r3c1: 'hu_shuo',       // m, gossip  → passed_around (above same_gender)
 };
 const roster = makeRoster(createRng(1), 'm', { crushId: 'su_nian', seatMap });
 const base = (over = {}) => ({
   launched: true, caughtDuring: null, teacherSawBall: false, crushId: 'su_nian', playerGender: 'm', roster, landing: null, ...over,
 });
-const land = (type, extra = {}) => ({ type, seatId: null, ownerId: null, pos: { x: 0, y: 0, z: 0 }, hits: [], flightTime: 1, bounces: 0, ...extra });
+// default rest point: front-right floor, > 0.9 m from every seat (so no 'pickup')
+const land = (type, extra = {}) => ({ type, seatId: null, ownerId: null, pos: { x: 1.4, y: 0.04, z: -4.3 }, hits: [], flightTime: 1, bounces: 0, ...extra });
+const head = (ownerId) => ({ tag: 'head', ownerId, t: 0.5, speed: 3 });
+const near = (seatId, dz = 0.45) => { const s = SEATS.find((x) => x.id === seatId); return { x: s.x, y: 0.04, z: s.chairZ + dz }; };
 const desk = (seatId, extra = {}) => land('desk', { seatId, ownerId: roster.seatMap[seatId], ...extra });
 
 // ---------- roster ----------
@@ -99,13 +104,13 @@ test('letters: ≥ 4 presets, ≤ 60 chars, unique ids', () => {
   assert.equal(new Set(LETTERS.map((l) => l.id)).size, LETTERS.length);
   for (const l of LETTERS) assert.ok([...l.text].length <= 60, `${l.id} has ${[...l.text].length} chars`);
 });
-test('ENDINGS: 13 with full metadata', () => {
-  assert.equal(ENDINGS.length, 13);
+test('ENDINGS: 15 with full metadata', () => {
+  assert.equal(ENDINGS.length, 15);
   for (const e of ENDINGS) {
     for (const k of ['id', 'title', 'subtitle', 'rarity', 'hint', 'icon', 'color']) assert.ok(e[k], `${e.id}.${k}`);
     assert.ok(['common', 'rare', 'secret'].includes(e.rarity));
   }
-  assert.deepEqual([...ENDING_IDS].sort(), ['caught_read', 'chalk_counter', 'confetti', 'coward', 'graded', 'lost', 'out_window', 'perfect', 'same_gender', 'self_love', 'three_pointer', 'wrong_accept', 'wrong_caught']);
+  assert.deepEqual([...ENDING_IDS].sort(), ['caught_read', 'chalk_counter', 'confetti', 'coward', 'graded', 'lost', 'love_bonk', 'out_window', 'passed_around', 'perfect', 'same_gender', 'self_love', 'three_pointer', 'wrong_accept', 'wrong_caught']);
 });
 
 // ---------- resolve(): one case per row, plus priority edges ----------
@@ -159,17 +164,57 @@ const cases = [
   ['lost: timeout, unseen', base({ landing: land('timeout') }), 'lost'],
   ['lost: missing landing', base({ landing: null }), 'lost'],
   ['lost: unknown owner id', base({ landing: land('desk', { seatId: 'r4c5', ownerId: 'ghost' }) }), 'lost'],
+  // ---- recipient rule (playtest 1): bonk / pickup ----
+  ['bonk: hit a non-crush girl, fell to the floor → wrong_accept', base({ landing: land('floor', { hits: [head('xu_ruoqing')] }) }), 'wrong_accept', 'xu_ruoqing', 'bonk'],
+  ['bonk: first classmate hit wins', base({ landing: land('floor', { hits: [head('wang_dazhuang'), head('xu_ruoqing')] }) }), 'same_gender', 'wang_dazhuang', 'bonk'],
+  ['bonk: body hits count too', base({ landing: land('floor', { hits: [{ tag: 'body', ownerId: 'lin_xiaoyu' }] }) }), 'wrong_caught', 'lin_xiaoyu', 'bonk'],
+  ['bonk: rests on another occupied desk → that desk wins', base({ landing: desk('r0c1', { hits: [head('wang_dazhuang')] }) }), 'wrong_accept', 'xu_ruoqing', 'desk'],
+  ['bonk: then an empty desk → the bonked classmate', base({ landing: land('desk', { seatId: 'r2c3', ownerId: null, hits: [head('wang_dazhuang')] }) }), 'same_gender', 'wang_dazhuang', 'bonk'],
+  ['bonk: seen + same gender → caught_read', base({ teacherSawBall: true, landing: land('floor', { hits: [head('wang_dazhuang')] }) }), 'caught_read', 'wang_dazhuang', 'bonk'],
+  ['bonk: teacher head hits are not classmates', base({ landing: land('floor', { hits: [{ tag: 'teacher', ownerId: 'teacher' }] }) }), 'chalk_counter', null, null],
+  ['love_bonk: bonked the crush, fell to the floor', base({ landing: land('floor', { hits: [head('su_nian')] }) }), 'love_bonk', 'su_nian', 'bonk'],
+  ['love_bonk: bonked the crush, then rested on her desk', base({ landing: desk('r0c0', { hits: [head('su_nian')] }) }), 'love_bonk', 'su_nian', 'desk'],
+  ['love_bonk needs unseen → caught_read', base({ teacherSawBall: true, landing: land('floor', { hits: [head('su_nian')] }) }), 'caught_read', 'su_nian', 'bonk'],
+  ['bonked the crush but rested on another desk → that desk', base({ landing: desk('r0c1', { hits: [head('su_nian')] }) }), 'wrong_accept', 'xu_ruoqing', 'desk'],
+  ['pickup: floor next to a girl → wrong_accept', base({ landing: land('floor', { pos: near('r0c1', 0.3) }) }), 'wrong_accept', 'xu_ruoqing', 'pickup'],
+  ['pickup: floor next to the crush → perfect', base({ landing: land('floor', { pos: near('r0c0', 0.3) }) }), 'perfect', 'su_nian', 'pickup'],
+  ['pickup: floor next to a snitch → wrong_caught', base({ landing: land('floor', { pos: near('r1c0', 0.3) }) }), 'wrong_caught', 'lin_xiaoyu', 'pickup'],
+  ['pickup: seen + floor next to the crush → caught_read', base({ teacherSawBall: true, landing: land('floor', { pos: near('r0c0', 0.3) }) }), 'caught_read', 'su_nian', 'pickup'],
+  ['pickup: floor in front of a boy (r2c2) → same_gender', base({ landing: land('floor', { pos: { x: -0.32, y: 0.04, z: -0.28 + 0.3 } }) }), 'same_gender', 'wang_dazhuang', 'pickup'],
+  ['pickup: player seat never picks up (self is a place)', base({ landing: land('floor', { pos: { x: -4.4, y: 0.04, z: 3.2 } }) }), 'lost', null, null],
+  ['passed_around: gossip girl on her desk', base({ landing: desk('r3c0') }), 'passed_around', 'tang_tang', 'desk'],
+  ['passed_around: gossip boy beats same_gender', base({ landing: desk('r3c1') }), 'passed_around', 'hu_shuo', 'desk'],
+  ['passed_around: gossip via bonk', base({ landing: land('floor', { hits: [head('tang_tang')] }) }), 'passed_around', 'tang_tang', 'bonk'],
+  ['passed_around needs unseen → wrong_caught (opposite gender)', base({ teacherSawBall: true, landing: desk('r3c0') }), 'wrong_caught', 'tang_tang', 'desk'],
+  ['passed_around needs unseen → caught_read (same gender)', base({ teacherSawBall: true, landing: desk('r3c1') }), 'caught_read', 'hu_shuo', 'desk'],
+  ['a gossip crush says yes herself → perfect', base({ crushId: 'tang_tang', landing: desk('r3c0') }), 'perfect', 'tang_tang', 'desk'],
+  ['teacher intercept has no recipient', base({ landing: land('intercept', { ownerId: 'teacher', pos: near('r0c0', 0.2) }) }), 'chalk_counter', null, null],
 ];
-for (const [name, round, want] of cases) test(`resolve ${name}`, () => assert.equal(resolve(round), want));
-test('resolve covers all 13 endings', () => {
+for (const [name, round, want, recId, delivery] of cases) {
+  test(`resolve ${name}`, () => {
+    assert.equal(resolve(round), want);
+    if (recId !== undefined) { assert.equal(round.recipientId, recId, 'recipientId'); assert.equal(round.delivery, delivery, 'delivery'); }
+  });
+}
+test('recipientId/delivery are always written (null when nobody)', () => {
+  const r = base({ landing: land('trash') }); resolve(r);
+  assert.equal(r.recipientId, null); assert.equal(r.delivery, null);
+  const c = base({ launched: false }); resolve(c);
+  assert.equal(c.recipientId, null); assert.equal(c.delivery, null);
+  const d = base({ landing: desk('r0c0') }); resolve(d);
+  assert.equal(d.recipientId, 'su_nian'); assert.equal(d.delivery, 'desk');
+});
+test('resolve covers all 15 endings', () => {
   const got = new Set(cases.map(([, r]) => resolve(r)));
   for (const id of ENDING_IDS) assert.ok(got.has(id), `no case reaches ${id}`);
 });
-test('resolve is pure (does not mutate the round)', () => {
+test('resolve only writes recipientId/delivery and is idempotent', () => {
   const r = base({ teacherSawBall: true, landing: desk('r0c0') });
   const snap = JSON.stringify(r);
-  resolve(r); resolve(r);
-  assert.equal(JSON.stringify(r), snap);
+  const a = resolve(r);
+  const { recipientId, delivery, ...rest } = r;
+  assert.equal(JSON.stringify(rest), snap);
+  assert.equal(resolve(r), a);
 });
 
 console.log(fails.join('\n'));

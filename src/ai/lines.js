@@ -106,14 +106,14 @@ export const HEARD_TELL = ['什么声音？', '嗯？！', '谁？'];
 export const FAKEOUT_TELL = ['嗯……算了。', '……', ''];
 export const DRINK_TELL = ['（吸溜——）', '啊……', ''];
 export const PATROL_LINES = ['我下来看看大家写得怎么样。', '都写完了吗？', '我看看谁没在听。'];
-export const SUSPICIOUS_LINES = ['嗯——？', '靠窗那个同学……', '你手里拿的什么？', '我看见了啊。', '别以为我没看见。'];
+export const SUSPICIOUS_LINES = ['嗯——？', '靠窗那个同学……', '最后一排那个同学……', '你手里拿的什么？', '我看见了啊。', '别以为我没看见。'];
 export const SUSPICIOUS_CLEAR = ['……好好听课。', '嗯，继续。', '算你认真。'];
 export const ALERT_AIM = ['那个同学！手里拿的什么！', '靠窗那个！站起来！'];
 export const ALERT_BALL = ['谁扔的？！', '站住——什么东西飞过去了？！'];
 
 /** Calling on a student (P1). {name} is replaced by the student's name. */
 export const CALL_ON = ['{name}，你来回答一下。', '{name}，这道题你来说。', '{name}，你说说看。'];
-export const ANSWER_GOOD = ['顶点是 (2, -1)！', 'x₁ = 2，x₂ = 3！', '因为半径垂直于切线！'];
+export const ANSWER_GOOD = ['顶点是二，负一！', 'x 等于二或者三！', '因为半径垂直于切线！'];
 export const ANSWER_BAD = ['呃……x 等于……二？', '选……C？', '我……刚才没听清。', '老师，这题超纲了吧？'];
 export const REPLY_GOOD = ['很好，坐下。', '不错，大家要向{pron}学习。'];
 export const REPLY_BAD = ['上课认真听！坐下。', '下课来我办公室。坐下吧。', '……站着听十分钟。算了，坐下。'];
@@ -127,7 +127,7 @@ export const SCOLD = {
   clown: ['{name}，你做什么鬼脸？'],
   default: ['{name}，看黑板！'],
 };
-export const SCOLD_REPLY = { sleeper: '我、我没睡！', gamer: '没、没什么！', foodie: '（咕咚）没有！', gossip: '……', clown: '嘿嘿。', default: '对不起……' };
+export const SCOLD_REPLY = { sleeper: '我、我没睡！', gamer: '没、没什么！', foodie: '没、没有！', gossip: '……', clown: '嘿嘿。', default: '对不起……' };
 
 /** Classmate lines. */
 export const STUDENT = {

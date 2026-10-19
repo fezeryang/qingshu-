@@ -4,9 +4,9 @@ import * as THREE from 'three';
 import {
   ROOM, SEATS, DESK, CHAIR, PLATFORM, TEACHER_DESK, BLACKBOARD, WINDOWS, DOORS, TRASH, PLAYER_SEAT,
 } from '../core/layout.js';
-import { Batch, GEO, mat4, V, toon, colBox, colTrigger, makeSolid, worldUV, atlasUV, rectUV, mergeColored, rngFor, TAU } from './kit.js';
+import { Batch, GEO, mat4, V, surface, colBox, colTrigger, makeSolid, worldUV, atlasUV, rectUV, mergeColored, rngFor, TAU } from './kit.js';
 import { PAL } from './palette.js';
-import { woodFloorTexture, deskAtlas, bannerTexture, posterAtlas, newspaperTexture, facadeTexture, glassTexture } from './textures.js';
+import { terrazzoTexture, softDotTexture, deskAtlas, bannerTexture, posterAtlas, newspaperTexture, facadeTexture, glassTexture } from './textures.js';
 import { createBlackboard } from './blackboard.js';
 import { createFans, createCurtains, createClock } from './fixtures.js';
 import { createSky, createStars, createClouds, createRain, createShafts, createDust, createSunPatches, treeParts } from './atmos.js';
@@ -46,22 +46,22 @@ export function buildClassroom(ctx) {
   const WAIN = WINDOWS[0].sillY;            // wainscot height = window sill
 
   // ------------------------------------------------------------------ materials
-  const mVC = toon();
-  const mCeil = toon({ emissive: 0xfff4e2, emissiveIntensity: 0.4 });   // bounce + fluorescent light on the ceiling
-  const floorTex = woodFloorTexture();
-  const mFloor = toon({ map: floorTex });
+  const mVC = surface();
+  const mCeil = surface({ emissive: 0xfff4e2, emissiveIntensity: 0.4 });   // bounce + fluorescent light on the ceiling
+  const floorTex = terrazzoTexture();
+  const mFloor = surface({ map: floorTex, bumpMap: floorTex, bumpScale: 0.003, roughness: 0.68 });
   const atlas = deskAtlas();
-  const mDesk = toon({ map: atlas.texture });
+  const mDesk = surface({ map: atlas.texture, roughness: 0.62 });
   const posters = posterAtlas();
-  const mPoster = toon({ map: posters.texture });
-  const mBanner = toon({ map: bannerTexture() });
+  const mPoster = surface({ map: posters.texture });
+  const mBanner = surface({ map: bannerTexture() });
   const news = newspaperTexture(0);
-  const mNews = toon({ map: news.texture });
+  const mNews = surface({ map: news.texture });
   const mGlass = new THREE.MeshBasicMaterial({ map: glassTexture(), color: PAL.glass, transparent: true, opacity: 0.16, depthWrite: false, side: THREE.DoubleSide, vertexColors: true });
   const mTube = new THREE.MeshBasicMaterial({ color: 0xfffaf0, vertexColors: true });
   const facadeDay = facadeTexture(false), facadeNight = facadeTexture(true);
   for (const t of [facadeDay, facadeNight]) t.repeat.set(1, 1);
-  const mFacade = toon({ map: facadeDay });
+  const mFacade = surface({ map: facadeDay });
 
   const B = new Batch();     // opaque, casts + receives shadows
   const BN = new Batch();    // opaque decals (posters), receive only
@@ -300,7 +300,7 @@ export function buildClassroom(ctx) {
     B.add(GEO.cyl8, mVC, mat4(wx - 0.05, 0.7, wz - 0.2, Math.PI / 2, 0, 0, 0.025, 0.04, 0.025), 0xd8463c);
     B.add(GEO.cyl8, mVC, mat4(wx + 0.05, 0.7, wz - 0.2, Math.PI / 2, 0, 0, 0.025, 0.04, 0.025), 0x4d9ed2);
     const bottle = mergeColored([[GEO.cyl16, mat4(0, 0, 0, 0, 0, 0, 0.27, 0.42, 0.27), 0x8fd0ff]]);
-    const bm = new THREE.Mesh(bottle, new THREE.MeshToonMaterial({ vertexColors: true, gradientMap: mVC.gradientMap, transparent: true, opacity: 0.65 }));
+    const bm = new THREE.Mesh(bottle, surface({ roughness: 0.24, transparent: true, opacity: 0.65 }));
     bm.position.set(wx, 0.95 + 0.21, wz);
     group.add(bm);
     colliders.push(colBox(wx - 0.135, 0.95, wz - 0.135, wx + 0.135, 1.37, wz + 0.135, 'prop'));
@@ -469,6 +469,15 @@ export function buildClassroom(ctx) {
     OB.add(GEO.plane, mFacade, mat4(fx + 0.02, (GROUND + 12) / 2, 0, 0, Math.PI / 2, 0, 80, 12 - GROUND, 1), 0xffffff, (g) => { const uv = g.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * 80 / 7.2, uv.getY(i) * (12 - GROUND) / 7.2); });
     OB.boxMM(mVC, { top: 0xd8d2c4, side: 0xe9e2d4 }, -80, GROUND, 40, -30, 16, 52);
     OB.boxMM(mVC, 0xd8684e, -46.2, 11.4, -40, -46, 12, 40);
+    // Floor bands and recessed facade give the opposite block real depth.
+    for (let y = GROUND + 3.6; y < 12; y += 3.6) {
+      OB.boxMM(mVC, 0xc6c3b8, fx, y - 0.12, -40, fx + 0.22, y + 0.12, 40);
+    }
+    for (let z = -40; z <= 40; z += 7.2) {
+      OB.boxMM(mVC, 0xd1cec2, fx, GROUND, z - 0.12, fx + 0.16, 12, z + 0.12);
+    }
+    for (const x of [-14, -9]) OB.boxMM(mVC, 0xd4d2c6, x - 0.08, GROUND, -60, x + 0.08, GROUND + 0.16, 60);
+    for (const x of [-35, -34, -20, -19]) OB.boxMM(mVC, 0xe5dfcf, x, GROUND + 0.035, -39, x + 0.05, GROUND + 0.04, 39);
     // hills
     const hr = rngFor('hills');
     for (let i = 0; i < 9; i++) OB.add(GEO.cone8, mVC, mat4(-150 - hr.range(0, 30), GROUND + 6, -120 + i * 30 + hr.range(-8, 8), 0, hr.range(0, 3), 0, hr.range(40, 70), hr.range(18, 34), hr.range(40, 70)), (nx, ny) => (ny > 0.6 ? 0xb3cdd0 : PAL.hills));
@@ -477,9 +486,8 @@ export function buildClassroom(ctx) {
     const tr = rngFor('trees');
     const parts = [];
     // canopies sit just below / around eye level so the window shows treetops, sky and the far building
-    const spots = [[-12, -9.5], [-13.5, -4.5], [-12.5, 0.8], [-14, 5.5], [-12, 10], [-18, -7], [-19, 2.5], [-17, 12], [-21, -1], [-25, 7], [-26, -6], [-23, -13], [-28, 14], [-12, -14]];
-    for (const [tx, tz] of spots) parts.push(...treeParts(tr, tx, -5.2, tz, tr.range(1.15, 1.45), [PAL.treeA, PAL.treeB, PAL.treeC], PAL.trunk, true));
-    parts.push([GEO.cyl8, mat4(-30, -6.4, 0, 0, 0, 0, 1, 2.4, 1), PAL.trunk]); // keeps merge happy if spots change
+    const spots = [[-16, -10], [-17, 8], [-22, -6], [-23, 5], [-27, 14], [-27, -14]];
+    for (const [tx, tz] of spots) parts.push(...treeParts(tr, tx, GROUND, tz, tr.range(1.35, 1.6), [PAL.treeA, PAL.treeB, PAL.treeC], PAL.trunk, false));
     const trees = new THREE.Mesh(mergeColored(parts), mVC);
     trees.castShadow = !lowfx; trees.receiveShadow = false;
     trees.name = 'trees';
@@ -498,6 +506,15 @@ export function buildClassroom(ctx) {
   B.build(group, { name: 'classroomSolid' });
   BN.build(group, { castShadow: false, name: 'classroomDecals' });
   BG.build(group, { castShadow: false, name: 'glass', renderOrder: 3 });
+
+  // Static furniture contact shade also grounds desks when lowfx disables shadow maps.
+  const contacts = new Batch();
+  const contactMat = new THREE.MeshBasicMaterial({ map: softDotTexture(), color: 0x28322d, transparent: true, opacity: 0.22, depthWrite: false });
+  for (const seat of SEATS) {
+    contacts.add(GEO.plane, contactMat, mat4(seat.x, 0.003, seat.deskZ, -Math.PI / 2, 0, 0, DESK.w * 1.6, DESK.d * 1.8, 1));
+    contacts.add(GEO.plane, contactMat, mat4(seat.x, 0.004, seat.chairZ, -Math.PI / 2, 0, 0, CHAIR.w * 1.5, CHAIR.d * 1.5, 1));
+  }
+  contacts.build(group, { castShadow: false, receiveShadow: false, name: 'furnitureContactShade' });
 
   // ------------------------------------------------------------------ animated fixtures
   const FB = new Batch();
@@ -568,7 +585,7 @@ export function buildClassroom(ctx) {
       hemi.color.set(m.hemiSky); hemi.groundColor.set(m.hemiGround); hemi.intensity = m.hemiI * (lowfx ? 1.12 : 1);
       amb.intensity = m.ambI;
       mTube.color.set(m.lights ? 0xfffaf0 : 0x8a8f96);
-      mCeil.emissiveIntensity = m.ceil;
+      mCeil.emissiveIntensity = m.ceil * 0.3;
       sky.setColors({ ...m.sky, sunDir: S });
       stars.material.uniforms.opacity.value = m.stars;
       stars.visible = m.stars > 0;
@@ -580,11 +597,11 @@ export function buildClassroom(ctx) {
       mFacade.needsUpdate = true;
       rain.mesh.visible = m.rain;
       const L = S.clone().negate();
-      shafts.rebuild(L); shafts.material.uniforms.color.value.set(m.shaft[0]); shafts.material.uniforms.opacity.value = m.shaft[1];
+      shafts.rebuild(L); shafts.material.uniforms.color.value.set(m.shaft[0]); shafts.material.uniforms.opacity.value = m.shaft[1] * 0.3;
       shafts.mesh.visible = m.shaft[1] > 0;
-      dust.rebuild(L); dust.material.uniforms.color.value.set(m.dust[0]); dust.material.uniforms.opacity.value = m.dust[1];
+      dust.rebuild(L); dust.material.uniforms.color.value.set(m.dust[0]); dust.material.uniforms.opacity.value = m.dust[1] * 0.45;
       dust.mesh.visible = m.dust[1] > 0;
-      if (patches) { patches.rebuild(L); patches.material.color.set(m.patch[0]); patches.material.opacity = m.patch[1]; patches.mesh.visible = m.patch[1] > 0; }
+      if (patches) { patches.rebuild(L); patches.material.color.set(m.patch[0]); patches.material.opacity = m.patch[1] * 0.5; patches.mesh.visible = m.patch[1] > 0; }
       classroom.exposure = m.exposure;
       classroom.background.set(m.sky.horizon);
       if (ctx.stage?.current === 'classroom') { ctx.engine.renderer.toneMappingExposure = m.exposure; }

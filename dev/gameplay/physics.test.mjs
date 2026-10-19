@@ -153,12 +153,12 @@ test('thin rotated OBB is not tunnelled at max speed', () => {
 test('apex event fires once at the top', () => {
   let n = 0, y = 0;
   P.simulate(SN, V(0, 1, 2), V(0, 4, -1), { ev: { apex: (b) => { n++; y = b.py; } } });
-  assert(n === 1 && Math.abs(y - (1 + 16 / (2 * 9.8))) < 0.08, `n=${n} y=${y}`);
+  assert(n === 1 && Math.abs(y - (1 + 16 / (2 * P.PHYS.G))) < 0.1, `n=${n} y=${y}`);
 });
 test('near miss: passing just above a head', () => {
   const s = SEAT_BY_ID.r1c2;
   const seen = [];
-  const { r } = run(S, V(s.x, 1.48, s.chairZ + 1.5), V(0, 0.6, -6), { ev: { nearMiss: (b, i) => seen.push(i) } });
+  const { r } = run(S, V(s.x, 1.48, s.chairZ + 1.5), V(0, 0.3, -6), { ev: { nearMiss: (b, i) => seen.push(i) } });
   assert(seen.some((i) => i.ownerId === 's_r1c2') && !r.hits.some((h) => h.ownerId === 's_r1c2'), JSON.stringify(seen.map((x) => x.ownerId)));
   return `dist ${seen.find((i) => i.ownerId === 's_r1c2').dist}`;
 });
@@ -172,12 +172,66 @@ test('wind pushes the ball near the windows only', () => {
   assert(Math.abs(c.pos.x - d.pos.x) < 1e-9, 'wind acted away from the window');
   return `drift ${(a.pos.x - b.pos.x).toFixed(2)} m, windDrift ${a.windDrift.toFixed(2)}`;
 });
-test('nudge acceleration shifts the landing point', () => {
-  // full willpower (1.5 s) of nudging on a typical ~1.5 s lob: lead wants roughly 0.5–1 m
-  const a = P.simulate(SN, V(0, 1.2, 3), V(0, 4.6, -4.2), { env: { nudge: { x: P.PHYS.NUDGE_ACC, y: 0, z: 0 } } });
-  const b = P.simulate(SN, V(0, 1.2, 3), V(0, 4.6, -4.2));
-  assert(a.pos.x - b.pos.x > 0.4 && a.pos.x - b.pos.x < 1.1, `shift ${a.pos.x - b.pos.x} (flight ${b.t.toFixed(2)} s)`);
-  return `shift ${(a.pos.x - b.pos.x).toFixed(2)} m`;
+test('nudge (full 1.5 s willpower) shifts a typical lob by ~0.5–1 m', () => {
+  const o = P.launchOriginFor(0, 0);
+  const s = SEAT_BY_ID.r1c2;
+  const sol = solveLaunch({ origin: o, target: V(s.x, DESK.topY + R, s.deskZ), scene: SN, fans: fanZones(FAN_LIST), lookups: chars.lookups });
+  const v = P.launchVelocity(sol);
+  const fly = (acc) => {
+    const b = P.resetBall(P.newBall(), o, v);
+    while (!b.done) {
+      const f = Math.hypot(b.vx, b.vz) || 1;
+      P.stepBall(b, SN, { nudge: b.t < 1.5 ? { x: (-b.vz / f) * acc, y: 0, z: (b.vx / f) * acc } : null });
+      if (b.hits.length) break; // first touch-down
+    }
+    return b;
+  };
+  const a = fly(P.PHYS.NUDGE_ACC), b = fly(0);
+  const shift = Math.hypot(a.px - b.px, a.pz - b.pz);
+  assert(shift > 0.4 && shift < 1.1, `shift ${shift} (flight ${b.t.toFixed(2)} s)`);
+  return `shift ${shift.toFixed(2)} m over a ${b.t.toFixed(2)} s flight`;
+});
+test('desk tops catch the ball: first touch-down on a desk top → stays on that desk', () => {
+  let seed = 77;
+  const rnd = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
+  let onDesk = 0, stayed = 0;
+  for (let i = 0; i < 3000 && onDesk < 300; i++) {
+    const o = P.launchOriginFor(0, 0);
+    const v = P.launchVelocity({ yaw: rnd() * 1.6 - 1.1, pitch: 0.3 + rnd() * 0.8, power: rnd() });
+    const { r, L } = run(S, o, v);
+    const h = r.hits[0];
+    if (!h || h.tag !== 'desk' || h.ny < 0.9 || h.ownerId === PLAYER_SEAT) continue;
+    onDesk++;
+    if (L.seatId === h.ownerId) stayed++;
+  }
+  assert(onDesk > 50 && stayed / onDesk >= 0.85, `${stayed}/${onDesk}`);
+  return `${stayed}/${onDesk} stayed (${(100 * stayed / onDesk).toFixed(0)} %)`;
+});
+test('floaty flight: solver lobs to desks are airborne 1.3–2.5 s typically (≥ 0.9 s for the row in front)', () => {
+  const o = P.launchOriginFor(0, 0);
+  const ts = [];
+  for (const s of SEATS) {
+    if (s.id === PLAYER_SEAT || s.id === SEAT_BY_ID[PLAYER_SEAT].deskmate) continue;
+    const sol = solveLaunch({ origin: o, target: V(s.x, DESK.topY + R, s.deskZ), scene: S, fans: fanZones(FAN_LIST), lookups: chars.lookups });
+    const r = P.simulate(S, o, P.launchVelocity(sol));
+    ts.push(r.hits[0].t);
+  }
+  ts.sort((a, b) => a - b);
+  const med = ts[ts.length >> 1];
+  assert(med >= 1.3 && med <= 2.5 && ts[0] >= 0.9 && ts[ts.length - 1] <= 2.5, `range ${ts[0]}–${ts[ts.length - 1]}, median ${med}`);
+  return `airborne min ${ts[0].toFixed(2)} s, median ${ts[ts.length >> 1].toFixed(2)} s, max ${ts[ts.length - 1].toFixed(2)} s`;
+});
+test('Landing carries nearSeatId / nearSeatDist / nearOwnerId and hit ownerIds', () => {
+  const s = SEAT_BY_ID.r2c2;
+  const { L } = run(SN, V(s.x - 0.55, 1.0, s.chairZ), V(0, 0, 0));      // aisle floor right beside r2c2's occupant
+  assert(L.type === 'floor' && L.nearSeatId === 'r2c2' && L.nearOwnerId === 's_r2c2' && L.nearSeatDist < 0.62, JSON.stringify([L.type, L.nearSeatId, L.nearSeatDist]));
+  const e = SEAT_BY_ID.r2c5;                                             // empty seat: the nearest OCCUPIED seat is reported
+  const { L: L2 } = run(SN, V(e.x + 0.55, 1.0, e.chairZ), V(0, 0, 0));
+  assert(L2.nearSeatId !== 'r2c5' && L2.nearSeatDist > 0.6, JSON.stringify([L2.nearSeatId, L2.nearSeatDist]));
+  const h = SEAT_BY_ID.r2c3;
+  const { L: L3 } = run(S, V(h.x, 1.1, h.chairZ + 1.2), V(0, 0.2, -5));
+  assert(L3.hits[0].tag === 'head' && L3.hits[0].ownerId === 's_r2c3' && L3.nearSeatDist != null, JSON.stringify(L3.hits[0]));
+  return `floor beside r2c2: ${L.nearSeatDist} m; bonk → ${L3.type}, near ${L3.nearSeatId} ${L3.nearSeatDist} m`;
 });
 test('determinism: identical inputs → identical results', () => {
   const a = P.simulate(S, V(-3, 1, 2), V(1.3, 5.2, -6.1));

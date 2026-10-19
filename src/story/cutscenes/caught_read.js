@@ -1,5 +1,5 @@
 // caught_read — 社死 · 当众朗读. Called to the front and made to read your own letter aloud, verbatim.
-import { begin, settleClass, front, recipient, finalHold } from './common.js';
+import { begin, settleClass, front, recipient, finalHold, cutaway } from './common.js';
 import { V } from '../direct.js';
 import { AISLES_X, PLATFORM } from '../../core/layout.js';
 
@@ -27,13 +27,18 @@ export default async function caughtRead(d) {
     await d.say(t, d.pick(['你手里拿的，是什么？', '藏什么呢？拿出来。', '我盯你很久了。']), { mood: 'angry' });
   } else {
     await d.say(t, d.pick(['刚才飞过去的那个纸团……', '上课时间，空中飞行物？']), { mood: 'angry' });
-    if (rec) { d.emote(rec, 'sweat'); d.look(rec, t); d.anim(rec, 'raiseHand'); d.bubble(rec, '不、不是我扔的！', 1.4); }
+    if (rec) {
+      d.emote(rec, 'sweat'); d.look(rec, t); d.anim(rec, 'raiseHand');
+      const why = d.round.delivery === 'bonk' ? '它砸的我！不是我扔的！' : d.round.delivery === 'pickup' ? '我、我只是捡起来……' : '不、不是我扔的！';
+      await cutaway(d, rec, { line: why, expr: 'shock', hold: 1.1 });
+    }
     await d.say(t, d.pick(['我都看见了。是谁扔的？', '扔的人，自己站起来。']), { mood: 'angry' });
   }
 
   // 2 — the whole class turns to look at you
   d.sfx('ooh');
   d.crowd((ch) => { d.look(ch, me); d.anim(ch, 'turnBack'); d.emote(ch, '!', 0.9); }, { stagger: 0.5 });
+  if (crush) await cutaway(d, crush, { line: '……！', expr: 'embarrassed', clip: 'facepalm', emote: 'blush', look: me, hold: 0.9 });
   d.expr(me, 'shock');
   d.emote(me, 'sweat', 2);
   await front(d, me, { angle: -0.3, dist: 1.55, fov: 40 });

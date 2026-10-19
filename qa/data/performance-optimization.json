@@ -1,0 +1,506 @@
+{
+  "before": {
+    "aim": {
+      "n": 600,
+      "avg": 4.097833333114783,
+      "p50": 3.100000023841858,
+      "p95": 9.5,
+      "max": 22.599999964237213,
+      "facePaints": 2329,
+      "phase": "aim"
+    },
+    "charge": {
+      "n": 90,
+      "avg": 5.31555555595292,
+      "p50": 4,
+      "p95": 13.800000011920929,
+      "max": 17.099999964237213,
+      "facePaints": 335,
+      "phase": "aim"
+    },
+    "render": {
+      "n": 3,
+      "avg": 14.199999988079071,
+      "p50": 10.399999976158142,
+      "p95": 22.19999998807907,
+      "max": 22.19999998807907
+    },
+    "draw": {
+      "frame": 7,
+      "calls": 126,
+      "triangles": 395376,
+      "points": 320,
+      "lines": 0
+    },
+    "memory": {
+      "geometries": 86,
+      "textures": 93
+    },
+    "pixelRatio": 1,
+    "errors": []
+  },
+  "cpu": {
+    "aim": {
+      "n": 600,
+      "avg": 1.601833332379659,
+      "p50": 1.399999976158142,
+      "p95": 3.199999988079071,
+      "max": 14.199999988079071,
+      "facePaints": 659,
+      "phase": "aim"
+    },
+    "charge": {
+      "n": 90,
+      "avg": 3.4200000007947287,
+      "p50": 3.199999988079071,
+      "p95": 6.600000023841858,
+      "max": 9.600000023841858,
+      "facePaints": 90,
+      "phase": "aim"
+    },
+    "render": {
+      "n": 3,
+      "avg": 13.26666667064031,
+      "p50": 13.899999976158142,
+      "p95": 14.200000047683716,
+      "max": 14.200000047683716
+    },
+    "draw": {
+      "frame": 8,
+      "calls": 126,
+      "triangles": 395376,
+      "points": 320,
+      "lines": 0
+    },
+    "memory": {
+      "geometries": 86,
+      "textures": 93
+    },
+    "pixelRatio": 1,
+    "errors": []
+  },
+  "after": {
+    "aim": {
+      "n": 600,
+      "avg": 1.9914999976754189,
+      "p50": 1.600000023841858,
+      "p95": 4.400000035762787,
+      "max": 17,
+      "facePaints": 671,
+      "phase": "aim"
+    },
+    "charge": {
+      "n": 90,
+      "avg": 3.4233333309491476,
+      "p50": 2.800000011920929,
+      "p95": 9.300000011920929,
+      "max": 12.900000035762787,
+      "facePaints": 98,
+      "phase": "aim"
+    },
+    "render": {
+      "n": 3,
+      "avg": 9.966666658719381,
+      "p50": 9.899999976158142,
+      "p95": 10.800000011920929,
+      "max": 10.800000011920929
+    },
+    "renderPhase": "aim",
+    "draw": {
+      "frame": 8,
+      "calls": 146,
+      "triangles": 397892,
+      "points": 320,
+      "lines": 0
+    },
+    "memory": {
+      "geometries": 93,
+      "textures": 93
+    },
+    "pixelRatio": 1,
+    "errors": []
+  },
+  "method": {
+    "seed": 31,
+    "mode": "normal, shadows enabled",
+    "viewport": [
+      960,
+      540
+    ],
+    "aimFrames": 600,
+    "chargeFrames": 90,
+    "browser": "Headless Chromium / SwiftShader",
+    "comparison": "CPU ticks exclude rendering; rendering is not comparable because baseline render followed a release while final render correctly cancels charging. No real-GPU FPS claim. Cosmetic randomness and host scheduling can vary timings."
+  },
+  "regression": {
+    "previews": 60,
+    "staticCurtainGeometry": true,
+    "faceCache": true,
+    "errors": []
+  },
+  "resolution": {
+    "initialDpr": 1.5,
+    "adaptedDpr": 1.35,
+    "allocations": 2,
+    "css": [
+      960,
+      540
+    ],
+    "buffer": [
+      1296,
+      729
+    ],
+    "errors": []
+  },
+  "colliders": {
+    "checked": 96,
+    "raised": 72,
+    "errors": []
+  },
+  "sameGenderEnding": {
+    "pass": true,
+    "ending": "same_gender",
+    "target": "wang_dazhuang",
+    "stages": [
+      {
+        "name": "classroom",
+        "at": 0.08
+      },
+      {
+        "name": "cherryPath",
+        "at": 24.44
+      },
+      {
+        "name": "canteen",
+        "at": 27.84
+      },
+      {
+        "name": "classroom",
+        "at": 30.24
+      }
+    ],
+    "snapshots": [
+      {
+        "kind": "climax",
+        "at": 13.44,
+        "phase": "ending",
+        "stage": "classroom",
+        "beat": "climax",
+        "me": {
+          "visible": true,
+          "posture": "sit",
+          "pos": [
+            -3.12,
+            0,
+            2.22
+          ],
+          "head": [
+            -3.117941950806686,
+            1.1516137375552817,
+            2.1999963717942665
+          ],
+          "screen": [
+            2.484213380674678,
+            1.5650549188522118,
+            1.2362353713110907
+          ],
+          "top": -2.2976963753966784,
+          "feet": 14.531542430623043
+        },
+        "rec": {
+          "visible": true,
+          "posture": "stand",
+          "pos": [
+            3.12,
+            0,
+            -2.7800000000000002
+          ],
+          "head": [
+            2.9456293280357135,
+            1.3931396905005924,
+            -3.0773411478841894
+          ],
+          "screen": [
+            0.08596799555956532,
+            0.09205516977057158,
+            0.992444874942214
+          ],
+          "top": 0.22108056790904676,
+          "feet": -0.4179713190926161
+        }
+      },
+      {
+        "kind": "path",
+        "at": 25.24,
+        "phase": "ending",
+        "stage": "cherryPath",
+        "beat": "path",
+        "me": {
+          "visible": true,
+          "posture": "stand",
+          "pos": [
+            -0.5,
+            0,
+            -0.9800000000000124
+          ],
+          "head": [
+            -0.4916585142486521,
+            1.5155929201746954,
+            -0.958164522583063
+          ],
+          "screen": [
+            -0.09327025602284034,
+            0.018865425885169904,
+            0.9918174715118755
+          ],
+          "top": 0.13701296080129396,
+          "feet": -0.4818448865515142
+        },
+        "rec": {
+          "visible": true,
+          "posture": "stand",
+          "pos": [
+            0.17506009064591918,
+            0,
+            -1.1510358147383493
+          ],
+          "head": [
+            0.18461316007385856,
+            1.3918277682836913,
+            -1.132988798545658
+          ],
+          "screen": [
+            0.034176032183197154,
+            -0.021186482104581017,
+            0.9920199795083059
+          ],
+          "top": 0.0940666410427259,
+          "feet": -0.46958412449747056
+        }
+      },
+      {
+        "kind": "canteen",
+        "at": 28.64,
+        "phase": "ending",
+        "stage": "canteen",
+        "beat": "canteen",
+        "me": {
+          "visible": true,
+          "posture": "sit",
+          "pos": [
+            -2.85,
+            0,
+            0.020000000000000018
+          ],
+          "head": [
+            -2.8622608931584406,
+            1.1516300573618772,
+            -0.0007032033673039419
+          ],
+          "screen": [
+            -0.2535798459597926,
+            0.12224207122522256,
+            0.9901149014939609
+          ],
+          "top": 0.2485834800037004,
+          "feet": -0.2680123596622686
+        },
+        "rec": {
+          "visible": true,
+          "posture": "sit",
+          "pos": [
+            -2.85,
+            0,
+            -1.22
+          ],
+          "head": [
+            -2.84481298177707,
+            1.099656207882737,
+            -1.172302439037854
+          ],
+          "screen": [
+            -0.08865825006646284,
+            0.1511951560741009,
+            0.9914297989648864
+          ],
+          "top": 0.26120300635302834,
+          "feet": -0.16981834877989074
+        }
+      },
+      {
+        "kind": "punishment",
+        "at": 31.24,
+        "phase": "ending",
+        "stage": "classroom",
+        "beat": "punishment",
+        "me": {
+          "visible": true,
+          "posture": "stand",
+          "pos": [
+            -0.68,
+            0,
+            3.9
+          ],
+          "head": [
+            -0.6538521211152356,
+            1.5083698001584518,
+            3.856224283999899
+          ],
+          "screen": [
+            0.30717880768777217,
+            0.3783577163603619,
+            0.9735524119002955
+          ],
+          "top": 0.6830329290165416,
+          "feet": -0.48597705836051974
+        },
+        "rec": {
+          "visible": true,
+          "posture": "stand",
+          "pos": [
+            0.68,
+            0,
+            3.9
+          ],
+          "head": [
+            0.6781117695025257,
+            1.393890482522261,
+            3.888631725676655
+          ],
+          "screen": [
+            -0.30666051063398486,
+            0.29938812429497336,
+            0.9745490914142426
+          ],
+          "top": 0.5849963164903454,
+          "feet": -0.48597705836051974
+        }
+      }
+    ],
+    "final": {
+      "at": 34.04,
+      "phase": "card",
+      "stage": "classroom",
+      "beat": "final",
+      "me": {
+        "visible": true,
+        "posture": "stand",
+        "pos": [
+          -0.68,
+          0,
+          3.9
+        ],
+        "head": [
+          -0.6591199912011134,
+          1.5089114667823509,
+          3.853503309692047
+        ],
+        "screen": [
+          0.3100119269394836,
+          0.3779915704470799,
+          0.9735215795833341
+        ],
+        "top": 0.6830180970376026,
+        "feet": -0.48597705836051974
+      },
+      "rec": {
+        "visible": true,
+        "posture": "stand",
+        "pos": [
+          0.68,
+          0,
+          3.9
+        ],
+        "head": [
+          0.6687523394556831,
+          1.393764068172997,
+          3.8900236776729535
+        ],
+        "screen": [
+          -0.30226608550832895,
+          0.2997263167118126,
+          0.9745628179175427
+        ],
+        "top": 0.5851973987987189,
+        "feet": -0.48597705836051974
+      }
+    },
+    "result": {
+      "game": 33.91,
+      "ui": 34.07,
+      "result": "ok"
+    },
+    "beats": [
+      {
+        "name": "react",
+        "t": 0.31
+      },
+      {
+        "name": "reaction",
+        "t": 9.47
+      },
+      {
+        "name": "climax",
+        "t": 13.57
+      },
+      {
+        "name": "path",
+        "t": 24.74
+      },
+      {
+        "name": "canteen",
+        "t": 28.04
+      },
+      {
+        "name": "punishment",
+        "t": 30.79
+      },
+      {
+        "name": "final",
+        "t": 32
+      },
+      {
+        "name": "final",
+        "t": 32
+      }
+    ],
+    "error": null,
+    "errors": []
+  },
+  "finalAcceptanceI2": {
+    "aim": {
+      "n": 600,
+      "avg": 1.609,
+      "p50": 1.4,
+      "p95": 3.3,
+      "max": 10.1
+    },
+    "flight": {
+      "n": 169,
+      "avg": 3.504,
+      "p50": 3.1,
+      "p95": 7.1,
+      "max": 12.3
+    },
+    "ending": {
+      "n": 480,
+      "avg": 1.629,
+      "p50": 1.5,
+      "p95": 2.8,
+      "max": 6.1
+    }
+  },
+  "validation": {
+    "static": "101 files passed",
+    "smoke": "passed, zero errors",
+    "acceptance": [
+      "B3",
+      "B4",
+      "B6",
+      "F3",
+      "I1",
+      "I2"
+    ],
+    "unitTests": 7
+  }
+}

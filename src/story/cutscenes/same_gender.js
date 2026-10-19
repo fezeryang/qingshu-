@@ -1,7 +1,8 @@
 // same_gender — 误投 · 认真的回应. A same-gender classmate reads it with total sincerity, stands up and
 // says "……我愿意。" Warm absurdist comedy: the joke is the mix-up and their earnestness, never mockery.
-import { begin, settleClass, front, reactionCloseUp, pickUpAndRead, recipient, expressionRamp, traitLine, backToClassroom, finalHold } from './common.js';
+import { begin, settleClass, front, reactionCloseUp, receive, cutaway, recipient, expressionRamp, traitLine, backToClassroom, finalHold } from './common.js';
 import { V } from '../direct.js';
+import { ROOM } from '../../core/layout.js';
 
 const YES = {
   nerd: '我验算了三遍。……我愿意。',
@@ -31,7 +32,7 @@ export default async function sameGender(d) {
   // 1 — they read it. Carefully. Every word.
   d.beat('react');
   await front(d, rec, { angle: 0.4, dist: 1.5, fov: 38 });
-  await pickUpAndRead(d, rec);
+  await receive(d, rec);
   d.bg(front(d, rec, { angle: 0.2, dist: 1.1, fov: 32, dur: 5 }));
   expressionRamp(d, rec, [[0, 'shock'], [2, 'neutral'], [3.6, 'determined']]);
   await d.reveal(letter, { mode: 'read' });
@@ -69,6 +70,10 @@ export default async function sameGender(d) {
   d.crowd((ch) => { d.anim(ch, d.pick(['cheer', 'clap']), { loop: true }); d.expr(ch, 'happy'); }, { exclude: [rec, crush], stagger: 0.4 });
   d.bg(d.caption('全 班 沸 腾', 'impact', 1.9));
   await d.wait(0.6);
+  // the teacher turns round at the noise, chalk frozen mid-stroke
+  d.stop(t);
+  await d.face(t, Math.PI, 0.3);
+  await cutaway(d, t, { line: '……什么情况？', emote: '?', expr: 'shock', hold: 1.0 });
   if (crush) {
     d.expr(crush, 'shock');
     d.emote(crush, 'dots', 1.8);
@@ -86,48 +91,71 @@ export default async function sameGender(d) {
   // 5 — montage: cherry blossom path
   await d.iris('out', 0.7);
   const path = d.stage('cherryPath');
+  d.beat('path');
   d.showOnly([me, rec]);
-  const bench = d.anchor(path, 'bench', V(2, 0, -1), Math.PI / 2);
-  d.place(me, d.anchor(path, 'left', V(-0.5, 0, 0)).pos.clone().add(V(-1.6, 0, 0.8)), { yaw: 0 });
-  d.place(rec, d.anchor(path, 'right', V(0.5, 0, 0)).pos.clone().add(V(-1.6, 0, 0.8)), { yaw: 0 });
+  const left = d.anchor(path, 'left', V(-0.5, 0, 0)).pos;
+  const right = d.anchor(path, 'right', V(0.5, 0, 0)).pos;
+  d.stop(me);
+  d.stop(rec);
+  d.look(me, null);
+  d.look(rec, null);
+  d.place(me, left.clone().add(V(0, 0, -1.2)), { yaw: Math.PI });
+  d.place(rec, right.clone().add(V(0, 0, -1.2)), { yaw: Math.PI });
   d.expr(me, 'sweat');
   d.expr(rec, 'happy');
-  await d.camAt(d.anchor(path, 'camTrackStart'), { fov: 45 });
+  await d.camAt(d.anchor(path, 'camWide'), { fov: 45 });
   await d.iris('in', 0.6);
   d.bg(d.caption('后来——', 'chapter', 2));
-  d.bg(d.camAt(d.anchor(path, 'camTrackEnd'), { fov: 45, dur: 3.2 }));
-  d.bg(d.walk(me, bench.pos.clone().add(V(0, 0, 0.35)), { speed: 0.9 }));
-  await d.walk(rec, bench.pos.clone().add(V(0, 0, -0.35)), { speed: 0.9, cap: 3.2 });
+  await Promise.all([
+    d.walk(me, left.clone().add(V(0, 0, 1.2)), { speed: 1.1 }),
+    d.walk(rec, right.clone().add(V(0, 0, 1.2)), { speed: 1.1 }),
+  ]);
   d.emote(rec, 'heart', 1.6);
   d.expr(me, 'smile');
 
-  // montage: the canteen — half a drumstick
+  // Lunch is its own montage location, rather than a snack appearing at punishment.
   await d.fade(1, 0.3);
-  const can = d.stage('canteen');
+  const canteen = d.stage('canteen');
+  d.beat('canteen');
   d.showOnly([me, rec]);
-  const table = d.anchor(can, 'tableA', V(0, 0, 0));
-  const seats = table.seats || [{ pos: table.pos.clone().add(V(-0.45, 0, -0.62)), yaw: Math.PI }, { pos: table.pos.clone().add(V(-0.45, 0, 0.62)), yaw: 0 }];
+  const table = d.anchor(canteen, 'tableA', V(0, 0, 0));
+  const seats = table.seats || [
+    { pos: table.pos.clone().add(V(-0.45, 0, -0.62)), yaw: Math.PI },
+    { pos: table.pos.clone().add(V(-0.45, 0, 0.62)), yaw: 0 },
+  ];
   d.place(rec, seats[0], { posture: 'sit' });
   d.place(me, seats[2] || seats[1], { posture: 'sit' });
-  d.hold(rec, d.prop('snack'));
+  d.anim(me, 'sitIdle', { loop: true });
   d.anim(rec, 'eat', { loop: true });
-  await d.twoShot(me, rec, { dur: 0, fov: 40 });
+  d.hold(rec, d.prop('snack'));
+  d.expr(rec, 'happy');
+  d.look(me, rec);
+  d.look(rec, me);
+  await d.camAt(d.anchor(canteen, 'camWide'), { fov: 50 });
   await d.fade(0, 0.3);
+  d.bg(d.caption('午饭时 · 食堂', 'chapter', 1.6));
   await d.say(rec, '鸡腿，分你一半。', { expr: 'happy' });
-  d.expr(me, 'happy');
+  await d.wait(0.4);
 
-  // montage: standing at the back of the class together (罚站)
+  // montage: standing at the back of the class together (罚站) — still sharing a drumstick
   await d.fade(1, 0.3);
   backToClassroom(d, [me]);
-  d.place(me, V(-0.5, 0, 4.1), { yaw: 0 });
-  d.place(rec, V(0.1, 0, 4.1), { yaw: 0 });
-  d.hold(rec, null);
+  settleClass(d, { except: [rec], teacher: 'class' });
+  d.stop(me);
+  d.look(me, null);
+  const backZ = ROOM.maxZ - 0.6;
+  d.place(me, V(-0.68, 0, backZ), { yaw: 0 });
+  d.place(rec, V(0.68, 0, backZ), { yaw: 0 });
+  d.hold(rec, d.prop('snack'));
   d.stop(t);
   d.teacherAtBoard('class');
   d.expr(t, 'angry');
-  d.cut({ pos: V(-0.2, 1.5, 2.0), look: V(-0.2, 1.25, 4.1), fov: 46 });
+  // Above the last row: include both full standing poses without foreground heads
+  // or the cinema bars cutting through their hair.
+  d.cut({ pos: V(0, 2.3, backZ - 2.2), look: V(0, 0.95, backZ), fov: 56 });
   await d.fade(0, 0.3);
-  d.bubble(t, '你们两个，站好！', 1.6);
+  d.beat('punishment');
+  d.bubble(V(0, 1.95, backZ), '王老师：你们两个，站好！', 1.6);
   d.bg(d.caption('（一起被罚站）', 'whisper', 2));
   d.look(me, rec);
   d.look(rec, me);

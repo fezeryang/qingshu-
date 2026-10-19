@@ -27,3 +27,16 @@ single-subject shot it also hides a same-depth neighbour whose face is half-crop
 fixes the `front()` close-ups in confetti / caught_read / perfect without any story change. Suggestion for
 a later pass: `front()` in `cutscenes/common.js` could call `ctx.cam.closeUp(ch, {side, dist, fov, dur})`.
 It already searches for an angle that is clear of geometry and third-person heads.
+
+## Playtest 1: new presets for the 6–10-shot endings
+Three additions are available on `ctx.cam` (details in `docs/modules/camera.md` → "New presets"):
+
+```js
+await cam.whipPan('crush');                              // snap-look to a reaction (0.24 s, speed-line streak)
+await cam.reactionCutaway(ch, { hold: 0.8 });            // quick comic cut to a classmate's face, clear angle, small dutch
+await cam.pushIn(crush, { dur: 1.5, amount: 0.4 });      // slow dramatic dolly toward a face
+```
+
+Suggested rhythm for comic beats: line → `whipPan(listener)` → `reactionCutaway(other, {hold: 0.6})` →
+back to a `twoShot`. `reactionCutaway` picks its own clear angle, so it is safe to point at any seated
+classmate. Your `front()` framings also benefit from the automatic foreground clean-up (fix round 1).

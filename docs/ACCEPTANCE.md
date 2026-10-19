@@ -4,7 +4,7 @@ Every item needs **reproducible evidence** (automated test output, screenshot pa
 
 ## A. Boot and stability (P0)
 - A1 Boots to the title in both normal mode and `?lowfx=1` with 0 console errors and 0 unhandled rejections.
-- A2 All 13 endings run to completion (script-driven) with `__qs.errors` empty throughout.
+- A2 All 15 endings run to completion (script-driven) with `__qs.errors` empty throughout.
 - A3 10 consecutive rounds (mixing retry / rewrite / back to title) without a crash; `renderer.info.memory.geometries/textures` stop growing after round 3.
 - A4 After any ending, "再来一局" returns to a correct aim view (no black screen, no leftover letterbox/fade/PiP, timeScale = 1, HUD correct).
 
@@ -31,8 +31,9 @@ Using **real Playwright mouse/keyboard events** (not `__qs.throwAt`):
 - D5 At least 6 in-flight accidents can be triggered with `ai.students.trigger` and are visible on screen (screenshots).
 
 ## E. Endings (P0)
-- E1 All 13 endings can be triggered by deterministic scripts (one scenario per ending in `tests/`), and `resolve()` matches the GDD §7 table.
-- E2 Each ending lasts 8–45 s (game time), has its own camera work / dialogue / music, and ends on the ending card; the 13 key-frame screenshots are all different and match the ending's content.
+- E1 All 15 endings can be triggered by deterministic scripts (one scenario per ending in `tests/`), and `resolve()` matches the GDD §7 table.
+- E2 Each ending lasts 8–45 s (game time), has its own camera work / dialogue / music, and ends on the ending card; the 15 key-frame screenshots are all different and match the ending's content.
+- E5 (playtest round 1) A ball that bonks a classmate or stops on the floor next to one is picked up by them (no `lost`); typical flight time 1.3–2.5 s.
 - E3 `caught_read` reads out the player's own letter text verbatim (including custom input).
 - E4 Gallery: unlocks persist across reloads; locked endings show hints; new unlocks show "NEW".
 

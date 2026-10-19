@@ -1,6 +1,6 @@
 // three_pointer — 隐藏 · 三分球. Swish into the bin, commentator, standing ovation, the PE teacher
 // bursts in to recruit you → the basketball court.
-import { begin, settleClass, front, finalHold } from './common.js';
+import { begin, settleClass, front, finalHold, cutaway } from './common.js';
 import { V } from '../direct.js';
 import { TRASH, DOORS } from '../../core/layout.js';
 
@@ -21,7 +21,7 @@ export default async function threePointer(d) {
   await d.wait(0.5);
   d.music('sports');
   d.sfx('buzzer');
-  await d.say('解说', '球——进——了——！！！', { voice: CAST, mood: 'shout' });
+  await d.say('解说', '进了！空心入网！', { voice: CAST, mood: 'shout' });
   d.bg(d.caption('三 分 球 ！', 'impact', 2));
   d.sfx('cheer');
 
@@ -32,7 +32,9 @@ export default async function threePointer(d) {
   d.emote(t, '!', 1.2);
   const jock = d.byTrait('jock')[0];
   await d.say(jock || '同学们', d.pick(['这弧线……是天才！', '空心入网！连框都没碰！']), { mood: 'shout' });
+  await cutaway(d, t, { expr: 'shock', emote: '!', hold: 0.3 });
   await d.say(t, d.pick(['……这……这是在上课！', '……投得还挺准。']), { expr: 'sweat' });
+  if (crush) await cutaway(d, crush, { line: '好帅……', clip: 'clap', expr: 'blush', emote: 'heart', look: me, hold: 0.9 });
 
   // 3 — the PE teacher bursts in
   const pe = d.npc('pe');

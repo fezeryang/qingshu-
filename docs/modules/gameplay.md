@@ -39,21 +39,23 @@ node tools/shot.mjs --script dev/gameplay/shots.js     --out dev/gameplay/shots
 - **Contacts.** Up to 3 resolution passes handle corners, edges and wedges.
 - **Frame-rate independence.** The live ball uses an accumulator with render interpolation. Its trajectory is therefore bit-identical to the solver's and `predict`'s, whatever the frame rate or slow motion.
 - **Forces.**
-  - Gravity 9.8.
+  - Gravity **5.5 m/s²** (playtest 1: stylised floaty paper ball; GDD §6.1). Launch speed `1.4 + power × 7.1` m/s (1.4–8.5).
   - Air drag `a = −(0.016|v| + 0.03) v`.
   - Wind: only for `x < −2.6`, ramping up toward the window, `1.6 m/s² × strength` along `classroom.wind.dir`.
-  - Telekinesis: `1.0 m/s²` sideways (lowered from 2.5 by lead decision: ≈0.5–1 m landing shift at full willpower) relative to the flight direction. It is flipped when the camera looks back at the ball, so "A" is always screen-left.
+  - Telekinesis: `0.55 m/s²` sideways (≈0.8 m landing shift for a full 1.5 s willpower on a typical 1.7 s lob; was 2.5, then 1.0) relative to the flight direction. It is flipped when the camera looks back at the ball, so "A" is always screen-left.
 - **Contact response.**
   - Restitution along the normal. Paper gets deader at speed: `e × clamp(1.12 − 0.08·v, 0.45, 1)`. Contacts slower than 0.3 m/s are perfectly inelastic.
   - Coulomb friction impulse.
   - Rolling resistance on supports (`roll × g`) with static stick.
   - Moving colliders impart their surface velocity: fan blades use their `velocity`; character colliders get a velocity estimated from frame-to-frame motion, clamped to 3 m/s.
+- **Desk tops catch the ball** (playtest 1): low bounce, high friction, high rolling resistance, and a stylised `grab`. An impact on an upward-facing desk/chair/book top also swallows 50–60 % of the remaining slide. In a Node test, 92 % of throws whose first touch-down is a desk top stay on that desk.
 - **Materials (`MATERIALS` in physics.js).** A collider's own `restitution` / `friction` override the per-tag defaults.
 
   | Tag | e | mu |
   |---|---|---|
-  | wood (desk, chair, podium) | 0.3 | 0.5 |
-  | book | 0.2 | 0.6 |
+  | desk, chair, teacherDesk | 0.12 | 0.85 |
+  | podium (platform) | 0.15 | 0.8 |
+  | book | 0.08 | 0.9 |
   | head | 0.55 | 0.3 |
   | body | 0.3 | 0.6 |
   | teacher | 0.5 | 0.4 |
@@ -70,7 +72,11 @@ node tools/shot.mjs --script dev/gameplay/shots.js     --out dev/gameplay/shots
 - **Safety net.** A last-resort room containment check (the room box, plus the open-window aperture) counts interventions in `sim.guard`. It never fired in the 2000-throw Node test or the 200-throw browser test; if it ever does, a world collider is missing.
 - **Malformed colliders.** Unknown kind, NaN, or missing fields are skipped, never fatal. There is also a NaN guard.
 
-### Deviation from GDD §6.1: `SPEED_MAX = 10.5 m/s` (GDD: 9)
+### Flight times and speed range (playtest 1)
+
+With G 5.5 and 1.4–8.5 m/s, every target (all 29 desks, trash, window, podium, teacher, fan, self) solves with power 0.01–0.86. Solver lobs to desks are airborne (launch to first touch-down) for a median of 1.67 s, a max of 1.79 s, and ~1.0 s for the row directly in front. The trash/teacher/podium throws are 1.6–1.8 s; the deskmate and own-desk plops are ~0.6 s.
+
+### History: `SPEED_MAX = 10.5 m/s` at G 9.8 (superseded)
 
 From the player's seat, a 9 m/s throw cannot reach the trash bin (~9.3 m away), the teacher's desk, or the teacher, even in vacuum (ceiling 3.2 m). Those are the `three_pointer`, `graded` and `chalk_counter` endings. At 10.5 m/s all of them, and every desk, solve robustly with power ≤ 0.93. The speed is one constant, `PHYS.SPEED_MAX`; the lead may revert it.
 
@@ -91,7 +97,12 @@ Priority order:
 | floor | `floor` | adds `nearSeatId` |
 | props / unknown | the desk underneath if the point lies on one, else `floor` | |
 
-Extra Landing fields: `support {tag, ownerId}`, `reason` (`rest`/`trigger`/`fan`/`timeout`/`intercept`), `fanId`, `nearSeatId`.
+Extra Landing fields: `support {tag, ownerId}`, `reason` (`rest`/`trigger`/`fan`/`timeout`/`intercept`), `fanId`, and on **every** landing (GDD §7 recipient rule):
+- `nearSeatId`: the nearest **occupied** classmate seat (never the player's).
+- `nearSeatDist`: the XZ distance (m) from the ball to where that classmate sits (the chair centre).
+- `nearOwnerId`: that classmate.
+
+`hits[]` keeps `ownerId` for `head`/`body`/`teacher` contacts, in flight order, so story can find the first classmate bonked.
 
 ## Solver (`solver.js`)
 
@@ -119,10 +130,16 @@ Extra Landing fields: `support {tag, ownerId}`, `reason` (`rest`/`trigger`/`fan`
 ## Input feel (`index.js`)
 
 - **Charging.** `Mouse0` charges `0 → 1` over 1.1 s with ease-out (`1 − (1 − t)²`). After that the power wobbles smoothly between 0.85 and 1, as a sum of two cosines whose frequencies come from `ctx.rng.fork('gameplay')` each round.
-- **Release.** Releasing `Mouse0` launches with `yaw = fp.yaw`, `pitch = fp.pitch + 10°`, speed `2.2 + power × 8.3` m/s.
+- **Release.** Releasing `Mouse0` launches with `yaw = fp.yaw`, `pitch = fp.pitch + 10°`, speed `1.4 + power × 7.1` m/s (then the aim assist below).
 - **Studying.** `Mouse2` / `Space` toggles studying and emits `aim:study {on}`. Pressing it mid-charge cancels the charge and emits `aim:cancel`. Charging is impossible while studying.
 - **Launch origin.** `launchOrigin()` depends only on `PLAYER_EYE` and the current `ctx.cam.fp` yaw/pitch: 0.17 m right, 0.13 m down, ~0.29 m forward. It never depends on the arm animation. At launch the ball mesh starts at `arms.handWorld()` and blends into the physical path over ~0.1 s; this is visual only.
-- **Trajectory dots.** While charging, 14 `Points` dots (one draw call) show the first 0.35 s of the real simulated arc. They update every frame with power and view.
+- **Trajectory dots.** While charging, 18 `Points` dots (one draw call) show the first **0.5 s** of the real simulated arc (playtest 1; was 0.35 s). They update every frame with power and view.
+- **Aim assist (player release path only, playtest 1).**
+  - On mouse release, gameplay simulates the throw. If its first touch-down lies within 0.3 m of a desk top (not the player's own), it bends yaw and power over two Newton steps so the touch-down moves 60 % of the way toward that desk's centre.
+  - The bend is kept only if the corrected throw really ends on that desk (and is not worse than the raw throw); otherwise the throw is left exactly as aimed.
+  - Typical bends are 0.7–3.5° of yaw and ≤ 0.025 power (0.05–0.4 m at the landing point).
+  - It is never applied to `launch()` calls (tests, `throwAt`).
+  - `ctx.gameplay.assistAim(spec)` exposes it for tests; `lastAssist` holds `{seatId, applied, dYawDeg, dPower, shift}`.
 - **Hold breath (flight).** Holding `Space` sets `willpower.active` and emits `ball:willpower {on}`. Willpower drains over 1.5 s of game time, once per throw. `KeyA` / `KeyD` push the ball sideways while it is active.
 - **FP arms.** Visible only in the aim phase (camera request):
   - `holdBall` / `charge` (with `setCharge`) / `study`, and `throw` until the flow switches to flight.
@@ -153,3 +170,10 @@ Extra Landing fields: `support {tag, ownerId}`, `reason` (`rest`/`trigger`/`fan`
 - **Mesh ownership.** `ball.mesh` is a Group: mesh → squash → spin → `createProp('letterBall')`. After landing, gameplay stops writing the mesh transform, apart from a short squash/wobble or while following a catcher. Story may move it or re-parent it; on `round:setup` it is put back in the scene and hidden.
 - **Intercepts.** `intercept(charId)` works for students and `'teacher'`. It returns `true` if the ball was flying.
 - **Near misses.** Measured from the head surface (`|ball − head| − r ≤ 0.35`), once per person, only if the ball never touched them.
+
+## Trajectory preview budget
+
+Charging updates the visual trajectory hint at most 30 times per UI-clock second. A new charge
+refreshes immediately; studying cancels it immediately. Power, input, release-time aim assist,
+`predict()`, `solveLaunch()` and fixed-step flight simulation retain their existing precision and
+update cadence. The hint can lag by at most one preview interval; never reuse it as launch physics.

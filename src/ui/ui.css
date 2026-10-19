@@ -79,6 +79,11 @@
 .qs-range::-moz-range-track { height: 6px; border-radius: 3px; background: linear-gradient(90deg, #f7c948, #ff9e6b); border: 2px solid var(--ink); }
 .qs-range::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: var(--pink); border: 2.5px solid var(--ink); }
 .qs-set-check { grid-template-columns: 6.2em auto 1fr; }
+.qs-set-voice { grid-template-columns: 6.2em 1fr; cursor: default; }
+.qs-seg { display: flex; gap: 6px; flex-wrap: wrap; }
+.qs-seg-btn { font-size: calc(var(--u) * .9); padding: .22em .7em .26em; box-shadow: 2px 2px 0 var(--ink); background: #fff; opacity: .8; }
+.qs-seg-btn[aria-pressed="true"] { background: var(--hl-pink); opacity: 1; transform: rotate(-2deg); }
+.qs-set-note { margin: -4px 0 8px calc(6.2em + 10px); font-size: calc(var(--u) * .78); line-height: 1.4; color: var(--red); }
 .qs-check { position: absolute; opacity: 0; width: 1px; height: 1px; }
 .qs-check-box { width: 28px; height: 28px; border: 2.5px solid var(--ink); border-radius: 6px 9px 5px 8px; background: #fff; position: relative; }
 .qs-check:checked + .qs-check-box::after { content: ''; position: absolute; left: 6px; top: -4px; width: 10px; height: 20px; border: solid var(--red); border-width: 0 4px 4px 0; transform: rotate(40deg); }

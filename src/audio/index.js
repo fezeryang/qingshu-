@@ -93,9 +93,16 @@ export async function install(ctx) {
     M.register('sfx', g, t + len, [s]);
     return { stop(f = 0.1) { try { const n = ac.currentTime; g.gain.cancelScheduledValues(n); g.gain.setTargetAtTime(0, n, Math.max(0.01, f / 4)); s.stop(n + f + 0.05); } catch { /* ended */ } } };
   }
+  const classroomSpeech = () => ['intro', 'aim', 'flight'].includes(ctx.flow?.phase) && ctx.settings?.voiceMode !== 'off' && ctx.settings?.voiceMode !== 'blips';
   function play(name, o = {}) {
     if (!SFX[name]) { warnOnce(`unknown sfx "${name}"`); return null; }
     if (!M.running || M.silent('sfx')) return null;
+    if (name === 'murmur' && voice.ritualActive) return null;
+    if (name === 'murmur' && classroomSpeech() && voice.chatterBuffers().length >= 8) { // a short burst of real chatter
+      const h = makeLoop('murmur', { volume: clamp(o.volume ?? 0.6, 0, 1) * 0.6 }, 'burst');
+      h.until = time.uiNow + 2.6;
+      return { stop: (f) => h.stop(f) };
+    }
     const buf = bank.get(name);
     if (buf) return playBuffer(name, buf, o);
     bank.want(name);
@@ -107,6 +114,7 @@ export async function install(ctx) {
   const loops = new Set();
   function makeLoop(name, o = {}, owner = 'ext') {
     const known = !!SFX[name];
+    const isChatter = name === 'murmur';
     if (!known) warnOnce(`unknown loop "${name}"`);
     const h = {
       name, owner, alive: known, volume: clamp(+(o.volume ?? 1) || 0, 0, 2), rate: clamp(+(o.rate ?? 1) || 1, 0.25, 4), pos: o.pos || null,
@@ -125,9 +133,13 @@ export async function install(ctx) {
           try { h.g.gain.cancelScheduledValues(n); h.g.gain.setValueAtTime(h.g.gain.value, n); h.g.gain.linearRampToValueAtTime(0, n + f); h.src.stop(n + f + 0.05); } catch { /* ok */ }
         }
         h.src = null;
+        for (const s of h.sources || []) { try { s.stop(M.ac.currentTime + Math.max(0.02, +fade || 0)); } catch { /* ended */ } }
+        if (h.cg && M.ac) { const n = M.ac.currentTime, f = Math.max(0.02, +fade || 0); try { h.cg.gain.cancelScheduledValues(n); h.cg.gain.setValueAtTime(h.cg.gain.value, n); h.cg.gain.linearRampToValueAtTime(0, n + f); } catch { /* ok */ } }
       },
       sync() {
         if (!h.alive) return;
+        if (isChatter && classroomSpeech() && M.running && voice.chatterBuffers().length >= 8) { syncChatter(h); return; }
+        if (h.cg && h.cgVol !== 0) { h.cg.gain.setTargetAtTime(0, M.ac.currentTime, 0.03); h.cgVol = 0; }
         if (!h.src) {
           if (!M.running || M.silent('sfx')) return;
           const buf = bank.get(name); if (!buf) { bank.want(name); return; }
@@ -149,9 +161,37 @@ export async function install(ctx) {
         h.applied = { vol, rate: h.rate, pan: sp.pan };
       },
     };
-    if (known) { loops.add(h); rec('loop', name, owner === 'auto' ? { auto: true } : undefined); }
+    if (known) { loops.add(h); if (owner !== 'burst') rec('loop', name, owner === 'auto' ? { auto: true } : undefined); }
     return h;
   }
+  // classroom chatter (叽叽喳喳): pre-rendered speech fragments, random voice / pan / timing, low-passed.
+  // Density and level follow the loop volume the AI sets (0.04 quiet … 0.36 teacher's back turned).
+  function syncChatter(h) {
+    const ac = M.ac, n = ac.currentTime;
+    if (h.src) { try { h.src.stop(); } catch { /* ok */ } h.src = null; } // upgrade from the formant loop
+    if (!h.cg) {
+      h.cg = ac.createGain(); h.cg.gain.value = 0;
+      const hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 220;
+      const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2100; lp.Q.value = 0.5;
+      h.cg.connect(hp); hp.connect(lp); lp.connect(M.bus.sfxIn);
+      h.nextAt = 0; h.live = 0; h.sources = new Set();
+    }
+    const audible = !M.silent('sfx') && ctx.settings?.voiceMode !== 'off';
+    const vol = audible ? h.volume * 1.1 : 0;
+    if (Math.abs((h.cgVol ?? -1) - vol) > 0.004) { h.cg.gain.setTargetAtTime(vol, n, 0.3); h.cgVol = vol; }
+    const now = time.uiNow;
+    if (!audible || now < h.nextAt || h.live >= 6 || h.volume < 0.01) return;
+    const bufs = voice.chatterBuffers();
+    const b = bufs[Math.floor(Math.random() * bufs.length)];
+    const s = ac.createBufferSource(); s.buffer = b; s.playbackRate.value = 0.94 + Math.random() * 0.14;
+    const g = ac.createGain(); g.gain.value = 0.35 + Math.random() * 0.65;
+    s.connect(g);
+    if (ac.createStereoPanner) { const p = ac.createStereoPanner(); p.pan.value = Math.random() * 1.7 - 0.85; g.connect(p); p.connect(h.cg); } else g.connect(h.cg);
+    s.start(n + Math.random() * 0.05); h.live++; h.sources.add(s); s.onended = () => { h.live--; h.sources.delete(s); s.disconnect(); g.disconnect(); };
+    const rate = clamp(0.7 + h.volume * 11, 0.7, 4.5); // fragments per second
+    h.nextAt = now + (-Math.log(1 - Math.random() * 0.95) / rate);
+  }
+
   const beds = new Map(); // key → handle (owner 'auto')
   function setBeds(want) {
     for (const [k, h] of beds) {
@@ -169,7 +209,10 @@ export async function install(ctx) {
 
   // ------------------------------------------------------------------ auto cues (deferred 1 frame, deduped)
   const cueQ = [];
-  const voice = createVoice(M, ctx, rec);
+  const voice = createVoice(M, ctx, rec, {
+    // a voiced teacher "嗯？" replaces the synthesized hmm cue
+    onVoiced(key, text) { if (key === 'teacher' && /^嗯/.test(text)) lastName.hmm = time.uiNow; },
+  });
   const A = {
     cue(name, o = {}, noDedupe = false) { cueQ.push({ name, o, at: time.uiNow, frame: time.frame, noDedupe }); },
     autoMusic(id, fade = 1, delay = 0) { if (!delay) pendingMusic = pendingMusic.filter((p) => p.due > time.uiNow); pendingMusic.push({ id, fade, due: time.uiNow + delay, at: time.uiNow, frame: time.frame }); },
@@ -184,7 +227,7 @@ export async function install(ctx) {
       for (const h of [...loops]) h.stop(0.25);
       beds.clear();
       manualTension = 0; tension = 0; cur?.setTension(0);
-      voice.cancelAll();
+      voice.stopVoice();
       M.ducks = [];
       cueQ.length = 0; pendingSfx.length = 0;
     },
@@ -210,7 +253,15 @@ export async function install(ctx) {
     },
     loop(name, o = {}) { lastName[name] = time.uiNow; return makeLoop(String(name), o || {}, 'ext'); },
     blip(v, ch) { voice.blip(v, ch); },
+    voiceLine(text, v, o = {}) { return voice.voiceLine(text, v, o || {}); },
     speak(text, o = {}) { return voice.speak(text, o || {}); },
+    /** stop any voice line / read-aloud now (UI click-to-skip); the pending promises resolve */
+    stopVoice() { voice.stopVoice(); },
+    cancelVoice() { voice.stopVoice(); },
+    /** 'natural' | 'online' | 'legacy' | 'none' — realism of the best Chinese voice on this browser */
+    get voiceQuality() { return voice.quality(); },
+    /** one-line settings hint when only legacy/no Chinese voices exist (else null) */
+    get voiceHint() { return voice.hint(); },
     duck(amount = 0.5, dur = 1) { if (M.ac) M.duck(amount, dur, time.uiNow); },
     applySettings(s) { if (s) M.setVolumes(s); },
     debug: {
@@ -221,11 +272,16 @@ export async function install(ctx) {
       get sfxReady() { return bank.count(); },
       get voices() { return { music: M.activeVoices('music'), sfx: M.activeVoices('sfx') }; },
       get blips() { return voice.stats.blips; },
+      get speech() { return { ...voice.stats, activeJobs: voice.activeJobs, ritualActive: voice.ritualActive, chatterBuffers: voice.chatterBuffers().length, clips: { ...voice.clipStats, manifestLines: voice.manifestLines }, quality: voice.quality(), mode: ctx.settings?.voiceMode || 'speech' }; },
+      castTable: () => voice.castTable(),
+      voiceList: () => voice.voiceList(),
       get gain() { return { ...M.vol, mute: M.mute }; },
+      get clock() { return M.now; },
+      get masterGain() { return M.bus?.master.gain.value ?? null; },
       get player() { return cur ? { id: cur.id, state: cur.state, mode: cur.mode, beat: +cur.timeBeat(cur.horizon ?? 0).toFixed(2), ctxTime: +M.now.toFixed(2) } : null; },
       meter: () => M.meter(),
     },
-    dev: { renderTrack, renderSfxStats, tracks: TRACKS, sfxNames: SFX_NAMES },
+    dev: { renderTrack, renderSfxStats, tracks: TRACKS, sfxNames: SFX_NAMES, setVoicesForTest: (l) => voice._setVoicesForTest(l), harvest: () => voice.harvest(), harvestReset: () => voice.harvestReset(), harvestAdd: (k, key, t) => voice.harvestAdd(k, key, t) },
   };
   ctx.audio = audio;
 
@@ -284,7 +340,7 @@ export async function install(ctx) {
     if (cur) cur.setRate(slowScale < 1 && cur.id === 'flight' ? 0.6 + 0.4 * slowScale : 1);
     cur?.update(now);
     for (let i = fading.length - 1; i >= 0; i--) { fading[i].update(now); if (fading[i].state === 'done') fading.splice(i, 1); }
-    for (const h of loops) h.sync();
+    for (const h of loops) { if (h.until && time.uiNow > h.until) h.stop(0.8); else h.sync(); }
   }, ORDER.AUDIO);
 
   // ------------------------------------------------------------------ self-test helpers (dev/audio/render.js)

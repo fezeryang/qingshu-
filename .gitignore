@@ -3,3 +3,4 @@ qa/shots/
 qa/tmp/
 *.log
 dev/*/shots/
+tools/voices/.venv/

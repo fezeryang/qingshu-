@@ -14,21 +14,16 @@
     "kind": "block",
     "action": "stretch",
     "id": "jiang_bei"
-   },
-   {
-    "type": "student:event",
-    "kind": "flinch",
-    "id": "jiang_bei"
    }
   ],
   "focus": {
    "type": "student",
    "id": "jiang_bei"
   },
-  "controlDiff": 5.292,
-  "diff": 6.92,
-  "controlPose": 0.099,
-  "pose": 0.566,
+  "controlDiff": 5.112,
+  "diff": 7.146,
+  "controlPose": 0.107,
+  "pose": 0.528,
   "windPeak": 0,
   "shot": "qa/shots/D5/stretch.png",
   "beforeShot": "qa/shots/D5/stretch-before.png",
@@ -51,21 +46,16 @@
     "kind": "block",
     "action": "raiseHand",
     "id": "jiang_bei"
-   },
-   {
-    "type": "student:event",
-    "kind": "flinch",
-    "id": "jiang_bei"
    }
   ],
   "focus": {
    "type": "student",
    "id": "jiang_bei"
   },
-  "controlDiff": 5.186,
-  "diff": 5.863,
-  "controlPose": 0.1,
-  "pose": 0.426,
+  "controlDiff": 5.183,
+  "diff": 5.772,
+  "controlPose": 0.109,
+  "pose": 0.428,
   "windPeak": 0,
   "shot": "qa/shots/D5/raiseHand.png",
   "beforeShot": "qa/shots/D5/raiseHand-before.png",
@@ -88,21 +78,16 @@
     "kind": "block",
     "action": "standUp",
     "id": "jiang_bei"
-   },
-   {
-    "type": "student:event",
-    "kind": "flinch",
-    "id": "jiang_bei"
    }
   ],
   "focus": {
    "type": "student",
    "id": "jiang_bei"
   },
-  "controlDiff": 5.615,
-  "diff": 11.08,
-  "controlPose": 0.105,
-  "pose": 0.297,
+  "controlDiff": 5.49,
+  "diff": 11.383,
+  "controlPose": 0.108,
+  "pose": 0.372,
   "windPeak": 0,
   "shot": "qa/shots/D5/standUp.png",
   "beforeShot": "qa/shots/D5/standUp-before.png",
@@ -125,21 +110,16 @@
     "kind": "block",
     "action": "sneeze",
     "id": "jiang_bei"
-   },
-   {
-    "type": "student:event",
-    "kind": "flinch",
-    "id": "jiang_bei"
    }
   ],
   "focus": {
    "type": "student",
    "id": "jiang_bei"
   },
-  "controlDiff": 5.648,
-  "diff": 6.028,
-  "controlPose": 0.104,
-  "pose": 0.192,
+  "controlDiff": 4.987,
+  "diff": 6.27,
+  "controlPose": 0.103,
+  "pose": 0.211,
   "windPeak": 0,
   "shot": "qa/shots/D5/sneeze.png",
   "beforeShot": "qa/shots/D5/sneeze-before.png",
@@ -156,27 +136,22 @@
     "type": "student:event",
     "kind": "catch",
     "id": "xia_mo"
-   },
-   {
-    "type": "student:event",
-    "kind": "flinch",
-    "id": "jiang_bei"
    }
   ],
   "focus": {
    "type": "student",
    "id": "xia_mo"
   },
-  "controlDiff": 3.295,
-  "diff": 3.2,
-  "controlPose": 0.017,
-  "pose": 0.017,
+  "controlDiff": 3.635,
+  "diff": 7.766,
+  "controlPose": 0.019,
+  "pose": 0.41,
   "windPeak": 0,
   "shot": "qa/shots/D5/catch.png",
   "beforeShot": "qa/shots/D5/catch-before.png",
   "event": true,
-  "visible": false,
-  "ok": false
+  "visible": true,
+  "ok": true
  },
  {
   "kind": "witness",
@@ -193,92 +168,21 @@
     "kind": "witness",
     "action": "witness",
     "id": "jiang_bei"
-   },
-   {
-    "type": "student:event",
-    "kind": "flinch",
-    "id": "jiang_bei"
    }
   ],
   "focus": {
    "type": "student",
    "id": "jiang_bei"
   },
-  "controlDiff": 5.453,
-  "diff": 5.766,
-  "controlPose": 0.1,
-  "pose": 0.107,
+  "controlDiff": 5.318,
+  "diff": 6.959,
+  "controlPose": 0.108,
+  "pose": 0.621,
   "windPeak": 0,
   "shot": "qa/shots/D5/witness.png",
   "beforeShot": "qa/shots/D5/witness-before.png",
   "event": true,
-  "visible": false,
-  "ok": false
- },
- {
-  "kind": "gust",
-  "ret": true,
-  "err": null,
-  "events": [
-   {
-    "type": "incident",
-    "kind": "wind",
-    "action": "gust",
-    "id": null
-   },
-   {
-    "type": "student:event",
-    "kind": "flinch",
-    "id": "jiang_bei"
-   }
-  ],
-  "focus": {
-   "type": "window"
-  },
-  "controlDiff": 0.651,
-  "diff": 4.975,
-  "controlPose": null,
-  "pose": null,
-  "windPeak": 0.97,
-  "shot": "qa/shots/D5/gust.png",
-  "beforeShot": "qa/shots/D5/gust-before.png",
-  "event": true,
   "visible": true,
   "ok": true
- },
- {
-  "kind": "teacherTurn",
-  "ret": true,
-  "err": null,
-  "events": [
-   {
-    "type": "teacher:state",
-    "kind": "warning"
-   },
-   {
-    "type": "incident",
-    "kind": "teacherTurn",
-    "action": "teacherTurn",
-    "id": null
-   },
-   {
-    "type": "student:event",
-    "kind": "flinch",
-    "id": "jiang_bei"
-   }
-  ],
-  "focus": {
-   "type": "teacher"
-  },
-  "controlDiff": 2.322,
-  "diff": 1.99,
-  "controlPose": 0.75,
-  "pose": 0.71,
-  "windPeak": 0,
-  "shot": "qa/shots/D5/teacherTurn.png",
-  "beforeShot": "qa/shots/D5/teacherTurn-before.png",
-  "event": true,
-  "visible": false,
-  "ok": false
  }
 ]

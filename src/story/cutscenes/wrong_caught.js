@@ -1,6 +1,6 @@
 // wrong_caught — 误投 A · 请家长. Wrong desk, and the recipient reports it (or the teacher saw).
 // Next day in the office, rain outside, both parents, a 3000-character self-criticism.
-import { begin, settleClass, front, pickUpAndRead, recipient, finalHold } from './common.js';
+import { begin, settleClass, front, receive, recipient, finalHold } from './common.js';
 import { V } from '../direct.js';
 import { SNITCH_TRAITS } from '../roster.js';
 
@@ -16,7 +16,7 @@ export default async function wrongCaught(d) {
   // 1 — the wrong person reads it
   d.beat('react');
   await front(d, rec, { angle: 0.4, dist: 1.45, fov: 38 });
-  await pickUpAndRead(d, rec);
+  await receive(d, rec);
   d.expr(rec, 'shock');
   await d.wait(0.8);
   if (snitch && !seen) {

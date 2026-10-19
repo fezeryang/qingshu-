@@ -1,5 +1,5 @@
 // lost — 隐藏 · 石沉大海. Nobody notices. Night falls; the janitor sweeps it up (ball's POV).
-import { begin, settleClass, front, finalHold } from './common.js';
+import { begin, settleClass, front, finalHold, cutaway, teacherOblivious } from './common.js';
 import { V } from '../direct.js';
 import { DOORS } from '../../core/layout.js';
 
@@ -18,7 +18,9 @@ export default async function lost(d) {
   d.bubble(t, d.pick(['好，我们看下一题。', '这个公式，要背下来。']), 1.8);
   await d.wait(1.6);
   d.bg(d.caption('……没有人注意到。', 'whisper', 2.4));
-  await d.wait(1.2);
+  const sleeper = d.byTrait('sleeper')[0];
+  if (sleeper) await cutaway(d, sleeper, { line: '呼……呼……', clip: 'yawn', emote: 'zzz', expr: 'sleepy', hold: 1.0 });
+  await teacherOblivious(d, '这个公式，考试必考。', 1.0);
   await front(d, me, { angle: 0.3, dist: 1.45, fov: 40 });
   d.expr(me, 'sad');
   d.emote(me, 'dots', 1.8);

@@ -13,13 +13,13 @@ Owner: qs-narrative-director. Contract: `docs/CONTRACTS.md` §4.6.
 | `direct.js` | Director toolkit `d`. Every call into another module goes through it (see "Robustness") |
 | `intro.js` | Class-start intro and its cleanup |
 | `cutscenes/common.js` | Shared beats: `begin`, `settleClass`, occlusion-aware `front()` framing, `pickUpAndRead`, `hitPrelude`, `expressionRamp`, … |
-| `cutscenes/<id>.js` | One script per ending (13) |
+| `cutscenes/<id>.js` | One script per ending (15) |
 
 Dev and test files live in `dev/story/`:
 
 | File | Purpose |
 |---|---|
-| `resolve.test.mjs` | `node dev/story/resolve.test.mjs`: 57 checks covering the roster, letters, metadata, every resolve() branch and the priority edges |
+| `resolve.test.mjs` | `node dev/story/resolve.test.mjs`: 82 checks covering the roster, letters, metadata, every resolve() branch and the priority edges |
 | `_template.js`, `gen.sh` | `sh dev/story/gen.sh` regenerates `endings1..3.js` |
 | `endings1.js` … `endings3.js` | Each one triggers 4–5 endings through `__qs`, checks the ending id, takes a screenshot at the `climax` and `final` beats, and returns durations and errors |
 
@@ -85,22 +85,42 @@ Colours are `'#rrggbb'` strings. There are 12 girls and 11 boys. Every trait exi
 
 ## resolve(round)
 
-`resolve()` is pure: it reads only `round.{launched, caughtDuring, teacherSawBall, landing, crushId, playerGender, roster}`. The checks run in this order:
+`resolve()` is pure, except that it also writes `round.recipientId` and `round.delivery` (contract §4.6).
+
+### Recipient rule (GDD §7, playtest round 1)
+
+`decideRecipient(round, landing)` in `endings.js` returns `{id, delivery}`:
+
+1. **`desk`**: a `desk`/`chair`/`intercept` landing on an occupied seat (or a classmate's catch). The recipient is the occupant or catcher.
+2. **`bonk`**: otherwise, the first classmate (student) in `landing.hits` with tag `head`/`body`.
+3. **`pickup`**: otherwise, the occupant of the nearest occupied seat within **0.9 m** of `landing.pos`. Distance is taken in XZ to the chair centre or the desk centre, whichever is nearer. If there is no `pos`, `landing.nearSeatId`/`nearSeatDist` are used.
+4. **`null`**: nobody. This also applies to place landings (teacher, podium, bin, window, fan, own desk) and to teacher intercepts.
+
+### Priority
 
 1. `!launched && caughtDuring !== 'aim'` → `coward`.
 2. `caughtDuring === 'aim'` → `caught_read`.
-3. Seen (`teacherSawBall`, or `caughtDuring === 'flight'`) and the recipient is the crush, a same-gender classmate, or nobody (floor, empty desk, timeout) → `caught_read`.
-4. Any teacher contact (`type 'teacher'`, a `teacher` intercept, or any hit tagged/owned `teacher`) → `chalk_counter`.
-5. `podium` → `graded`; `trash` → `three_pointer`; `outside` → `out_window`; `fan` → `confetti`.
-6. `self`, or desk/chair on `r4c0` → `self_love`.
-7. The recipient is a non-crush classmate of the other gender:
-   - seen, or the recipient's trait is `monitor`/`disciplinarian` → `wrong_caught`;
-   - otherwise → `wrong_accept`.
-8. The recipient is a non-crush classmate of the same gender (unseen) → `same_gender`.
-9. The recipient is the crush (unseen) → `perfect`.
-10. Otherwise → `lost`.
+3. Seen, and the recipient is the crush, a same-gender classmate, or nobody (not a place) → `caught_read`.
+4. Any teacher contact → `chalk_counter`.
+5. `podium` → `graded`; `trash` → `three_pointer`; `outside` → `out_window`; `fan` → `confetti`; own desk/chair → `self_love`.
+6. **`love_bonk`**: the recipient is the crush, it is unseen, and the crush was hit (`delivery === 'bonk'`, or a crush head/body hit before resting on her desk).
+7. **`passed_around`**: the recipient is a `gossip`, not the crush, and it is unseen.
+8. The recipient is opposite-gender and not the crush → `wrong_caught` if seen or a snitch type, else `wrong_accept`.
+9. Same-gender, not the crush → `same_gender`.
+10. The crush → `perfect`.
+11. Nobody → `lost`.
 
-The **recipient** is the character on a `desk`/`chair`/`intercept` landing. It comes from `landing.ownerId`, falling back to `roster.seatMap[landing.seatId]`.
+`node dev/story/resolve.test.mjs` runs 82 checks, covering every row, every delivery type and the priority edges.
+
+### Delivery staging
+
+`receive(d, ch)` in `cutscenes/common.js` is used by perfect, same_gender, wrong_caught, wrong_accept and passed_around:
+
+- **desk:** `!`, pick up, unfold, read.
+- **bonk:** dizzy face and a hand to the head, then "哎哟！/痛……/谁啊？！". They glare left and right, then a low floor shot of the ball with them in the background, then a suspicious pick-up and a peek.
+- **pickup:** `!` at the ball, a glance at the teacher (cut-away to his back, still writing), then a low floor shot as they slide down and sneak it up ("嘘……"). They read it with a suspicious face.
+
+In caught_read, the recipient protests according to the delivery: "它砸的我！不是我扔的！" / "我、我只是捡起来……".
 
 ## Deterministic trigger recipes (for QA)
 
@@ -121,7 +141,10 @@ For `playerGender: 'f'`, use the boys instead: `yan_zheng` for `wrong_caught`, `
 | `out_window` | `throwAt('window')` | outside → out_window, ~25 s |
 | `confetti` | `throwAt('fan')` | fan (`budgetMs: 400`) → confetti, 11.3 s |
 | `self_love` | `throwAt('self')` | self → self_love, 19.4 s |
-| `lost` | `throwAt('floor')` | floor → lost, 16.1 s |
+| `love_bonk` | a landing with `hits: [{tag:'head', ownerId: crushId}]` that rests anywhere but another occupied desk, e.g. `throwAt(<crush head position>)`. Verified by injecting `ball:landed {type:'floor', hits:[crush head]}` | love_bonk |
+| `passed_around` | `throwAt('tang_tang')` (gossip girl; `hu_shuo` for the boy), with the crush ≠ the gossip | passed_around |
+| bonk / pickup variants | inject `ball:landed {type:'floor', hits:[{tag:'head', ownerId:X}]}`, or `{type:'floor', pos: next to X's chair}` | X's ending, `delivery` bonk/pickup |
+| `lost` | `throwAt('floor')`. The default floor target (aisle x = −1.4) is > 0.9 m from every seat | floor → lost, 16.1 s |
 | `coward` | `start({..., roundSeconds: 2})`, then wait | bell → coward, 12.0 s |
 
 To test a cutscene without physics, emit `ball:launched` and then `ball:landed` with a hand-made Landing during `aim`/`flight`. Flow takes it from there.
@@ -138,7 +161,7 @@ To test a cutscene without physics, emit `ball:launched` and then `ball:landed` 
 - **Walks.** `d.place()`/`d.seat()` cancel a still-running `walkTo` (same walk-token trick the character module uses) so placements stick.
 - **Props.** Props are cached per key for the whole session (`d.prop`), so memory stays flat. On `round:setup` they are removed from the scene, and story loops are stopped.
 
-## Intro (≤ 6 s, ui clock; Mouse0/Space skips)
+## Intro (≤ 6.5 s, ui clock; Mouse0/Space skips)
 
 | t (s) | Camera | Action / text | Audio |
 |---|---|---|---|
@@ -152,6 +175,32 @@ To test a cutscene without physics, emit `ball:launched` and then `ball:landed` 
 | ≈5.8 | `cast.seatAll()`, letterbox off, `toFP({instant})` | objective "把情书扔到 X 的桌上"; AI and ambient back on | |
 
 ## Ending storyboards
+
+> Playtest round 1: every ending now has about 6–10 distinct shots, with reaction cut-aways (`cutaway()`) and oblivious-teacher cut-aways (`teacherOblivious()`). The tables below list the main beats. The added cut-aways are: perfect (gossip "哦——？", teacher at the board), graded (gossip "是情书！", crush "……谁写的？", clown "五十九！哈哈哈！"), self_love (deskmate "……你在跟纸团谈恋爱？", crush yawning, teacher), coward (the wall clock, the crush laughing), confetti (teacher looking up, foodie "……能吃吗？"), lost (sleeper snoring, teacher), caught_read (recipient protest, crush hiding her face), three_pointer (teacher's jaw drop, crush "好帅……"), same_gender (teacher "……什么情况？"), wrong_accept (gossip "大新闻！", crush "……？").
+
+### love_bonk: 隐藏 · 砸出来的缘分 (~25 s)
+
+| Beat | Camera | Action / dialogue | Music / SFX |
+|---|---|---|---|
+| react | behind the crush, `slowMo(0.3)` | the bonk; dizzy; impact "咚！" | thudHead, shake |
+| — | `overShoulder(you, crush)` | she clutches her head and turns: "谁啊？！" | |
+| — | `front(you)` | frozen, sweating: "对、对不起……" | |
+| — | `twoShot`, `slowMo(0.4)` | eyes meet; chapter "四目相对"; her anger melts into a blush | **romance**, heartbeat |
+| climax | `front(crush)` | she picks it up and reads it (`letterReveal`), then a blush close-up with hearts | sparkle |
+| — | teacher cut-away | "后排的，安静一点。" | chalkScratch |
+| — | side shot of your head | she lobs it back and bonks *you*; you get dizzy hearts; she laughs: "扯平了。" | whoosh, thudHead |
+| final | `twoShot` | both grinning; the gossip rolls her eyes (`dots`); chapter "一 砸 钟 情" | |
+
+### passed_around: 隐藏 · 全班传阅 (~30 s)
+
+| Beat | Camera | Action / dialogue | Music / SFX |
+|---|---|---|---|
+| react | `front(gossip)` | delivery staging, then a smug peek: "哦豁——"; you: "不……不要传……" | |
+| relay | alternating hand-off wides and per-classmate cut-aways | the note travels up to 5 classmates along the path to the crush; each reacts in character (nerd "格式不对。", foodie "（吧唧）……嗯，甜。", sleeper wakes up and passes it, chuuni "禁忌的文书……", clown "噗——"…) | **comedy**, swoosh |
+| freeze | the teacher turning | halfway: "……嗯？", slow motion, everyone pretends to write; impact "装 认 真"; he turns back | stingDanger |
+| climax | `front(crush)` | it reaches the crush last: "……为什么我是最后一个看到的？" | **romance** |
+| final | wide from the front, then `front(you)` | the whole class turns to you, beaming; impact "全班都知道了"; you facepalm | ooh |
+
 
 Every ending follows the same frame:
 
@@ -256,7 +305,7 @@ Line variants are drawn from `ctx.rng.fork('story/<id>')`, so a seed reproduces 
 | climax | `camOverShoulder` | "回去写三千字检讨。" / "三、三千字？！"; impact "检讨书 · 3000 字" | |
 | final | `front(you)`, crying | whisper caption "尊敬的王老师：我错了。（还剩 2994 字）" (2 variants) | |
 
-### same_gender: 误投 · 认真的回应 (~33 s). Warm, never mocking.
+### same_gender: 误投 · 认真的回应 (~35–40 s). Warm, never mocking.
 
 | Beat | Camera | Action / dialogue | Music / SFX |
 |---|---|---|---|
@@ -300,3 +349,23 @@ Line variants are drawn from `ctx.rng.fork('story/<id>')`, so a seed reproduces 
 ## Requests filed
 
 See `docs/requests/narrative-director-to-*.md`.
+
+Classroom voice integration: the class greeting starts at 2.0 s and the teacher answers at 3.9 s, after all eight neural chorus voices finish. The crush reveal is shortened to keep the complete skippable intro within its existing 6.5-second cap.
+
+## Same-gender montage transitions
+
+The cherry-path montage now walks both actors side by side along the path and awaits both arrivals before the canteen lunch scene and the return to the classroom. The returned class is reset to seated idle poses; the couple stands with clear separation against the rear wall in a shared shot. `path`, `canteen` and `punishment` debug beats identify these locations independently of `climax` and `final`.
+
+Director-owned walks invalidate the character's movement token on timeout or cancellation and stop walk/run clips. A completed capped await must never leave a tween that overwrites a subsequent `place()`. Ending text-only dialogue uses normal text pacing rather than reserving nonexistent speech duration.
+
+Regression commands:
+
+```sh
+node --test dev/story/walk.test.mjs
+node tools/shot.mjs --script dev/story/same-gender.js --out dev/story/shots/same-gender-fixed
+node tools/shot.mjs --script dev/story/same-gender.js --query 'lowfx=1&mute=1&long=1&pickup=1&gender=f' --out dev/story/shots/same-gender-long-fixed
+```
+
+The browser script verifies classroom → cherry path → canteen → classroom, both actors visible and standing inside the camera frame, successful completion without the ending hard cap, and no runtime errors. It captures the declaration, walk, lunch and punishment for visual review. The second case covers a female player, floor pickup and a long custom letter.
+
+Final regression evidence is stored in `qa/data/same-gender-regression.json`: male/head-hit delivery completes in 33.91 s; female/floor-pickup delivery with a 300-character letter completes in 38.09 s. Both visit all four locations and return `result: 'ok'` with no runtime errors. `dev/story/shots/same-gender-complete/` contains the four key frames for each case. Walk cancellation unit tests and the full-round smoke also pass. The lunch shot uses the canteen wide anchor so its counter and tables identify the location.

@@ -6,6 +6,7 @@
 import * as THREE from 'three';
 import { SEAT_BY_ID, PLAYER_EYE, ROOM, BLACKBOARD } from '../core/layout.js';
 import * as L from './lines.js';
+import { speakable } from './teacher.js';
 
 const PLAYER_V = new THREE.Vector3(PLAYER_EYE.x, PLAYER_EYE.y, PLAYER_EYE.z);
 const MISCHIEF_TEACHER = new Set(['writing', 'drinking']);
@@ -32,7 +33,11 @@ export function createStudents(ctx, teacher) {
   const ball = () => ctx.gameplay?.ball ?? null;
   const flying = () => ball()?.state === 'flying';
   const call = (fn) => { try { const p = fn(); if (p && typeof p.catch === 'function') p.catch(() => {}); return p; } catch (e) { console.warn('[ai] student call failed', e); return undefined; } };
-  const bubble = (st, text, dur) => { if (text) call(() => ctx.ui?.bubble?.(st.id, text, { dur: dur ?? 1.8 })); };
+  const bubble = (st, text, dur, voiced = false) => {
+    if (!text) return;
+    const v = voiced && phase() !== 'flight' && speakable(text);   // only call-on answers are voiced
+    return call(() => ctx.ui?.bubble?.(st.id, text, v ? { dur: dur ?? 1.8, voiced: true } : { dur: dur ?? 1.8 }));
+  };
   const fill = (s, st) => s.replace('{name}', st?.ch?.spec?.name ?? '同学').replace('{pron}', st?.ch?.spec?.gender === 'f' ? '她' : '他');
 
   // ───────────────────────── roster ─────────────────────────
@@ -212,7 +217,7 @@ export function createStudents(ctx, teacher) {
     const g = gen, tok = ++st.token;
     st.busyUntil = time.now + 3;
     teacher.lookAtChar(st.ch, 2.2);
-    teacher.say(fill(rngA.pick(L.SCOLD[key]), st), { dur: 2 });
+    teacher.say(fill(rngA.pick(L.SCOLD[key]), st), { dur: 2, voiced: true });
     (async () => {
       await time.wait(0.7);
       if (!stillValid(st, tok, g)) return;
@@ -234,9 +239,9 @@ export function createStudents(ctx, teacher) {
     const st = id ? byId(id) : pool.length ? rngA.pick(pool) : null;
     if (!st) return false;
     const g = gen, tok = ++st.token;
-    st.busyUntil = time.now + 6.5;
+    st.busyUntil = time.now + 16;
     teacher.lookAtChar(st.ch, 4);
-    teacher.say(fill(rngA.pick(L.CALL_ON), st), { dur: 1.8 });
+    const question = teacher.say(fill(rngA.pick(L.CALL_ON), st), { dur: 1.8, voiced: true, hold: 12 });
     const good = st.trait === 'nerd' || st.trait === 'monitor' || rngA.chance(0.3);
     emitEvent('calledOn', st);
     (async () => {
@@ -249,11 +254,11 @@ export function createStudents(ctx, teacher) {
       if (st.ch.posture !== 'stand') call(() => st.ch.setPosture?.('stand'));
       st.standing = true;
       expr(st, good ? 'determined' : 'sweat');
-      bubble(st, rngA.pick(good ? L.ANSWER_GOOD : L.ANSWER_BAD), 1.8);
-      await time.wait(1.9);
+      await question;
       if (!stillValid(st, tok, g)) return;
-      teacher.say(fill(rngA.pick(good ? L.REPLY_GOOD : L.REPLY_BAD), st), { dur: 1.6 });
-      await time.wait(0.8);
+      await bubble(st, rngA.pick(good ? L.ANSWER_GOOD : L.ANSWER_BAD), 1.8, true);
+      if (!stillValid(st, tok, g)) return;
+      await teacher.say(fill(rngA.pick(good ? L.REPLY_GOOD : L.REPLY_BAD), st), { dur: 1.6, voiced: true });
       if (!stillValid(st, tok, g)) return;
       await oneShot(st, 'sitDown', 1.6);
       if (!stillValid(st, tok, g)) return;
@@ -374,10 +379,10 @@ export function createStudents(ctx, teacher) {
       play(st, 'sneeze');
       return true;
     },
-    witness(st, natural) {
+    witness(st, natural, explicit) {
       emitEvent('witness', st);
       emitIncident('witness', 'witness', st, null, natural);
-      react('witness', st.id);
+      react('witness', st.id, explicit);
       if (teacher.facingClass) teacher.addSuspicion(0.2);
       return true;
     },
@@ -392,6 +397,13 @@ export function createStudents(ctx, teacher) {
       }
       // arm a reflex catch: hands go up when the ball comes close, intercept within reach
       flight.catchArm = { st, reach: explicit ? 0.75 : 0.5, raised: false, natural, explicit };
+      if (explicit) {
+        flight.catchArm.raised = true;
+        play(st, 'catch');
+        look(st, b.mesh ?? b.pos, 1);
+        st.busyUntil = time.now + 2;
+        expr(st, 'determined');
+      }
       if (explicit && headOf(st, tmp).distanceTo(b.pos) < 2.2) doCatch(flight.catchArm);
       return true;
     },
@@ -437,10 +449,10 @@ export function createStudents(ctx, teacher) {
   EXTRA.turnBack = EXTRA.turnAround;
 
   // ───────────────────────── reactions ─────────────────────────
-  function react(kind, id) {
+  function react(kind, id, explicit = false) {
     const st = byId(id);
     if (!st) return false;
-    const full = active();                     // quiet class: faces/gaze only, no body clips
+    const full = active() || explicit;                     // quiet class: faces/gaze only, no body clips
     const b = ball();
     const g = gen, tok = ++st.token;
     st.busyUntil = Math.max(st.busyUntil, time.now + 2);
@@ -629,7 +641,7 @@ export function createStudents(ctx, teacher) {
   /** Classroom murmur loop: louder while the teacher's back is turned (P1). */
   function updateMurmur(dt, frac) {
     const ph = phase();
-    const want = (ph === 'aim' || ph === 'flight');
+    const want = ambientFlag && (ph === 'aim' || ph === 'flight');
     if (!want) { if (scene.murmur) { call(() => scene.murmur.stop?.(0.6)); scene.murmur = null; scene.murmurVol = -1; } return; }
     if (!scene.murmur && ctx.audio?.loop) scene.murmur = call(() => ctx.audio.loop('murmur', { volume: 0.05 })) ?? null;
     scene.murmurT -= dt;
@@ -643,6 +655,8 @@ export function createStudents(ctx, teacher) {
   // ───────────────────────── lifecycle ─────────────────────────
   function resetRound() {
     gen++;
+    if (scene.murmur) call(() => scene.murmur.stop?.(0.1));
+    scene.murmur = null; scene.murmurVol = -1; scene.murmurT = 0;
     rngA = ctx.rng.fork('ambient'); rngI = ctx.rng.fork('incidents'); rngT = ctx.rng.fork('trigger');
     flight.active = false; flight.plan = null; flight.catchArm = null;
     cutsceneEnable = false;
@@ -662,6 +676,8 @@ export function createStudents(ctx, teacher) {
   }
   function endScene() {
     gen++;
+    if (scene.murmur) call(() => scene.murmur.stop?.(0.1));
+    scene.murmur = null; scene.murmurVol = -1;
     flight.active = false; flight.plan = null; flight.catchArm = null;
     noteProp?.removeFromParent();
     restoreAll();

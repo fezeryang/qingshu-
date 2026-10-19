@@ -1,6 +1,7 @@
 // Ending verification + key-frame screenshots (generated from dev/story/_template.js by gen.sh).
-// For each case: start a deterministic round, trigger the ending, check resolve() picked the expected id,
-// screenshot the 'climax' beat and the final frame, and record game-time duration + errors.
+// For each case: start a deterministic round, trigger the ending (real throw, or an injected landing),
+// check resolve() picked the expected id, screenshot the 'climax' beat (+ optional extra beat / final frame),
+// and record game-time duration, recipient/delivery and errors.
 qs.manual(true);
 const V = (x, y, z) => new qs.ctx.THREE.Vector3(x, y, z);
 const CASES = __CASES__;
@@ -17,13 +18,19 @@ for (const c of CASES) {
       qs.ctx.ai?.students?.setAmbient?.(false); // no fidget/catch accidents: deterministic landing (sticky; reset below)
       if (c.seen) qs.ctx.round.teacherSawBall = true;
       const tgt = c.target === 'teacher' ? (() => { const p = new qs.ctx.THREE.Vector3(); qs.ctx.cast.teacher.headWorld(p); return { x: p.x, y: p.y, z: p.z }; })() : c.target;
-      r.sol = await qs.throwAt(tgt, { budgetMs: 600, ...(c.opts || {}) }).then((s) => s && { pitch: +(s.pitch * 57.3).toFixed(1), power: +s.power.toFixed(3) }).catch((e) => String(e.message || e));
-      if (typeof r.sol === 'string' && c.synthetic) {
-        // physics could not reach the target: inject the landing directly (tests the cutscene, not the solver)
-        const bus = qs.ctx.bus;
-        bus.emit('ball:launched', { pos: V(-3, 1, 2), vel: V(0, 1, -1), power: 0.5 });
+      if (!c.forceSynthetic) r.sol = await qs.throwAt(tgt, { budgetMs: 600, ...(c.opts || {}) }).then((s) => s && { pitch: +(s.pitch * 57.3).toFixed(1), power: +s.power.toFixed(3) }).catch((e) => String(e.message || e));
+      if (c.forceSynthetic || (typeof r.sol === 'string' && c.synthetic)) {
+        // inject the landing directly (tests the cutscene and resolve(), not the solver)
+        const syn = { ...c.synthetic };
+        if (syn.nearOf) {
+          const seat = qs.ctx.layout.SEAT_BY_ID[qs.ctx.cast.seatOf(syn.nearOf)];
+          syn.pos = V(seat.x + 0.1, 0.04, seat.chairZ + 0.4); delete syn.nearOf;
+        }
+        if (syn.bonk) { syn.hits = [{ tag: 'head', ownerId: syn.bonk === 'crush' ? qs.ctx.round.crushId : syn.bonk, t: 0.6, speed: 3 }]; delete syn.bonk; }
+        if (!syn.pos) syn.pos = V(1.4, 0.04, -4.3);
+        qs.ctx.bus.emit('ball:launched', { pos: V(-3, 1, 2), vel: V(0, 1, -1), power: 0.5 });
         await qs.advance(0.1);
-        bus.emit('ball:landed', { pos: V(0, 0, 0), hits: [], flightTime: 1, bounces: 0, nearMisses: [], ...c.synthetic });
+        qs.ctx.bus.emit('ball:landed', { hits: [], flightTime: 1, bounces: 0, nearMisses: [], seatId: null, ownerId: null, ...syn });
         r.synthetic = true;
       }
       if (c.seen) await qs.advanceUntil(() => { qs.ctx.round.teacherSawBall = true; return qs.ctx.flow.phase !== 'flight'; }, 15);
@@ -31,10 +38,10 @@ for (const c of CASES) {
     await qs.advanceUntil(() => qs.ctx.flow.phase === 'ending' || qs.ctx.flow.phase === 'card', 60);
     r.got = qs.ctx.round.endingId;
     r.landing = qs.state().landing;
-    const t0 = qs.ctx.time.now;
+    r.recipient = [qs.ctx.round.recipientId, qs.ctx.round.delivery];
     if (c.extraBeat) {
       await qs.advanceUntil(() => qs.ctx.story.debug.beat === c.extraBeat || qs.ctx.flow.phase === 'card', 50);
-      await qs.advance(0.5);
+      await qs.advance(c.extraDelay ?? 2.2);
       if (qs.ctx.flow.phase !== 'card') await shot(`${c.expect}_${c.extraBeat}`);
     }
     await qs.advanceUntil(() => qs.ctx.story.debug.beat === 'climax' || qs.ctx.flow.phase === 'card', 50);
@@ -45,7 +52,7 @@ for (const c of CASES) {
     if (c.shotFinal !== false && qs.ctx.flow.phase !== 'card') await shot(`${c.expect}_final`);
     const got = await qs.runToEnding(60);
     r.dur = qs.ctx.story.debug.durations[r.got];
-    r.beats = qs.ctx.story.debug.beats.map((b) => `${b.name}@${b.t}`).join(' ');
+    r.cuts = qs.ctx.story.debug.cuts?.[r.got];
     r.ok = got === c.expect;
   } catch (e) { r.err = String(e.stack || e); }
   qs.ctx.ai?.students?.setAmbient?.(true);

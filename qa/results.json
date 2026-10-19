@@ -1,14 +1,25 @@
 {
- "generatedAt": "2026-10-17T10:14:22.935Z",
+ "generatedAt": "2026-10-19T04:12:32.559Z",
  "mode": "full",
  "strict": false,
- "srcHash": "c04e2bf099",
- "gitHead": "53f0edd",
- "dirtyModules": [],
+ "srcHash": "6236842920",
+ "gitHead": "ad723db",
+ "dirtyModules": [
+  "ai",
+  "audio",
+  "camera",
+  "characters",
+  "core",
+  "gameplay",
+  "main.js",
+  "story",
+  "ui",
+  "world"
+ ],
  "stubs": [],
- "durationSec": 738,
+ "durationSec": 31,
  "ranIds": [
-  "A4"
+  "I2"
  ],
  "specs": [
   {
@@ -172,9 +183,9 @@
    "metrics": null,
    "exception": false,
    "partial": false,
-   "durationSec": 28,
-   "ranAt": "2026-10-17T05:08:19.337Z",
-   "quick": false,
+   "durationSec": 39,
+   "ranAt": "2026-10-18T11:56:41.786Z",
+   "quick": true,
    "data": "data/B2.json"
   },
   {
@@ -197,8 +208,8 @@
    "metrics": null,
    "exception": false,
    "partial": false,
-   "durationSec": 17.4,
-   "ranAt": "2026-10-17T05:08:37.672Z",
+   "durationSec": 13.8,
+   "ranAt": "2026-10-19T04:07:30.248Z",
    "quick": false,
    "data": "data/B3.json"
   },
@@ -221,8 +232,8 @@
    "metrics": null,
    "exception": false,
    "partial": false,
-   "durationSec": 17.8,
-   "ranAt": "2026-10-17T05:08:56.382Z",
+   "durationSec": 11.2,
+   "ranAt": "2026-10-19T04:07:44.281Z",
    "quick": false,
    "data": "data/B4.json"
   },
@@ -267,8 +278,8 @@
    "metrics": null,
    "exception": false,
    "partial": false,
-   "durationSec": 13.2,
-   "ranAt": "2026-10-17T05:10:34.950Z",
+   "durationSec": 8.7,
+   "ranAt": "2026-10-19T04:07:58.157Z",
    "quick": false,
    "data": "data/B6.json"
   },
@@ -387,7 +398,7 @@
    "method": "Fresh round, AI unforced, player idle looking at the board; observe 60 s of game time (30 s quick). From `teacher:state` events: the sequence must contain writing→warning→watching; every warning lasts 0.5–0.9 s (game time). Tell: during each warning the teacher character gets a clip/emote/lookAt/expression call, a bubble/say, or the head rotates ≥ 4° (visible), and an audio event appears in `ctx.audio.debug.recent` or an `audio.sfx` call (audible). FP screenshots of writing / warning / watching.",
    "status": "pass",
    "pending": null,
-   "details": "states: watching; writing; warning; drinking; writing; warning; watching; writing; warning; watching; writing; warning; watching; writing; … (+10); warnings 0.6s→drinking, 0.517s→watching, 0.7s→watching, 0.75s→watching, 0.717s→watching, 0.867s→watching, 0.567s→drinking; tells e.g. [\"play(idle)\",\"lookAt(vec)\",\"emote(?)\"] / [\"{\\\"t\\\":7.533,\\\"kind\\\":\\\"sfx\\\",\\\"name\\\":\\\"stingDanger\\\",\\\"auto\\\":true}\",\"{\\\"t\\\":7.533,\\\"kind\\\":\\\"sfx\\\",\\\"name\\\":\\\"hmm\\\",\\\"auto\\\":true}\"]. ",
+   "details": "states: watching; writing; warning; drinking; writing; warning; watching; writing; warning; watching; writing; warning; watching; warnings 0.6s→drinking, 0.517s→watching, 0.7s→watching, 0.75s→watching; tells e.g. [\"play(idle)\",\"lookAt(vec)\",\"emote(?)\"] / [\"{\\\"t\\\":7.533,\\\"kind\\\":\\\"sfx\\\",\\\"name\\\":\\\"stingDanger\\\",\\\"auto\\\":true}\",\"{\\\"t\\\":7.533,\\\"kind\\\":\\\"sfx\\\",\\\"name\\\":\\\"hmm\\\",\\\"auto\\\":true}\"]. ",
    "evidence": [
     "qa/shots/D1/writing.png",
     "qa/shots/D1/warning.png",
@@ -395,10 +406,10 @@
    ],
    "metrics": null,
    "exception": false,
-   "partial": false,
-   "durationSec": 82.9,
-   "ranAt": "2026-10-17T05:26:04.684Z",
-   "quick": false,
+   "partial": true,
+   "durationSec": 55,
+   "ranAt": "2026-10-18T04:39:37.987Z",
+   "quick": true,
    "data": "data/D1.json"
   },
   {
@@ -411,14 +422,14 @@
    "method": "Fresh round, teacher forced `watching`, suspicion 0, `ctx.input.simulate({down:\"Mouse0\"})` held. Measure game time from the first tick where `teacher.canSee(PLAYER_EYE)` (or charging visibility) is true to `teacher:caught`. Repeated for 3 seeds; all must be ≤ 3 s.",
    "status": "pass",
    "pending": null,
-   "details": "seed 16: in view at 0.02 s, caught at 1.97 s; seed 17: in view at 0.02 s, caught at 1.97 s; seed 18: in view at 0.02 s, caught at 1.97 s",
+   "details": "seed 16: in view at 0.02 s, caught at 1.97 s",
    "evidence": [],
    "metrics": null,
    "exception": false,
    "partial": false,
-   "durationSec": 32.6,
-   "ranAt": "2026-10-17T05:27:34.660Z",
-   "quick": false,
+   "durationSec": 6,
+   "ranAt": "2026-10-18T04:40:17.783Z",
+   "quick": true,
    "data": "data/D2.json"
   },
   {
@@ -437,9 +448,9 @@
    "metrics": null,
    "exception": false,
    "partial": false,
-   "durationSec": 8.1,
-   "ranAt": "2026-10-17T05:27:54.328Z",
-   "quick": false,
+   "durationSec": 9.3,
+   "ranAt": "2026-10-18T04:40:35.652Z",
+   "quick": true,
    "data": "data/D3.json"
   },
   {
@@ -452,14 +463,14 @@
    "method": "Fresh round, teacher forced watching, suspicion 0; high lob to a front-row desk / the podium. Counts flight time with `teacher.canSee(ball.pos)`; after landing `ctx.round.teacherSawBall` must be true (and `teacher:caught {reason:\"ball\"}` emitted). Control: same throw with the teacher forced writing → teacherSawBall false.",
    "status": "pass",
    "pending": null,
-   "details": "watching: 1.64s in view → saw true (caught_read); writing control → saw false (lost). ",
+   "details": "watching: 1.99s in view → saw true (wrong_caught); writing control → saw false (wrong_accept). ",
    "evidence": [],
    "metrics": null,
    "exception": false,
    "partial": false,
-   "durationSec": 27.9,
-   "ranAt": "2026-10-17T05:28:40.266Z",
-   "quick": false,
+   "durationSec": 26.8,
+   "ranAt": "2026-10-18T04:41:25.544Z",
+   "quick": true,
    "data": "data/D4.json"
   },
   {
@@ -472,25 +483,23 @@
     "world"
    ],
    "method": "Per kind (stretch, raiseHand, standUp, sneeze, catch, witness, gust, teacherTurn), three deterministic flights on fresh pages (seed 24, quiet class, teacher forced writing, lob to the podium; trigger 0.2 s into the flight with no id, so the AI picks the classmate nearest the path): (1) discover who/what is affected from `student:event`/`incident`; (2) control without trigger and (3) with trigger, both rendered by a close QA camera on the affected classmate (or the open window for gust, the teacher for teacherTurn) just before and 0.7 s after the trigger time. Visible = the affected character's maximum bone displacement over those 0.7 s exceeds max(1.5 × control, control + 6 cm) (a pixel metric was too noisy because classmates track the ball with their gaze); gust = `classroom.wind.strength` peak > 0.3 plus a pixel change at the window (wind is not frozen here). Screenshots are for eyeballing. Pass: ≥ 6 kinds return true, emit an event and are visible. Screenshots: qa/shots/D5/<kind>.png (after) and <kind>-before.png.",
-   "status": "fail",
+   "status": "pass",
    "pending": null,
-   "details": "5/8 kinds OK: stretch✓(0.566/0.099 m) raiseHand✓(0.426/0.1 m) standUp✓(0.297/0.105 m) sneeze✓(0.192/0.104 m) catch✗(0.017/0.017 m) witness✗(0.107/0.1 m) gust✓(wind 0.97) teacherTurn✗(0.71/0.75 m). only 5 kinds triggerable + observable + visible: catch(ret true, event true, pose Δ 0.017 vs ctl 0.017, wind 0), witness(ret true, event true, pose Δ 0.107 vs ctl 0.1, wind 0), teacherTurn(ret true, event true, pose Δ 0.71 vs ctl 0.75, wind 0)",
+   "details": "6/6 kinds OK: stretch✓(0.528/0.107 m) raiseHand✓(0.428/0.109 m) standUp✓(0.372/0.108 m) sneeze✓(0.211/0.103 m) catch✓(0.41/0.019 m) witness✓(0.621/0.108 m). ",
    "evidence": [
     "qa/shots/D5/stretch.png",
     "qa/shots/D5/raiseHand.png",
     "qa/shots/D5/standUp.png",
     "qa/shots/D5/sneeze.png",
     "qa/shots/D5/catch.png",
-    "qa/shots/D5/witness.png",
-    "qa/shots/D5/gust.png",
-    "qa/shots/D5/teacherTurn.png"
+    "qa/shots/D5/witness.png"
    ],
    "metrics": null,
    "exception": false,
-   "partial": false,
-   "durationSec": 171.4,
-   "ranAt": "2026-10-17T09:47:14.601Z",
-   "quick": false,
+   "partial": true,
+   "durationSec": 220.2,
+   "ranAt": "2026-10-18T04:50:14.216Z",
+   "quick": true,
    "data": "data/D5.json"
   },
   {
@@ -658,8 +667,8 @@
    "metrics": null,
    "exception": false,
    "partial": false,
-   "durationSec": 15.9,
-   "ranAt": "2026-10-17T06:15:38.956Z",
+   "durationSec": 20.7,
+   "ranAt": "2026-10-19T04:08:23.007Z",
    "quick": false,
    "data": "data/F3.json"
   },
@@ -736,14 +745,14 @@
    "method": "Unmuted page (`?lowfx=1`). AudioContext instances are tracked from document start. Real click on 我是男生 → context state must be `running`. One round through the real UI (letter, crumple, intro) then scripted aim → throw → ending; `ctx.audio.debug.music` is recorded at every phase change. Expect title→title, aim→classroom, flight→flight, ending→an ending track (romance, comedy, …). Signal level at the destination is sampled (analyser) for information.",
    "status": "pass",
    "pending": null,
-   "details": "contexts before/after click []→[\"running\"]; music title [\"title\"], intro [\"classroom\"], aim [\"classroom\"], flight [\"flight\"], ending [null,\"romance\"]; peak level intro 0.394, ending 0.389. ",
+   "details": "contexts before/after click []→[\"running\"]; music title [\"title\"], intro [\"classroom\"], aim [\"classroom\"], flight [\"flight\"], ending [null,\"romance\"]; peak level intro 0.374, ending 0.822. ",
    "evidence": [],
    "metrics": null,
    "exception": false,
    "partial": false,
-   "durationSec": 95,
-   "ranAt": "2026-10-17T05:39:02.224Z",
-   "quick": false,
+   "durationSec": 113.1,
+   "ranAt": "2026-10-18T04:46:05.711Z",
+   "quick": true,
    "data": "data/H1.json"
   },
   {
@@ -756,14 +765,14 @@
    "method": "Same unmuted round as H1 (real crumple, intro bell, forced teacher warning, charging, throw onto a desk). Every new entry of `ctx.audio.debug.recent` is collected each tick; each required name must appear. Names seen only through `ctx.audio.sfx` call spies (not in debug.recent) give a warning.",
    "status": "pass",
    "pending": null,
-   "details": "paperCrumple:recent whoosh:recent thudDesk:recent bell:recent stingDanger:recent heartbeat:recent; 47 debug.recent entries (sample [\"{\\\"t\\\":32.215,\\\"kind\\\":\\\"sfx\\\",\\\"name\\\":\\\"stingReveal\\\"}\",\"{\\\"t\\\":32.215,\\\"kind\\\":\\\"sfx\\\",\\\"name\\\":\\\"paperUnfold\\\"}\"]). ",
+   "details": "paperCrumple:recent whoosh:recent thudDesk:recent bell:recent stingDanger:recent heartbeat:recent; 54 debug.recent entries (sample [\"{\\\"t\\\":41.628,\\\"kind\\\":\\\"loop\\\",\\\"name\\\":\\\"birds\\\",\\\"auto\\\":true}\",\"{\\\"t\\\":42.428,\\\"kind\\\":\\\"voice\\\",\\\"name\\\":\\\"你的字，好丑。\\\",\\\"mode\\\":\\\"text-only\\\",\\\"key\\\":\\\"you_xiaoyou\\\"}\"]). ",
    "evidence": [],
    "metrics": null,
    "exception": false,
    "partial": false,
    "durationSec": 0,
-   "ranAt": "2026-10-17T05:39:05.282Z",
-   "quick": false,
+   "ranAt": "2026-10-18T04:46:08.580Z",
+   "quick": true,
    "data": "data/H2.json"
   },
   {
@@ -775,16 +784,16 @@
     "ui"
    ],
    "method": "Unmuted page. Every connection to the AudioContext destination is routed through a QA analyser (installed before boot). Title → 设置 → the 主音量 slider is set to 0 with a real fill → sfx(\"ding\") + sfx(\"bell\") + title music → peak at the destination must be < 1e-4 over 0.6 s. Sanity: at 0.8 the same sounds must be audible (peak > 1e-3), otherwise the measurement is inconclusive. Reload → `ctx.settings.masterVolume` and localStorage `qingshu.settings` keep 0. Also `?mute=1` boot must be silent and must not persist: reloading the same profile without mute=1 must restore audible volume.",
-   "status": "fail",
+   "status": "pass",
    "pending": null,
-   "details": "start masterVolume 0.8; peak default 0.0000, master 0 0.000000, after reload 0.000000 (masterVolume 0), ?mute=1 0.000000, masterVolume after a mute boot + normal reload 0; set via ui slider. ?mute=1 is persisted: a later load without mute=1 in the same profile still has masterVolume 0 (BUG-002); sanity check inconclusive: peak 0 at default volume",
+   "details": "start masterVolume 0.8; peak default 0.5133, master 0 0.000000, after reload 0.000000 (masterVolume 0), ?mute=1 0.000000, masterVolume after a mute boot + normal reload 0.8; set via ui slider. ",
    "evidence": [],
    "metrics": null,
    "exception": false,
    "partial": false,
-   "durationSec": 115.6,
-   "ranAt": "2026-10-17T05:41:06.672Z",
-   "quick": false,
+   "durationSec": 126.4,
+   "ranAt": "2026-10-18T11:59:14.978Z",
+   "quick": true,
    "data": "data/H3.json"
   },
   {
@@ -799,16 +808,16 @@
    "method": "Fresh aim round (ambient on) in lowfx and in normal mode (shadows on); the camera is turned left / centre / right / up with real mouse moves; `__qs.render()` then `__qs.state().drawCalls/triangles` (renderer.info of the last render, shadow passes included). Max over views must be within budget.",
    "status": "pass",
    "pending": null,
-   "details": "lowfx/centre: 103 dc, 230k tri; lowfx/left: 41 dc, 70k tri; lowfx/right: 125 dc, 291k tri; lowfx/up: 66 dc, 144k tri; normal/centre: 148 dc, 431k tri; normal/left: 48 dc, 113k tri; normal/right: 188 dc, 553k tri; normal/up: 84 dc, 258k tri",
+   "details": "lowfx/centre: 100 dc, 215k tri; lowfx/left: 41 dc, 68k tri; lowfx/right: 115 dc, 290k tri; lowfx/up: 65 dc, 142k tri; normal/centre: 141 dc, 397k tri; normal/left: 47 dc, 104k tri; normal/right: 177 dc, 547k tri; normal/up: 80 dc, 249k tri",
    "evidence": [],
    "metrics": {
-    "maxDC": 188,
-    "maxTri": 552788
+    "maxDC": 177,
+    "maxTri": 546902
    },
    "exception": false,
    "partial": false,
-   "durationSec": 23.7,
-   "ranAt": "2026-10-17T05:41:31.194Z",
+   "durationSec": 21.6,
+   "ranAt": "2026-10-19T04:08:49.676Z",
    "quick": false,
    "data": "data/I1.json"
   },
@@ -829,15 +838,15 @@
    "method": "lowfx page, manual mode. `engine.tick(1/60)` is timed with performance.now() (yields between ticks are not counted) over 10 s of aim with ambient classmates and the natural teacher, then a full flight, then 8 s of an ending. Reports avg / p95 / max per phase and the slowest update order slot is not measured (contract-level only). Machine-dependent: also compare with `node -e` CPU speed if it fails.",
    "status": "pass",
    "pending": null,
-   "details": "overall avg 2.91 ms; aim: avg 3.039 / p95 5 / max 14.5 ms (600 ticks); flight: avg 3.769 / p95 5.7 / max 9.9 ms (249 ticks); ending: avg 2.314 / p95 3.4 / max 9 ms (480 ticks). ",
+   "details": "overall avg 1.87 ms; aim: avg 1.609 / p95 3.3 / max 10.1 ms (600 ticks); flight: avg 3.504 / p95 7.1 / max 12.3 ms (169 ticks); ending: avg 1.629 / p95 2.8 / max 6.1 ms (480 ticks). ",
    "evidence": [],
    "metrics": {
-    "avg": 2.914
+    "avg": 1.873
    },
    "exception": false,
    "partial": false,
-   "durationSec": 30.4,
-   "ranAt": "2026-10-17T05:42:11.139Z",
+   "durationSec": 23.4,
+   "ranAt": "2026-10-19T04:12:35.529Z",
    "quick": false,
    "data": "data/I2.json"
   },

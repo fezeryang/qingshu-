@@ -15,15 +15,15 @@ import { BALL_RADIUS, ROOM, WINDOWS, PLAYER_EYE } from '../core/layout.js';
 
 export const PHYS = {
   R: BALL_RADIUS,
-  G: 9.8,
+  G: 5.5,                     // stylised floaty paper ball (playtest 1: typical flight 1.3–2.5 s)
   H: 1 / 240,                 // fixed physics step (s)
   MAX_MOVE: BALL_RADIUS * 0.45, // max travel per sub-step (m)
   MAX_SUB: 12,
   SKIN: 0.0015,               // contact considered "touching" within this gap (m)
   DRAG_QUAD: 0.016,           // quadratic air drag k (1/m): a = -k |v| v
   DRAG_LIN: 0.03,             // linear air drag (1/s)
-  SPEED_MIN: 2.2,
-  SPEED_MAX: 10.5,           // GDD says 9; with this layout 9 m/s cannot reach the bin, podium or teacher (see docs/modules/gameplay.md)
+  SPEED_MIN: 1.4,
+  SPEED_MAX: 8.5,            // with G 5.5 every target (bin, podium, teacher, far desks) solves with power ≤ ~0.9
   LOB_DEG: 10,
   REST_SPEED: 0.12,           // m/s, relative to the support
   REST_TIME: 0.25,            // s at rest on a support → landed
@@ -34,11 +34,14 @@ export const PHYS = {
   NEAR_MISS: 0.35,            // m from a head's surface
   WIND_ACC: 1.6,              // m/s² at wind strength 1, right at the window
   WIND_X: -2.6,               // wind only acts for x < WIND_X
-  NUDGE_ACC: 1.0,             // m/s² telekinesis (≈0.5–1 m landing shift at full willpower; lead call, was 2.5)
+  NUDGE_ACC: 0.55,            // m/s² telekinesis (≈0.5–1 m landing shift for a full 1.5 s willpower on a typical floaty lob)
   MAX_SPEED: 30,              // safety clamp
 };
 
-/** Per-tag surface response. e = restitution, mu = Coulomb friction (impulse), roll = rolling resistance (× g). */
+/**
+ * Per-tag surface response. e = restitution, mu = Coulomb friction (impulse), roll = rolling resistance (× g),
+ * grab = share of the tangential speed a (near-horizontal) surface swallows on impact: desk tops catch the ball.
+ */
 export const MATERIALS = {
   default: { e: 0.3, mu: 0.45, roll: 0.35 },
   floor: { e: 0.25, mu: 0.6, roll: 0.5 },
@@ -48,11 +51,11 @@ export const MATERIALS = {
   door: { e: 0.35, mu: 0.4, roll: 0.35 },
   windowGlass: { e: 0.4, mu: 0.2, roll: 0.3 },
   windowFrame: { e: 0.3, mu: 0.4, roll: 0.4 },
-  desk: { e: 0.3, mu: 0.5, roll: 0.45 },
-  chair: { e: 0.3, mu: 0.5, roll: 0.45 },
-  book: { e: 0.2, mu: 0.6, roll: 0.55 },
-  podium: { e: 0.3, mu: 0.5, roll: 0.45 },
-  teacherDesk: { e: 0.3, mu: 0.5, roll: 0.45 },
+  desk: { e: 0.12, mu: 0.85, roll: 0.9, grab: 0.55 },
+  chair: { e: 0.12, mu: 0.85, roll: 0.9, grab: 0.5 },
+  book: { e: 0.08, mu: 0.9, roll: 1.0, grab: 0.6 },
+  podium: { e: 0.15, mu: 0.8, roll: 0.8, grab: 0.3 },
+  teacherDesk: { e: 0.12, mu: 0.85, roll: 0.9, grab: 0.5 },
   trashRim: { e: 0.3, mu: 0.4, roll: 0.35 },
   head: { e: 0.55, mu: 0.3, roll: 0.25 },
   body: { e: 0.3, mu: 0.6, roll: 0.6 },
@@ -73,7 +76,7 @@ const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
 /** Fresh internal collider record (all numbers, no allocation in the hot loop). */
 export function newRecord() {
   return {
-    kind: 0, src: null, tag: '', ownerId: null, key: '', e: 0.3, mu: 0.4, roll: 0.3,
+    kind: 0, src: null, tag: '', ownerId: null, key: '', e: 0.3, mu: 0.4, roll: 0.3, grab: 0,
     minx: 0, miny: 0, minz: 0, maxx: 0, maxy: 0, maxz: 0,   // AABB (box/trigger: exact; others: bounds)
     cx: 0, cy: 0, cz: 0, r: 0,                              // centre (all), radius (sphere)
     hx: 0, hy: 0, hz: 0,                                     // obb half extents
@@ -95,6 +98,7 @@ export function compileInto(o, c, key = '') {
   o.e = fin(c.restitution) ? c.restitution : m.e;
   o.mu = fin(c.friction) ? c.friction : m.mu;
   o.roll = m.roll;
+  o.grab = m.grab || 0;
   o.vx = o.vy = o.vz = 0;
   if (c.velocity && fin(c.velocity.x) && fin(c.velocity.y) && fin(c.velocity.z)) { o.vx = c.velocity.x; o.vy = c.velocity.y; o.vz = c.velocity.z; }
   if (kind === K_BOX || kind === K_TRIGGER) {
@@ -384,7 +388,9 @@ function resolveContacts(b, scene, ev) {
           b.vx += jn * C.nx; b.vy += jn * C.ny; b.vz += jn * C.nz;
           const tl = Math.sqrt(tx * tx + ty * ty + tz * tz);
           if (tl > 1e-9) {
-            const dv = Math.min(o.mu * jn, tl) / tl;
+            let dv = Math.min(o.mu * jn, tl) / tl;
+            // stylised catch: an impact on an upward-facing paper-grabbing surface also swallows a share of the slide
+            if (o.grab > 0 && C.ny > 0.7 && impact > PHYS.BOUNCE_MIN) dv = Math.min(1, dv + o.grab * (1 - dv));
             b.vx -= tx * dv; b.vy -= ty * dv; b.vz -= tz * dv;
           }
           if (impact > PHYS.HIT_SPEED && !b.prevContacts.includes(o.key) && !b.contacts.includes(o.key)) {

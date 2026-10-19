@@ -49,6 +49,11 @@ export function toon(opts = {}) {
   return new THREE.MeshToonMaterial({ gradientMap: toonGradient(), vertexColors: true, ...opts });
 }
 
+/** Rough, physically lit surfaces for architecture and furniture. */
+export function surface(opts = {}) {
+  return new THREE.MeshStandardMaterial({ roughness: 0.82, metalness: 0, vertexColors: true, ...opts });
+}
+
 // ---------------------------------------------------------------------------------------------
 // Batching
 const _c = new THREE.Color();

@@ -2,7 +2,7 @@
 // Every set shares the world origin. Character anchors: {pos (on the floor), yaw}. Camera anchors (cam*):
 // {pos, look, fov}. Anchor keys follow CONTRACTS.md §4.1 exactly; unknown keys return a safe default.
 import * as THREE from 'three';
-import { Batch, GEO, mat4, V, toon, worldUV, rectUV, mergeColored, rngFor, TAU } from './kit.js';
+import { Batch, GEO, mat4, V, surface, worldUV, rectUV, mergeColored, rngFor, TAU } from './kit.js';
 import { PAL } from './palette.js';
 import { yawTo } from '../core/util.js';
 import { createSky, createClouds, createRain, createPetals, treeParts } from './atmos.js';
@@ -32,7 +32,7 @@ function scaffold(ctx, name, o) {
   const lowfx = !!ctx.config.lowfx;
   const group = new THREE.Group();
   group.name = name;
-  const mVC = toon();
+  const mVC = surface();
   const S = new THREE.Vector3(...o.sunDir).normalize();
   let sky = null;
   if (o.sky) { sky = createSky(170); sky.setColors({ ...o.sky, sunDir: S }); group.add(sky.mesh); }
@@ -97,7 +97,7 @@ const BUILDERS = {
       sky: { top: 0x39408a, horizon: 0xffa064, bottom: 0x5a3a50, sun: 0xffd590, band: 0x5a2008, sunSize: 5, glow: 1.3 }, focus: [0, 0, 0], shadowExtent: 11,
     });
     const { B, mVC, group } = sc;
-    const mTile = toon({ map: tileTexture('#b9b0a6', '#c4bbb0', '#857d74', 4, 'roof') });
+    const mTile = surface({ map: tileTexture('#b9b0a6', '#c4bbb0', '#857d74', 4, 'roof') });
     B.boxMM(mTile, 0xffffff, -9, -0.3, -3.3, 9, 0, 9, worldUV(0.5));
     // parapet + railing
     const conc = { top: 0xd8d0c4, side: 0xc8beb2 };
@@ -150,7 +150,7 @@ const BUILDERS = {
     });
     const { B, mVC, group } = sc;
     const W = 4.2, Z0 = -3.6, Z1 = 3.4, H = 3.0, wy0 = 0.95, wy1 = 2.45, wx = 1.6;
-    const mFloor = toon({ map: tileTexture('#d8d4cc', '#cfcac0', '#a8a298', 4, 'office-floor') });
+    const mFloor = surface({ map: tileTexture('#d8d4cc', '#cfcac0', '#a8a298', 4, 'office-floor') });
     B.boxMM(mFloor, 0xffffff, -W, -0.1, Z0, W, 0, Z1, worldUV(0.6));
     B.boxMM(mVC, 0xf4f1ea, -W - 0.1, H, Z0 - 0.1, W + 0.1, H + 0.1, Z1 + 0.1);
     const wall = (x0, y0, z0, x1, y1, z1) => { if (y0 < 1 && y1 > 1) { B.boxMM(mVC, 0x9cb8c4, x0, y0, z0, x1, 1, z1); B.boxMM(mVC, 0xf1ece0, x0, 1, z0, x1, y1, z1); } else B.boxMM(mVC, y1 <= 1 ? 0x9cb8c4 : 0xf1ece0, x0, y0, z0, x1, y1, z1); };
@@ -164,7 +164,7 @@ const BUILDERS = {
     glass.position.set(0, (wy0 + wy1) / 2, Z0 - 0.06); glass.renderOrder = 3; group.add(glass);
     for (let i = 0; i < 9; i++) B.boxMM(mVC, 0xe8e2d2, -wx + 0.04, wy1 - 0.08 - i * 0.035, Z0 + 0.04, wx - 0.04, wy1 - 0.07 - i * 0.035, Z0 + 0.07);
     // outside: rain, a grey building opposite
-    const mFac = toon({ map: facadeTexture(false) });
+    const mFac = surface({ map: facadeTexture(false) });
     building(B, mVC, mFac, -30, -32, 30, -22, -12, 12, '+z', 0xc8c4bc);
     B.boxMM(mVC, 0x5a6a5a, -60, -12.5, -60, 60, -12, -3.8);
     const rain = createRain({ min: V(-12, -10, -20), max: V(12, 10, -3.9), count: sc.lowfx ? 900 : 2000, label: 'office-rain' });
@@ -188,7 +188,7 @@ const BUILDERS = {
       let y = top;
       for (let k = 0; k < n; k++) { const h = r.range(0.008, 0.016); B.boxMM(mVC, { top: k % 5 === 4 ? 0xf2d8a0 : 0xfbf8f0, side: 0xe8e2d4 }, px - 0.14 + r.range(-0.01, 0.01), y, pz - 0.105, px + 0.14 + r.range(-0.01, 0.01), y + h, pz + 0.105); y += h; }
     }
-    const paper = new THREE.Mesh(new THREE.PlaneGeometry(0.21, 0.29), toon({ map: paperTexture(), vertexColors: false }));
+    const paper = new THREE.Mesh(new THREE.PlaneGeometry(0.21, 0.29), surface({ map: paperTexture(), vertexColors: false }));
     paper.rotation.set(-Math.PI / 2, 0, 0.15); paper.position.set(0.08, top + 0.002, dz + 0.22); group.add(paper);
     B.add(GEO.cyl12, mVC, mat4(0.32, top + 0.055, dz + 0.12, 0, 0, 0, 0.08, 0.11, 0.08), 0xffffff);
     B.add(GEO.cyl8, mVC, mat4(-0.2, top + 0.006, dz + 0.25, 0, 0.4, Math.PI / 2, 0.012, 0.14, 0.012), 0xd62f2f);
@@ -211,10 +211,10 @@ const BUILDERS = {
     B.boxMM(mVC, 0xf0f2f2, 2.6, 0, -3.5, 2.95, 0.95, -3.15);
     B.add(GEO.cyl16, mVC, mat4(2.775, 1.17, -3.325, 0, 0, 0, 0.26, 0.42, 0.26), 0x8fd0ff);
     // wall: calligraphy, clock, notice board
-    const cal = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 0.47), toon({ map: calligraphyTexture('为人师表'), vertexColors: false }));
+    const cal = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 0.47), surface({ map: calligraphyTexture('为人师表'), vertexColors: false }));
     cal.position.set(0, 2.15, Z1 - 0.01); cal.rotation.y = Math.PI; group.add(cal);
     const pa = posterAtlas();
-    const board = new THREE.Mesh(new THREE.PlaneGeometry(1.0, 0.75), toon({ map: pa.texture, vertexColors: false }));
+    const board = new THREE.Mesh(new THREE.PlaneGeometry(1.0, 0.75), surface({ map: pa.texture, vertexColors: false }));
     board.geometry.attributes.uv.array.forEach((v, i, arr) => { const rr = pa.rects.schedule; arr[i] = i % 2 ? rr[1] + (rr[3] - rr[1]) * v : rr[0] + (rr[2] - rr[0]) * v; });
     board.position.set(-W + 0.01, 1.7, -1.6); board.rotation.y = Math.PI / 2; group.add(board);
     B.add(GEO.cyl24, mVC, mat4(2.6, 2.4, Z1 - 0.03, Math.PI / 2, 0, 0, 0.34, 0.04, 0.34), { top: 0xffffff, side: 0x3a3a40 });
@@ -244,21 +244,21 @@ const BUILDERS = {
       sky: { top: 0x5fa8ec, horizon: 0xdcefff, bottom: 0xb8c8bc, sun: 0xfff1cf, band: 0x101008, sunSize: 1, glow: 0.45 }, focus: [0, 0, -3], shadowExtent: 16,
     });
     const { B, mVC, group } = sc;
-    const mPlaza = toon({ map: tileTexture('#d6cfc2', '#cfc8ba', '#aaa294', 4, 'plaza') });
+    const mPlaza = surface({ map: tileTexture('#d6cfc2', '#cfc8ba', '#aaa294', 4, 'plaza') });
     B.boxMM(mVC, 0x8fbf6a, -150, -0.3, -150, 150, -0.02, 150);
     B.boxMM(mPlaza, 0xffffff, -16, -0.02, -12, 16, 0.0, 6, worldUV(0.5));
-    const mTrack = toon({ map: trackTexture() });
+    const mTrack = surface({ map: trackTexture() });
     B.add(GEO.plane, mTrack, mat4(0, 0.005, 33, -Math.PI / 2, 0, 0, 100, 50, 1), 0xffffff);
     B.boxMM(mVC, 0xe8e4da, -16, 0, 5.9, 16, 0.12, 6.1);
     // the teaching building (the open window on the 3rd floor is right above the landing spot)
-    const mFac = toon({ map: facadeTexture(false) });
+    const mFac = surface({ map: facadeTexture(false) });
     building(B, mVC, mFac, -32, -26, 32, -12, 0, 18, '+z');
     B.boxMM(mVC, 0xd8684e, -32, 18, -26, 32, 18.6, -11.8);
     B.boxMM(mVC, { top: 0xd8d2c4, side: 0xe9e2d4 }, -3, 0, -12, 3, 3.4, -10.6);
     B.boxMM(mVC, 0x4a5a6a, -1.2, 0, -10.62, 1.2, 2.5, -10.58);
     const win = { x: 0.4, y: 2 * 3.6 + 1.0 };
     B.boxMM(mVC, 0x3a4250, win.x - 0.9, win.y, -11.99, win.x + 0.9, win.y + 1.5, -11.97);
-    const curtain = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 1.4, 4, 8), toon({ color: PAL.curtain, vertexColors: false, side: THREE.DoubleSide }));
+    const curtain = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 1.4, 4, 8), surface({ color: PAL.curtain, vertexColors: false, side: THREE.DoubleSide }));
     curtain.position.set(win.x + 0.5, win.y + 0.75, -11.9);
     group.add(curtain);
     const cBase = curtain.geometry.attributes.position.array.slice();
@@ -322,7 +322,7 @@ const BUILDERS = {
     const { B, mVC, group } = sc;
     B.boxMM(mVC, 0x8fbf6a, -150, -0.3, -150, 150, -0.03, 150);
     B.boxMM(mVC, 0x3f8a6a, -10, -0.03, -9, 10, -0.01, 10);
-    const mCourt = toon({ map: courtTexture() });
+    const mCourt = surface({ map: courtTexture() });
     B.add(GEO.plane, mCourt, mat4(0, 0.0, 0, -Math.PI / 2, 0, 0, 15.6, 15.6, 1), 0xffffff);
     // hoop: rim centre at z = -7.8 + 0.8 + 1.575 ≈ court texture hoop mark
     const cScale = (15.6 * (1 - 80 / 1024)) / 15, rimZ = -7.8 + 15.6 * 40 / 1024 + 1.575 * cScale, rimY = 3.05;
@@ -346,7 +346,7 @@ const BUILDERS = {
     // fence posts + top rail around the court, trees and the school behind
     for (const [x0, z0, x1, z1] of [[-10, -9, 10, -9], [10, -9, 10, 10], [-10, 10, 10, 10]]) railing(B, mVC, x0, z0, x1, z1, 0, 3.2, 0x5f8a72, 2.5);
     trees(group, mVC, [[-14, -12], [-6, -14], [3, -15], [11, -13], [16, -4], [15, 6], [-16, 4], [-15, 13], [6, 15]], 'court-trees', [1.2, 1.5]);
-    const mFac = toon({ map: facadeTexture(false) });
+    const mFac = surface({ map: facadeTexture(false) });
     building(B, mVC, mFac, -30, -42, 30, -30, 0, 14.4, '+z');
     // ball rack + water bottles
     B.boxMM(mVC, 0x8a949c, 8.2, 0, 3.5, 9.4, 0.7, 4.1);
@@ -374,7 +374,7 @@ const BUILDERS = {
     });
     const { B, mVC, group } = sc;
     B.boxMM(mVC, 0x9cc87a, -120, -0.3, -120, 120, -0.02, 120);
-    const mPath = toon({ map: tileTexture('#d8cbbb', '#cdbfae', '#a89a88', 3, 'path') });
+    const mPath = surface({ map: tileTexture('#d8cbbb', '#cdbfae', '#a89a88', 3, 'path') });
     B.boxMM(mPath, 0xffffff, -1.6, -0.02, -45, 1.6, 0.0, 14, worldUV(0.6));
     B.boxMM(mVC, { top: 0xe0dad0, side: 0xc8c0b4 }, -1.75, -0.02, -45, -1.6, 0.1, 14);
     B.boxMM(mVC, { top: 0xe0dad0, side: 0xc8c0b4 }, 1.6, -0.02, -45, 1.75, 0.1, 14);
@@ -395,7 +395,7 @@ const BUILDERS = {
     for (const x of [-2.6, 2.6]) B.boxMM(mVC, { top: 0xd8d0c4, side: 0xc8bfb0 }, x - 0.5, 0, -44.5, x + 0.5, 4, -43.5);
     B.boxMM(mVC, 0xc8322d, -3.1, 3.4, -44.2, 3.1, 4.1, -43.8);
     B.boxMM(mVC, 0xffe07a, -2, 3.6, -43.79, 2, 3.9, -43.78);
-    const mFac = toon({ map: facadeTexture(false) });
+    const mFac = surface({ map: facadeTexture(false) });
     building(B, mVC, mFac, -25, -70, 25, -58, 0, 14.4, '+z');
     const petals = createPetals({ min: V(-6, 0, -18), max: V(6, 6.5, 9), count: sc.lowfx ? 160 : 450, label: 'sakura-petals' });
     group.add(petals.mesh);
@@ -419,7 +419,7 @@ const BUILDERS = {
     });
     const { B, mVC, group } = sc;
     const X = 7, Z0 = -5, Z1 = 5, H = 3.4;
-    const mFloor = toon({ map: tileTexture('#e6e2d8', '#dcd6ca', '#b8b0a2', 4, 'canteen-floor') });
+    const mFloor = surface({ map: tileTexture('#e6e2d8', '#dcd6ca', '#b8b0a2', 4, 'canteen-floor') });
     B.boxMM(mFloor, 0xffffff, -X, -0.1, Z0, X, 0, Z1, worldUV(0.7));
     B.boxMM(mVC, 0xf6f4ee, -X - 0.1, H, Z0 - 0.1, X + 0.1, H + 0.1, Z1 + 0.1);
     const wallC = (x0, y0, z0, x1, y1, z1) => { if (y0 < 1.2 && y1 > 1.2) { B.boxMM(mVC, 0xa8d0c0, x0, y0, z0, x1, 1.2, z1); B.boxMM(mVC, 0xf4eedc, x0, 1.2, z0, x1, y1, z1); } else B.boxMM(mVC, 0xf4eedc, x0, y0, z0, x1, y1, z1); };
@@ -439,7 +439,7 @@ const BUILDERS = {
     for (let i = 0; i < 10; i++) { const fx = -5 + i * 1.05; B.boxMM(mVC, 0xc0c8d0, fx, 0.95, Z0 + 0.1, fx + 0.85, 1.0, Z0 + 0.5); B.boxMM(mVC, foods[i % foods.length], fx + 0.05, 1.0, Z0 + 0.14, fx + 0.8, 1.03, Z0 + 0.46); }
     B.boxMM(mVC, 0x6a5e50, -5.5, 1.0, Z0 + 0.01, 5.5, 2.05, Z0 + 0.02);
     for (let i = 0; i < 4; i++) B.boxMM(mVC, 0xdfe6ea, -5.5 + i * 2.8 - 0.1, 1.0, Z0 + 0.02, -5.5 + i * 2.8 + 0.1, 2.05, Z0 + 0.04);
-    const menu = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 1.05), toon({ map: menuTexture(), vertexColors: false }));
+    const menu = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 1.05), surface({ map: menuTexture(), vertexColors: false }));
     menu.position.set(0, 2.6, Z0 + 0.01); group.add(menu);
     // tables (4-seat units with fixed round stools at height 0.44)
     const tables = [[-2.4, -0.6], [2.0, 0.9], [-2.4, 2.6], [2.0, -2.0], [-5.2, 0.9], [5.0, 3.0], [5.0, -0.6]];

@@ -9,8 +9,8 @@
    "running"
   ],
   "analysers": 1,
-  "peak": 0,
-  "rms": 0,
+  "peak": 0.5132652521133423,
+  "rms": 0.18590983898616265,
   "mv": 0.8
  },
  "silent": {
@@ -25,11 +25,11 @@
  },
  "persisted": {
   "mv": 0,
-  "raw": "{\"masterVolume\":0,\"musicVolume\":0.7,\"sfxVolume\":0.9,\"sensitivity\":1,\"reducedMotion\":false,\"playerGender\":\"m\"}"
+  "raw": "{\"masterVolume\":0,\"musicVolume\":0.7,\"sfxVolume\":0.9,\"sensitivity\":1,\"reducedMotion\":false,\"playerGender\":\"m\",\"voiceMode\":\"speech\"}"
  },
  "afterReload": {
   "mv": 0,
-  "raw": "{\"masterVolume\":0,\"musicVolume\":0.7,\"sfxVolume\":0.9,\"sensitivity\":1,\"reducedMotion\":false,\"playerGender\":\"m\"}"
+  "raw": "{\"masterVolume\":0,\"musicVolume\":0.7,\"sfxVolume\":0.9,\"sensitivity\":1,\"reducedMotion\":false,\"playerGender\":\"m\",\"voiceMode\":\"speech\"}"
  },
  "silentAfterReload": {
   "contexts": 1,
@@ -51,8 +51,8 @@
   "rms": 0
  },
  "afterMute": {
-  "mv": 0,
-  "raw": "{\"masterVolume\":0,\"musicVolume\":0.7,\"sfxVolume\":0.9,\"sensitivity\":1,\"reducedMotion\":false,\"playerGender\":\"m\"}"
+  "mv": 0.8,
+  "raw": "{\"masterVolume\":0.8,\"musicVolume\":0.7,\"sfxVolume\":0.9,\"sensitivity\":1,\"reducedMotion\":false,\"playerGender\":\"m\"}"
  },
  "selectors": {
   "title.settings": "role=button name=/^设置$/",

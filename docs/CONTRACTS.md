@@ -226,11 +226,11 @@ Automatic behaviour: phase title → establishing shot; aim → FP (cursor posit
 
 ```js
 ctx.story = {
-  ENDINGS: [{ id, title, subtitle, rarity: 'common'|'rare'|'secret', hint, icon, color }],   // 13, see GDD §7
+  ENDINGS: [{ id, title, subtitle, rarity: 'common'|'rare'|'secret', hint, icon, color }],   // 15, see GDD §7
   letters: [{ id, title, text }],                     // ≥ 3 presets
   makeRoster(rng, playerGender, opts?) → { students: Spec[], teacher: Spec, seatMap: {seatId: id|null}, crushId, playerSeatId },
       // opts.crushId / opts.seatMap override (tests)
-  resolve(round) → endingId,                          // the GDD §7 priority table, a pure function
+  resolve(round) → endingId,                          // the GDD §7 priority table, a pure function; also sets round.recipientId and round.delivery ('desk'|'bonk'|'pickup'|null) per the GDD §7 recipient rule
   playIntro() → Promise,                              // class starts + crush reveal (≤ 6 s, click to skip)
   playEnding(endingId) → Promise,                     // immediate reaction + ending cutscene; leaves the game on its final frame
   gallery: { unlocked() → id[], unlock(id) → isNew, reset() },   // localStorage 'qingshu.endings'
@@ -245,7 +245,7 @@ ctx.ui = {
   letterEditor({presets}) → Promise<{text, presetId}>,
   crumple() → Promise,                                  // hold-to-crumple interaction
   hud: { show(bool), setObjective(text), prompt(text|null) },   // the HUD reads ctx.round / ctx.gameplay / ctx.ai itself every frame
-  say(speaker, text, {charId?, voice?, mood?}) → Promise,       // dialogue box: typewriter + blips (ctx.audio.blip), auto-advance (click/Space speeds up)
+  say(speaker, text, {charId?, voice?, mood?}) → Promise,       // dialogue box: typewriter + ctx.audio.voiceLine(text, voice, {charId}); resolves when both the text and the voice line are done (auto-advance; click/Space skips)
   bubble(target: charId|Vector3, text, {dur}) → Promise,       // world-anchored speech bubble (lectures, whispers)
   caption(text, {style: 'impact'|'chapter'|'whisper', dur}) → Promise,   // big manga caption ("社死！")
   letterReveal(text, {mode: 'read'|'readAloud'|'grading'|'reply', score?}) → Promise,
@@ -267,7 +267,9 @@ ctx.audio = {
   setTension(0..1),                           // adaptive tension layer in the classroom track
   sfx(name, {volume, rate, pos?}),            // one-shot; pos (world space) → simple panning
   loop(name, {volume}) → {set({volume, rate}), stop(fade)},   // looping sound
-  blip(voice /*{pitch}*/, char),              // dialogue blip (once per character typed)
+  blip(voice /*{pitch}*/, char),              // soft dialogue blip (fallback voice)
+  voiceLine(text, voice, {charId}) → Promise,  // speak one dialogue line: real zh-CN speech with per-character pitch/rate when available
+                                              // (settings.voiceMode 'speech'), else soft blips ('blips'), else silent ('off'); always resolves within a bounded time
   speak(text, {pitch, rate}) → Promise,       // read aloud (speechSynthesis zh-CN, falls back to a blip sequence)
   duck(amount, dur), applySettings(settings),
   debug: { music, recent: [] },               // current track + last 50 audio events (for QA)
@@ -302,6 +304,7 @@ ownerId: desk/chair/book → seat id; head/body → character id; teacher → 't
   duration, timeLeft,                                                        // flow
   suspicion, teacherSawBall, caughtDuring /* null|'aim'|'flight' */, incidents: [],   // ai (gameplay may push incidents)
   launched, landing,                                                         // flow / gameplay
+  recipientId, delivery,                                                     // story (set by resolve)
   endingId, flags: {} }                                                      // flow / story
 ```
 

@@ -4,17 +4,19 @@
 // setInterval or its own requestAnimationFrame. Use ctx.time.wait / waitUI / tween / until —
 // they are driven by tick(), so the debug API can fast-forward the whole game deterministically.
 import * as THREE from 'three';
+import { createFrameBudget, renderPixelRatio } from './performance.js';
 
 /** Update order slots. Lower runs first. */
 export const ORDER = { INPUT: -100, AI: 10, WORLD: 15, CHARACTERS: 20, GAMEPLAY: 30, STORY: 35, CAMERA: 40, UI: 50, AUDIO: 60 };
 
-export function createEngine(canvas) {
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance', preserveDrawingBuffer: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+export function createEngine(canvas, { lowfx = false } = {}) {
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+  const budget = createFrameBudget();
+  const renderSize = new THREE.Vector2();
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.0;
-  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.enabled = !lowfx;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
   const scene = new THREE.Scene();
@@ -30,14 +32,15 @@ export function createEngine(canvas) {
 
   const engine = {
     THREE, renderer, scene, camera, canvas, time, ORDER,
+    performance: budget,
     /** game-clock speed (slow motion). Owned by the camera director at runtime. */
     get timeScale() { return time.scale; },
     set timeScale(v) { time.scale = Math.max(0, v); },
     get paused() { return paused; },
-    set paused(v) { paused = !!v; },
+    set paused(v) { paused = !!v; last = performance.now(); budget.reset(); },
     get manual() { return manual; },
     /** In manual mode the RAF loop stops ticking; tests drive tick() themselves. */
-    setManual(v) { manual = !!v; last = performance.now(); },
+    setManual(v) { manual = !!v; last = performance.now(); budget.reset(); },
     /** Register a per-tick update: fn(dt, time). dt is the scaled game dt. Returns an unsubscribe fn. */
     onUpdate(fn, order = 0) {
       const u = { fn, order };
@@ -59,7 +62,12 @@ export function createEngine(canvas) {
     resize() {
       const w = canvas.clientWidth || window.innerWidth;
       const h = canvas.clientHeight || window.innerHeight;
-      renderer.setSize(w, h, false);
+      const ratio = renderPixelRatio(w, h, window.devicePixelRatio, budget.scale, lowfx);
+      renderer.getSize(renderSize);
+      if (renderSize.x !== w || renderSize.y !== h || Math.abs(renderer.getPixelRatio() - ratio) > 0.001) {
+        // Set CSS size and pixel density together: one buffer allocation, with no DOM resize.
+        renderer.setDrawingBufferSize(w, h, ratio);
+      }
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
     },
@@ -68,7 +76,11 @@ export function createEngine(canvas) {
         requestAnimationFrame(loop);
         const realDt = (now - last) / 1000;
         last = now;
-        if (!manual) { engine.tick(realDt); renderFn(); }
+        if (!manual && !document.hidden) {
+          if (!paused && !lowfx && budget.sample(realDt * 1000)) engine.resize();
+          engine.tick(realDt);
+          renderFn();
+        }
       };
       requestAnimationFrame(loop);
     },
@@ -76,6 +88,7 @@ export function createEngine(canvas) {
   };
   const reportError = (err) => { console.error(err); engine.onError?.(err); };
   window.addEventListener('resize', () => engine.resize());
+  document.addEventListener('visibilitychange', () => { last = performance.now(); budget.reset(); });
   engine.resize();
   return engine;
 }
